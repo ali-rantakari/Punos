@@ -9,6 +9,16 @@
 import XCTest
 @testable import Punos
 
+private extension NSHTTPURLResponse {
+    func headerWithName(name: String) -> String? {
+        return (allHeaderFields as? [String:String])?[name]
+    }
+    var allHeaderNames: Set<String> {
+        guard let headers = allHeaderFields as? [String:String] else { return [] }
+        return Set(headers.keys) ?? []
+    }
+}
+
 class MockServerTests: XCTestCase {
     
     // ------------------------------------------------
@@ -79,7 +89,7 @@ class MockServerTests: XCTestCase {
     func testResponseMocking_defaultsWhenNoMockResponsesConfigured() {
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 200)
-            XCTAssertEqual(response.allHeaderFields as! [String:String], [:])
+            XCTAssertEqual(response.allHeaderNames, ["Server", "Date", "Connection", "Cache-Control"])
             XCTAssertEqual(data.length, 0)
             XCTAssertNil(error)
         }
@@ -97,7 +107,9 @@ class MockServerTests: XCTestCase {
         
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 201)
-            XCTAssertEqual(response.allHeaderFields as! [String:String], ["X-Greeting": "Hey yall", "Content-Type": "thing/foobar"])
+            XCTAssertEqual(response.allHeaderNames, ["Server", "Date", "Connection", "Cache-Control", "X-Greeting", "Content-Type", "Content-Length"])
+            XCTAssertEqual(response.headerWithName("X-Greeting"), "Hey yall")
+            XCTAssertEqual(response.headerWithName("Content-Type"), "thing/foobar")
             XCTAssertEqual(data, mockData)
             XCTAssertNil(error)
         }
