@@ -10,7 +10,7 @@
 		C979168A1C6A7BD700E5B379 /* Punos.h in Headers */ = {isa = PBXBuildFile; fileRef = C97916891C6A7BD700E5B379 /* Punos.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97916911C6A7BD700E5B379 /* Punos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916861C6A7BD700E5B379 /* Punos.framework */; };
 		C97916961C6A7BD700E5B379 /* PunosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916951C6A7BD700E5B379 /* PunosTests.swift */; };
-		C97916A11C6A7C0700E5B379 /* PunosServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A01C6A7C0700E5B379 /* PunosServer.swift */; };
+		C97916A11C6A7C0700E5B379 /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A01C6A7C0700E5B379 /* MockServer.swift */; };
 		C97916A31C6A7EC400E5B379 /* GCDWebServers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +31,7 @@
 		C97916901C6A7BD700E5B379 /* PunosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PunosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C97916951C6A7BD700E5B379 /* PunosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PunosTests.swift; sourceTree = "<group>"; };
 		C97916971C6A7BD700E5B379 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C97916A01C6A7C0700E5B379 /* PunosServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PunosServer.swift; sourceTree = "<group>"; };
+		C97916A01C6A7C0700E5B379 /* MockServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockServer.swift; sourceTree = "<group>"; };
 		C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCDWebServers.framework; path = Carthage/Build/iOS/GCDWebServers.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -79,7 +79,7 @@
 			children = (
 				C97916891C6A7BD700E5B379 /* Punos.h */,
 				C979168B1C6A7BD700E5B379 /* Info.plist */,
-				C97916A01C6A7C0700E5B379 /* PunosServer.swift */,
+				C97916A01C6A7C0700E5B379 /* MockServer.swift */,
 			);
 			path = Punos;
 			sourceTree = "<group>";
@@ -229,7 +229,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C97916A11C6A7C0700E5B379 /* PunosServer.swift in Sources */,
+				C97916A11C6A7C0700E5B379 /* MockServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
