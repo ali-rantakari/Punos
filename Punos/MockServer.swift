@@ -44,6 +44,7 @@ public class MockServer {
             try server.startWithOptions([
                 GCDWebServerOption_Port: port ?? 8080,
                 GCDWebServerOption_BindToLocalhost: true,
+                GCDWebServerOption_ServerName: "",
                 ])
         } catch let error {
             fatalError("The mock server failed to start on port \(port). Error: \(error)")
