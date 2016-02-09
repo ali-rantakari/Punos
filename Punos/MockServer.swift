@@ -40,8 +40,12 @@ public class MockServer {
     /// Start the server on the given `port` (`8080` by default.)
     ///
     func start(port: UInt? = nil) {
-        if !server.startWithPort(port ?? 8080, bonjourName: nil) {
-            fatalError("The mock server failed to start on port \(port)")
+        do {
+            try server.startWithOptions([
+                GCDWebServerOption_Port: port ?? 8080,
+                ])
+        } catch let error {
+            fatalError("The mock server failed to start on port \(port). Error: \(error)")
         }
     }
     
