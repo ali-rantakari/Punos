@@ -30,6 +30,9 @@ public class MockServer {
     
     private let server = GCDWebServer()
     
+    init() {
+        attachHandlers()
+    }
     
     // ------------------------------------
     // MARK: Starting and stopping
@@ -75,9 +78,9 @@ public class MockServer {
     
     private let allHTTPVerbs = ["OPTIONS", "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT"]
     
-    private func updateHandlers() {
+    private func attachHandlers() {
         for method in allHTTPVerbs {
-            server.addDefaultHandlerForMethod(method, requestClass: nil, processBlock: respondToRequest)
+            server.addDefaultHandlerForMethod(method, requestClass: GCDWebServerDataRequest.self, processBlock: respondToRequest)
         }
     }
     
