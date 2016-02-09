@@ -10,7 +10,7 @@ import Foundation
 import GCDWebServers
 
 
-typealias MockResponseMatcher = (request: GCDWebServerRequest) -> Bool
+typealias MockResponseMatcher = (request: HTTPRequest) -> Bool
 
 
 private struct MockResponse {
@@ -86,11 +86,12 @@ public class MockServer {
     
     private func mockResponseDataForRequest(request: GCDWebServerRequest!) -> MockResponse? {
         
+        let publicRequest = HTTPRequest(request)
         for i in mockResponsesWithMatchers.indices {
             let responseWithMatcher = mockResponsesWithMatchers[i]
             guard let matcher = responseWithMatcher.matcher else { continue }
             
-            if matcher(request: request) {
+            if matcher(request: publicRequest) {
                 if responseWithMatcher.onlyOnce {
                     mockResponsesWithMatchers.removeAtIndex(i)
                 }
