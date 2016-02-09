@@ -191,8 +191,8 @@ public class MockServer {
     /// the `Content-Type` header as `"application/json"`.)
     ///
     /// - parameters:
-    ///     - status: The response HTTP status code. Default: 200
     ///     - json: The UTF-8 encoded JSON to be sent in the response body
+    ///     - status: The response HTTP status code. Default: 200
     ///     - headers: The response headers
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
@@ -201,7 +201,7 @@ public class MockServer {
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    func mockResponse(status status: Int? = nil, json: String? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
+    func mockResponseJSON(json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
         mockResponse(
             status: status,
             data: json?.dataUsingEncoding(NSUTF8StringEncoding),
