@@ -12,6 +12,7 @@
 		C97916961C6A7BD700E5B379 /* PunosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916951C6A7BD700E5B379 /* PunosTests.swift */; };
 		C97916A11C6A7C0700E5B379 /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A01C6A7C0700E5B379 /* MockServer.swift */; };
 		C97916A31C6A7EC400E5B379 /* GCDWebServers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */; };
+		C97916AA1C6A959000E5B379 /* GCDWebServers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C97916AA1C6A959000E5B379 /* GCDWebServers.framework in Frameworks */,
 				C97916911C6A7BD700E5B379 /* Punos.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -141,6 +143,7 @@
 				C979168C1C6A7BD700E5B379 /* Sources */,
 				C979168D1C6A7BD700E5B379 /* Frameworks */,
 				C979168E1C6A7BD700E5B379 /* Resources */,
+				C97916AB1C6A95B500E5B379 /* Copy Carthage Frameworks */,
 			);
 			buildRules = (
 			);
@@ -207,6 +210,22 @@
 
 /* Begin PBXShellScriptBuildPhase section */
 		C97916A51C6A7ED500E5B379 /* Copy Carthage Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/GCDWebServers.framework",
+			);
+			name = "Copy Carthage Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+			showEnvVarsInLog = 0;
+		};
+		C97916AB1C6A95B500E5B379 /* Copy Carthage Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -387,6 +406,10 @@
 		C979169E1C6A7BD700E5B379 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = PunosTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.hasseg.PunosTests;
@@ -397,6 +420,10 @@
 		C979169F1C6A7BD700E5B379 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = PunosTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.hasseg.PunosTests;
