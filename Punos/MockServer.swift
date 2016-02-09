@@ -101,8 +101,8 @@ public class MockServer {
         if let def = defaultMockResponse {
             if def.onlyOnce {
                 defaultMockResponse = nil
-                return def
             }
+            return def
         }
         
         return nil
