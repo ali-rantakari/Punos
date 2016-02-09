@@ -106,6 +106,8 @@ public class MockServer {
     }
     
     private func respondToRequest(request: GCDWebServerRequest!) -> GCDWebServerResponse {
+        latestRequests.append(HTTPRequest(request))
+        
         guard let mockData = mockResponseDataForRequest(request) else {
             return GCDWebServerResponse()
         }
@@ -132,6 +134,16 @@ public class MockServer {
         }
         
         return response
+    }
+    
+    /// The latest HTTP requests this server has received, in order of receipt.
+    ///
+    var latestRequests = [HTTPRequest]()
+    
+    /// The most recent HTTP request this server has received, or `nil` if none.
+    ///
+    var lastRequest: HTTPRequest? {
+        return latestRequests.last
     }
     
     

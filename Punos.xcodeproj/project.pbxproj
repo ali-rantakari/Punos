@@ -12,6 +12,8 @@
 		C97916961C6A7BD700E5B379 /* PunosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916951C6A7BD700E5B379 /* PunosTests.swift */; };
 		C97916A11C6A7C0700E5B379 /* MockServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A01C6A7C0700E5B379 /* MockServer.swift */; };
 		C97916A31C6A7EC400E5B379 /* GCDWebServers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */; };
+		C97916A71C6A917100E5B379 /* HTTPRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A61C6A917100E5B379 /* HTTPRequest.swift */; };
+		C97916A91C6A949500E5B379 /* HTTPRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A81C6A949500E5B379 /* HTTPRequestTests.swift */; };
 		C97916AA1C6A959000E5B379 /* GCDWebServers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */; };
 /* End PBXBuildFile section */
 
@@ -34,6 +36,8 @@
 		C97916971C6A7BD700E5B379 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C97916A01C6A7C0700E5B379 /* MockServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockServer.swift; sourceTree = "<group>"; };
 		C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCDWebServers.framework; path = Carthage/Build/iOS/GCDWebServers.framework; sourceTree = "<group>"; };
+		C97916A61C6A917100E5B379 /* HTTPRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequest.swift; sourceTree = "<group>"; };
+		C97916A81C6A949500E5B379 /* HTTPRequestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequestTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +86,7 @@
 				C97916891C6A7BD700E5B379 /* Punos.h */,
 				C979168B1C6A7BD700E5B379 /* Info.plist */,
 				C97916A01C6A7C0700E5B379 /* MockServer.swift */,
+				C97916A61C6A917100E5B379 /* HTTPRequest.swift */,
 			);
 			path = Punos;
 			sourceTree = "<group>";
@@ -90,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				C97916951C6A7BD700E5B379 /* PunosTests.swift */,
+				C97916A81C6A949500E5B379 /* HTTPRequestTests.swift */,
 				C97916971C6A7BD700E5B379 /* Info.plist */,
 			);
 			path = PunosTests;
@@ -249,6 +255,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C97916A11C6A7C0700E5B379 /* MockServer.swift in Sources */,
+				C97916A71C6A917100E5B379 /* HTTPRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +264,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C97916961C6A7BD700E5B379 /* PunosTests.swift in Sources */,
+				C97916A91C6A949500E5B379 /* HTTPRequestTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
