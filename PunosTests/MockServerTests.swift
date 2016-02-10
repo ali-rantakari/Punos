@@ -37,11 +37,14 @@ class MockServerTests: XCTestCase {
         server.stop()
     }
     
-    func request(method: String, _ path: String, body: String? = nil, timeout: NSTimeInterval = 2, completionHandler: (NSData, NSHTTPURLResponse, NSError?) -> Void) {
+    func request(method: String, _ path: String, body: String? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
         let expectation = expectationWithDescription("Request")
         
         let request = NSMutableURLRequest(URL: NSURL(string: "\(server.baseURLString ?? "")\(path)")!)
         request.HTTPMethod = method
+        if let headers = headers {
+            headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
+        }
         if let body = body {
             request.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding)
         }
@@ -51,7 +54,7 @@ class MockServerTests: XCTestCase {
                 XCTFail("The response should always be an NSHTTPURLResponse")
                 return
             }
-            completionHandler(data!, response, error)
+            completionHandler?(data!, response, error)
             expectation.fulfill()
         }.resume()
         
