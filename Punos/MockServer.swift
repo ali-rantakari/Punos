@@ -195,7 +195,8 @@ public class MockServer {
     ///       thereafter
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
-    ///       incoming requests.
+    ///       incoming requests. If multiple matchers match an incoming request, the
+    ///       first one added wins.
     ///
     func mockResponse(response: MockResponse, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
         let config = MockResponseConfiguration(
@@ -221,7 +222,8 @@ public class MockServer {
     ///       thereafter
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
-    ///       incoming requests.
+    ///       incoming requests. If multiple matchers match an incoming request, the
+    ///       first one added wins.
     ///
     func mockResponse(status status: Int? = nil, data: NSData? = nil, contentType: String? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
         let response = MockResponse(
@@ -244,7 +246,8 @@ public class MockServer {
     ///       thereafter
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
-    ///       incoming requests.
+    ///       incoming requests. If multiple matchers match an incoming request, the
+    ///       first one added wins.
     ///
     func mockResponseJSON(json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
         mockResponse(

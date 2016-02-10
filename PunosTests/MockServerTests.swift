@@ -139,6 +139,27 @@ class MockServerTests: XCTestCase {
         }
     }
     
+    func testResponseMocking_matcher_overlapping() {
+        server.mockResponse(status: 201) { request in
+            return request.path.containsString("foo")
+        }
+        server.mockResponse(status: 202) { request in
+            return request.path.containsString("bar")
+        }
+        
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        request("GET", "/bar") { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+        
+        // Both match --> 1st one added wins
+        request("GET", "/foobar") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+    }
+    
     func testResponseMocking_onlyOnce_withoutMatcher() {
         
         // The responses should be dealt in the same order in which they were configured:
