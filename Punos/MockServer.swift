@@ -158,6 +158,12 @@ public class MockServer {
         return latestRequests.last
     }
     
+    /// Clear the `latestRequests` list (and `lastRequest`.)
+    ///
+    func clearLatestRequests() {
+        latestRequests.removeAll()
+    }
+    
     
     // ------------------------------------
     // MARK: Response mocking
