@@ -462,6 +462,7 @@
 				C979169C1C6A7BD700E5B379 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C979169D1C6A7BD700E5B379 /* Build configuration list for PBXNativeTarget "PunosTests" */ = {
 			isa = XCConfigurationList;
@@ -470,6 +471,7 @@
 				C979169F1C6A7BD700E5B379 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
