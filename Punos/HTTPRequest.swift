@@ -28,6 +28,12 @@ public struct HTTPRequest {
     
     /// The body data
     let data: NSData?
+    
+    /// The HTTP method and path, separated by a 
+    /// space. E.g. `"GET /foo/bar"`
+    var endpoint: String {
+        return "\(method) \(path)"
+    }
 }
 
 
