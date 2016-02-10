@@ -160,6 +160,21 @@ class MockServerTests: XCTestCase {
         }
     }
     
+    func testResponseMocking_matcher_viaEndpointParameter() {
+        server.mockResponse(endpoint: "GET /foo", status: 201)
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        
+        // If `matcher` and `endpoint` are both given, `endpoint`
+        // takes precedence:
+        //
+        server.mockResponse(endpoint: "GET /foo", status: 201) { req in return false }
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+    }
+    
     func testResponseMocking_onlyOnce_withoutMatcher() {
         
         // The responses should be dealt in the same order in which they were configured:

@@ -191,9 +191,22 @@ public class MockServer {
     private var defaultMockResponses: [MockResponseConfiguration] = []
     private var mockResponsesWithMatchers: [MockResponseConfiguration] = []
     
+    private func matcherForEndpoint(endpoint: String?) -> MockResponseMatcher? {
+        guard let endpoint = endpoint else { return nil }
+        let parts = endpoint.componentsSeparatedByString(" ")
+        let method = parts.first
+        let path = parts.last
+        return { request in
+            return request.method == method && request.path == path
+        }
+    }
+    
     /// Tell the server to send this response to incoming requests.
     ///
     /// - parameters:
+    ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
+    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. If set, this will
+    ///       supersede `matcher`.
     ///     - response: The mock response to send
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
@@ -205,10 +218,10 @@ public class MockServer {
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockResponse(response: MockResponse, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    func mockResponse(endpoint endpoint: String? = nil, response: MockResponse, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let config = MockResponseConfiguration(
             response: response,
-            matcher: matcher,
+            matcher: matcherForEndpoint(endpoint) ?? matcher,
             onlyOnce: onlyOnce,
             delay: delay)
         if matcher == nil {
@@ -221,6 +234,9 @@ public class MockServer {
     /// Tell the server to send this response to incoming requests.
     ///
     /// - parameters:
+    ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
+    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. If set, this will
+    ///       supersede `matcher`.
     ///     - status: The response HTTP status code. Default: 200
     ///     - data: The response body data
     ///     - contentType: The content type of the response body data (i.e. the `Content-Type` header)
@@ -235,19 +251,22 @@ public class MockServer {
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockResponse(status status: Int? = nil, data: NSData? = nil, contentType: String? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    func mockResponse(endpoint endpoint: String? = nil, status: Int? = nil, data: NSData? = nil, contentType: String? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let response = MockResponse(
             statusCode: status,
             data: data,
             contentType: contentType,
             headers: headers)
-        mockResponse(response, onlyOnce: onlyOnce, delay: delay, matcher: matcher)
+        mockResponse(endpoint: endpoint, response: response, onlyOnce: onlyOnce, delay: delay, matcher: matcher)
     }
     
     /// Tell the server to send this JSON response to incoming requests (sending
     /// the `Content-Type` header as `"application/json"`.)
     ///
     /// - parameters:
+    ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
+    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. If set, this will
+    ///       supersede `matcher`.
     ///     - json: The UTF-8 encoded JSON to be sent in the response body
     ///     - status: The response HTTP status code. Default: 200
     ///     - headers: The response headers
@@ -261,7 +280,7 @@ public class MockServer {
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockResponseJSON(json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    func mockJSONResponse(endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         mockResponse(
             status: status,
             data: json?.dataUsingEncoding(NSUTF8StringEncoding),
@@ -269,6 +288,7 @@ public class MockServer {
             headers: headers,
             onlyOnce: onlyOnce,
             delay: delay,
+            endpoint: endpoint,
             matcher: matcher)
     }
     
