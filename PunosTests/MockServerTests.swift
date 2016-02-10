@@ -136,7 +136,61 @@ class MockServerTests: XCTestCase {
         }
     }
     
-    // TODO: test .onlyOnce (both with and without a matcher)
+    func testResponseMocking_onlyOnce_withoutMatcher() {
+        
+        // The responses should be dealt in the same order in which they were configured:
+        //
+        server.mockResponse(status: 201, onlyOnce: true)
+        server.mockResponse(status: 202, onlyOnce: true)
+        server.mockResponse(status: 203, onlyOnce: true)
+        server.mockResponse(status: 500) // default fallback
+        
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 203)
+        }
+        
+        // All three 'onlyOnce' responses are exhausted — we should get the fallback:
+        request("POST", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 500)
+        }
+    }
+    
+    func testResponseMocking_onlyOnce_withMatcher() {
+        server.mockResponse(status: 500) // default fallback
+        
+        let matcher: MockResponseMatcher = { request in request.path == "/match-me" }
+        server.mockResponse(status: 201, onlyOnce: true, matcher: matcher)
+        server.mockResponse(status: 202, onlyOnce: true, matcher: matcher)
+        server.mockResponse(status: 203, onlyOnce: true, matcher: matcher)
+        
+        request("GET", "/match-me") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        
+        // Try one non-matching request "in between":
+        request("POST", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 500)
+        }
+        
+        request("GET", "/match-me") { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+        request("GET", "/match-me") { data, response, error in
+            XCTAssertEqual(response.statusCode, 203)
+        }
+        
+        // All three 'onlyOnce' responses are exhausted — we should get the fallback:
+        request("POST", "/match-me") { data, response, error in
+            XCTAssertEqual(response.statusCode, 500)
+        }
+    }
+    
     // TODO: test "convenience" versions of .mockResponse()
     
 }
