@@ -236,6 +236,37 @@ class MockServerTests: XCTestCase {
         }
     }
     
+    func testResponseMocking_delay() {
+        // Let's try to keep the delay short enough to not make our
+        // tests slow, but long enough for us to reliably check that
+        // it was intentional and not accidental
+        //
+        let delayToTest: NSTimeInterval = 0.5
+        
+        // First try with NO delay:
+        //
+        server.mockResponse(status: 205, delay: 0)
+        
+        let noDelayStartDate = NSDate()
+        request("GET", "/foo") { data, response, error in
+            let endDate = NSDate()
+            XCTAssertEqual(response.statusCode, 205)
+            XCTAssertLessThan(endDate.timeIntervalSinceDate(noDelayStartDate), 0.1)
+        }
+        
+        // Then try with the delay:
+        //
+        server.clearMockResponses()
+        server.mockResponse(status: 201, delay: delayToTest)
+        
+        let withDelayStartDate = NSDate()
+        request("GET", "/foo") { data, response, error in
+            let endDate = NSDate()
+            XCTAssertEqual(response.statusCode, 201)
+            XCTAssertGreaterThan(endDate.timeIntervalSinceDate(withDelayStartDate), delayToTest)
+        }
+    }
+    
     // TODO: test "convenience" versions of .mockResponse()
     
 }

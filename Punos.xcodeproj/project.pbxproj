@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A4DE4FAE1C6B1BCA00005441 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DE4FAD1C6B1BCA00005441 /* Utils.swift */; };
 		C979168A1C6A7BD700E5B379 /* Punos.h in Headers */ = {isa = PBXBuildFile; fileRef = C97916891C6A7BD700E5B379 /* Punos.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97916911C6A7BD700E5B379 /* Punos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916861C6A7BD700E5B379 /* Punos.framework */; };
 		C97916961C6A7BD700E5B379 /* MockServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916951C6A7BD700E5B379 /* MockServerTests.swift */; };
@@ -28,6 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A4DE4FAD1C6B1BCA00005441 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		C97916861C6A7BD700E5B379 /* Punos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Punos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C97916891C6A7BD700E5B379 /* Punos.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Punos.h; sourceTree = "<group>"; };
 		C979168B1C6A7BD700E5B379 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 			children = (
 				C97916891C6A7BD700E5B379 /* Punos.h */,
 				C979168B1C6A7BD700E5B379 /* Info.plist */,
+				A4DE4FAD1C6B1BCA00005441 /* Utils.swift */,
 				C97916A01C6A7C0700E5B379 /* MockServer.swift */,
 				C97916A61C6A917100E5B379 /* HTTPRequest.swift */,
 			);
@@ -256,6 +259,7 @@
 			files = (
 				C97916A11C6A7C0700E5B379 /* MockServer.swift in Sources */,
 				C97916A71C6A917100E5B379 /* HTTPRequest.swift in Sources */,
+				A4DE4FAE1C6B1BCA00005441 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

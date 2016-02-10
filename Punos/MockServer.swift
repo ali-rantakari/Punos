@@ -35,6 +35,7 @@ private struct MockResponseConfiguration {
     let response: MockResponse
     let matcher: MockResponseMatcher?
     let onlyOnce: Bool
+    let delay: NSTimeInterval
 }
 
 
@@ -101,11 +102,11 @@ public class MockServer {
     
     private func attachHandlers() {
         for method in allHTTPVerbs {
-            server.addDefaultHandlerForMethod(method, requestClass: GCDWebServerDataRequest.self, processBlock: respondToRequest)
+            server.addDefaultHandlerForMethod(method, requestClass: GCDWebServerDataRequest.self, asyncProcessBlock: respondToRequest)
         }
     }
     
-    private func mockResponseDataForRequest(request: GCDWebServerRequest!) -> MockResponse? {
+    private func mockResponseConfigForRequest(request: GCDWebServerRequest!) -> MockResponseConfiguration? {
         
         let publicRequest = HTTPRequest(request)
         
@@ -117,7 +118,7 @@ public class MockServer {
                 if responseConfig.onlyOnce {
                     mockResponsesWithMatchers.removeAtIndex(i)
                 }
-                return responseConfig.response
+                return responseConfig
             }
         }
         
@@ -126,18 +127,20 @@ public class MockServer {
             if responseConfig.onlyOnce {
                 defaultMockResponses.removeAtIndex(i)
             }
-            return responseConfig.response
+            return responseConfig
         }
         
         return nil
     }
     
-    private func respondToRequest(request: GCDWebServerRequest!) -> GCDWebServerResponse {
+    private func respondToRequest(request: GCDWebServerRequest!, completion: ((GCDWebServerResponse!) -> Void)!) {
         latestRequests.append(HTTPRequest(request))
         
-        guard let mockData = mockResponseDataForRequest(request) else {
-            return GCDWebServerResponse()
+        guard let mockConfig = mockResponseConfigForRequest(request) else {
+            completion(GCDWebServerResponse())
+            return
         }
+        let mockData = mockConfig.response
         
         let response: GCDWebServerResponse = {
             if let bodyData = mockData.data, contentType = mockData.contentType {
@@ -160,7 +163,9 @@ public class MockServer {
             }
         }
         
-        return response
+        dispatchAfterInterval(mockConfig.delay, queue: dispatch_get_main_queue()) {
+            completion(response)
+        }
     }
     
     /// The latest HTTP requests this server has received, in order of receipt.
@@ -193,16 +198,19 @@ public class MockServer {
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
     ///       thereafter
+    ///     - delay: How long to wait (after processing the incoming request) before sending
+    ///       the response
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockResponse(response: MockResponse, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
+    func mockResponse(response: MockResponse, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let config = MockResponseConfiguration(
             response: response,
             matcher: matcher,
-            onlyOnce: onlyOnce)
+            onlyOnce: onlyOnce,
+            delay: delay)
         if matcher == nil {
             defaultMockResponses.append(config)
         } else {
@@ -220,18 +228,20 @@ public class MockServer {
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
     ///       thereafter
+    ///     - delay: How long to wait (after processing the incoming request) before sending
+    ///       the response
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockResponse(status status: Int? = nil, data: NSData? = nil, contentType: String? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
+    func mockResponse(status status: Int? = nil, data: NSData? = nil, contentType: String? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let response = MockResponse(
             statusCode: status,
             data: data,
             contentType: contentType,
             headers: headers)
-        mockResponse(response, onlyOnce: onlyOnce, matcher: matcher)
+        mockResponse(response, onlyOnce: onlyOnce, delay: delay, matcher: matcher)
     }
     
     /// Tell the server to send this JSON response to incoming requests (sending
@@ -244,18 +254,21 @@ public class MockServer {
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
     ///       thereafter
+    ///     - delay: How long to wait (after processing the incoming request) before sending
+    ///       the response
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockResponseJSON(json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
+    func mockResponseJSON(json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         mockResponse(
             status: status,
             data: json?.dataUsingEncoding(NSUTF8StringEncoding),
             contentType: "application/json",
             headers: headers,
             onlyOnce: onlyOnce,
+            delay: delay,
             matcher: matcher)
     }
     
