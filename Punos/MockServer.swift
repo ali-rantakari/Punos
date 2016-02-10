@@ -13,11 +13,26 @@ import GCDWebServers
 typealias MockResponseMatcher = (request: HTTPRequest) -> Bool
 
 
-private struct MockResponse {
+/// Data for a mocked HTTP server response.
+///
+public struct MockResponse {
+    
+    /// The HTTP status code
     let statusCode: Int?
+    
+    /// The body data
     let data: NSData?
+    
+    /// The `Content-Type` header value
     let contentType: String?
+    
+    /// The HTTP headers
     let headers: [String:String]?
+}
+
+
+private struct MockResponseConfiguration {
+    let response: MockResponse
     let matcher: MockResponseMatcher?
     let onlyOnce: Bool
 }
@@ -95,23 +110,23 @@ public class MockServer {
         let publicRequest = HTTPRequest(request)
         
         for i in mockResponsesWithMatchers.indices {
-            let responseWithMatcher = mockResponsesWithMatchers[i]
-            guard let matcher = responseWithMatcher.matcher else { continue }
+            let responseConfig = mockResponsesWithMatchers[i]
+            guard let matcher = responseConfig.matcher else { continue }
             
             if matcher(request: publicRequest) {
-                if responseWithMatcher.onlyOnce {
+                if responseConfig.onlyOnce {
                     mockResponsesWithMatchers.removeAtIndex(i)
                 }
-                return responseWithMatcher
+                return responseConfig.response
             }
         }
         
         for i in defaultMockResponses.indices {
-            let defaultResponse = defaultMockResponses[i]
-            if defaultResponse.onlyOnce {
+            let responseConfig = defaultMockResponses[i]
+            if responseConfig.onlyOnce {
                 defaultMockResponses.removeAtIndex(i)
             }
-            return defaultResponse
+            return responseConfig.response
         }
         
         return nil
@@ -168,8 +183,31 @@ public class MockServer {
     // ------------------------------------
     // MARK: Response mocking
     
-    private var defaultMockResponses: [MockResponse] = []
-    private var mockResponsesWithMatchers: [MockResponse] = []
+    private var defaultMockResponses: [MockResponseConfiguration] = []
+    private var mockResponsesWithMatchers: [MockResponseConfiguration] = []
+    
+    /// Tell the server to send this response to incoming requests.
+    ///
+    /// - parameters:
+    ///     - response: The mock response to send
+    ///     - onlyOnce: Whether to only mock this response once — if `true`, this
+    ///       mock response will only be sent for the first matching request and not
+    ///       thereafter
+    ///     - matcher: An “evaluator” function that determines what requests this response
+    ///       should be sent for. If omitted or `nil`, this response will match _all_
+    ///       incoming requests.
+    ///
+    func mockResponse(response: MockResponse, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
+        let config = MockResponseConfiguration(
+            response: response,
+            matcher: matcher,
+            onlyOnce: onlyOnce)
+        if matcher == nil {
+            defaultMockResponses.append(config)
+        } else {
+            mockResponsesWithMatchers.append(config)
+        }
+    }
     
     /// Tell the server to send this response to incoming requests.
     ///
@@ -186,19 +224,12 @@ public class MockServer {
     ///       incoming requests.
     ///
     func mockResponse(status status: Int? = nil, data: NSData? = nil, contentType: String? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
-        let mockResponse = MockResponse(
+        let response = MockResponse(
             statusCode: status,
             data: data,
             contentType: contentType,
-            headers: headers,
-            matcher: matcher,
-            onlyOnce: onlyOnce)
-        
-        if matcher == nil {
-            defaultMockResponses.append(mockResponse)
-        } else {
-            mockResponsesWithMatchers.append(mockResponse)
-        }
+            headers: headers)
+        mockResponse(response, onlyOnce: onlyOnce, matcher: matcher)
     }
     
     /// Tell the server to send this JSON response to incoming requests (sending
