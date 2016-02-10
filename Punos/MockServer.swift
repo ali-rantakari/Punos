@@ -93,6 +93,7 @@ public class MockServer {
     private func mockResponseDataForRequest(request: GCDWebServerRequest!) -> MockResponse? {
         
         let publicRequest = HTTPRequest(request)
+        
         for i in mockResponsesWithMatchers.indices {
             let responseWithMatcher = mockResponsesWithMatchers[i]
             guard let matcher = responseWithMatcher.matcher else { continue }
@@ -105,11 +106,12 @@ public class MockServer {
             }
         }
         
-        if let def = defaultMockResponse {
-            if def.onlyOnce {
-                defaultMockResponse = nil
+        for i in defaultMockResponses.indices {
+            let defaultResponse = defaultMockResponses[i]
+            if defaultResponse.onlyOnce {
+                defaultMockResponses.removeAtIndex(i)
             }
-            return def
+            return defaultResponse
         }
         
         return nil
@@ -160,7 +162,7 @@ public class MockServer {
     // ------------------------------------
     // MARK: Response mocking
     
-    private var defaultMockResponse: MockResponse?
+    private var defaultMockResponses: [MockResponse] = []
     private var mockResponsesWithMatchers: [MockResponse] = []
     
     /// Tell the server to send this response to incoming requests.
@@ -187,7 +189,7 @@ public class MockServer {
             onlyOnce: onlyOnce)
         
         if matcher == nil {
-            defaultMockResponse = mockResponse
+            defaultMockResponses.append(mockResponse)
         } else {
             mockResponsesWithMatchers.append(mockResponse)
         }
@@ -220,7 +222,7 @@ public class MockServer {
     /// Remove all mock responses previously added with `mockResponse()`.
     ///
     func clearMockResponses() {
-        defaultMockResponse = nil
+        defaultMockResponses.removeAll()
         mockResponsesWithMatchers.removeAll()
     }
 }
