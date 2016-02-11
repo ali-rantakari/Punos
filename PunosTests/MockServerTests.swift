@@ -24,11 +24,11 @@ class MockServerTests: XCTestCase {
     // ------------------------------------------------
     // MARK: Helpers; plumbing
     
-    var server = MockServer()
+    var server = MockHTTPServer()
     
     override func setUp() {
         super.setUp()
-        server = MockServer()
+        server = MockHTTPServer()
         server.start()
     }
     
@@ -70,7 +70,7 @@ class MockServerTests: XCTestCase {
     // MARK: Test cases
     
     func testStartupAndShutdownEffectOnAPI() {
-        let s = MockServer()
+        let s = MockHTTPServer()
         
         XCTAssertFalse(s.isRunning)
         XCTAssertEqual(s.port, 0)

@@ -1,5 +1,5 @@
 //
-//  MockServer.swift
+//  MockHTTPServer.swift
 //  Punos
 //
 //  Created by Ali Rantakari on 9.2.16.
@@ -42,7 +42,7 @@ private struct MockResponseConfiguration {
 /// A web server that runs on `localhost` and can be told how to respond
 /// to incoming requests. Meant for automated tests.
 ///
-public class MockServer {
+public class MockHTTPServer {
     
     private let server = GCDWebServer()
     
