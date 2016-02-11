@@ -282,6 +282,29 @@ class MockServerTests: XCTestCase {
         }
     }
     
+    func testResponseMocking_headersSpecialCasedByGCDWebServerAPI() {
+        
+        // Test that we can, if we want, modify the values of response headers
+        // that the GCDWebServer API handles as some kind of a special case
+        // (either through a bespoke property/API or by setting values by default
+        // on its own.)
+        //
+        let fakeHeaders = [
+            "Etag": "-etag",
+            "Cache-Control": "-cc",
+            "Server": "-server",
+            "Date": "-date",
+            "Connection": "-connection",
+            "Last-Modified": "-lm",
+            "Transfer-Encoding": "-te",
+        ]
+        server.mockResponse(headers: fakeHeaders)
+        
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.allHeaderFields as! [String:String], fakeHeaders)
+        }
+    }
+    
     // TODO: test "convenience" versions of .mockResponse()
     
 }

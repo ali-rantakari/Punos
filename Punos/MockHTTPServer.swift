@@ -152,15 +152,7 @@ public class MockHTTPServer {
         response.statusCode = mockData.statusCode ?? 200
         
         if let headers = mockData.headers {
-            for (k, v) in headers {
-                if k == "ETag" {
-                    response.eTag = v
-                } else if k == "Cache-Control" {
-                    // TODO: set .cacheControlMaxAge
-                } else {
-                    response.setValue(v, forAdditionalHeader: k)
-                }
-            }
+            headers.forEach { k, v in response.setValue(v, forAdditionalHeader: k) }
         }
         
         dispatchAfterInterval(mockConfig.delay, queue: dispatch_get_main_queue()) {
