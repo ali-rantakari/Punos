@@ -37,8 +37,8 @@ class MockServerTests: XCTestCase {
         server.stop()
     }
     
-    func request(method: String, _ path: String, body: String? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
-        let expectation = expectationWithDescription("Request")
+    func request(method: String, _ path: String, body: String? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
+        let expectation: XCTestExpectation? = wait ? expectationWithDescription("Request") : nil
         
         let request = NSMutableURLRequest(URL: NSURL(string: "\(server.baseURLString ?? "")\(path)")!)
         request.HTTPMethod = method
@@ -55,12 +55,14 @@ class MockServerTests: XCTestCase {
                 return
             }
             completionHandler?(data!, response, error)
-            expectation.fulfill()
+            expectation?.fulfill()
         }.resume()
         
-        waitForExpectationsWithTimeout(timeout) { error in
-            if error != nil {
-                XCTFail("Request error: \(error)")
+        if wait {
+            waitForExpectationsWithTimeout(timeout) { error in
+                if error != nil {
+                    XCTFail("Request error: \(error)")
+                }
             }
         }
     }
