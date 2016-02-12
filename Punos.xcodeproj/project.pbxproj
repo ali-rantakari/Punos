@@ -82,7 +82,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C97916881C6A7BD700E5B379 /* Punos */ = {
+		C97916881C6A7BD700E5B379 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				C97916891C6A7BD700E5B379 /* Punos.h */,
@@ -91,7 +91,7 @@
 				C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */,
 				C97916A61C6A917100E5B379 /* HTTPRequest.swift */,
 			);
-			path = Punos;
+			path = Sources;
 			sourceTree = "<group>";
 		};
 		C97916941C6A7BD700E5B379 /* PunosTests */ = {
@@ -384,7 +384,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = Punos/Info.plist;
+				INFOPLIST_FILE = Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.hasseg.Punos;
@@ -406,7 +406,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = Punos/Info.plist;
+				INFOPLIST_FILE = Sources/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = org.hasseg.Punos;
