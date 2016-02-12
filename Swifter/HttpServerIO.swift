@@ -48,7 +48,7 @@ internal class HttpServerIO {
     }
     
     internal func dispatch(method: String, path: String) -> ([String: String], HttpRequest -> HttpResponse) {
-        return ([:], { _ in HttpResponse.NotFound })
+        return ([:], { _ in HttpResponse(404, "Not Found", nil, nil) })
     }
     
     private func handleConnection(socket: Socket) {
@@ -65,10 +65,6 @@ internal class HttpServerIO {
                 keepConnection = try self.respond(socket, response: response, keepAlive: keepConnection)
             } catch {
                 print("Failed to send response: \(error)")
-                break
-            }
-            if let session = response.socketSession() {
-                session(socket)
                 break
             }
             if !keepConnection { break }
@@ -94,9 +90,9 @@ internal class HttpServerIO {
     }
     
     private func respond(socket: Socket, response: HttpResponse, keepAlive: Bool) throws -> Bool {
-        try socket.writeUTF8("HTTP/1.1 \(response.statusCode()) \(response.reasonPhrase())\r\n")
+        try socket.writeUTF8("HTTP/1.1 \(response.statusCode) \(response.reasonPhrase)\r\n")
         
-        let content = response.content()
+        let content = response.content
         
         if content.length >= 0 {
             try socket.writeUTF8("Content-Length: \(content.length)\r\n")
@@ -106,7 +102,7 @@ internal class HttpServerIO {
             try socket.writeUTF8("Connection: keep-alive\r\n")
         }
         
-        for (name, value) in response.headers() {
+        for (name, value) in response.headers {
             try socket.writeUTF8("\(name): \(value)\r\n")
         }
         

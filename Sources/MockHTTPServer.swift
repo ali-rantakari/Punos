@@ -39,12 +39,16 @@ private class OurSwifterServer: HttpServerIO {
     
     var responder: (HttpRequest -> HttpResponse)?
     
+    class func defaultResponse() -> HttpResponse {
+        return HttpResponse(200, "OK", nil, { writer in writer.write([])})
+    }
+    
     override func dispatch(method: String, path: String) -> ([String : String], HttpRequest -> HttpResponse) {
         if let responder = responder {
             return ([:], responder)
         }
         return ([:], { req in
-            return .OK(.Text(""))
+            return OurSwifterServer.defaultResponse()
         })
     }
 }
@@ -138,11 +142,11 @@ public class MockHTTPServer {
         latestRequests.append(publicRequest)
         
         guard let mockConfig = mockResponseConfigForRequest(publicRequest) else {
-            return .OK(.Text(""))
+            return OurSwifterServer.defaultResponse()
         }
         let mockData = mockConfig.response
         
-        let response = HttpResponse.RAW(
+        let response = HttpResponse(
             mockData.statusCode ?? 200,
             "", // status code "reason phrase"
             mockData.headers,
