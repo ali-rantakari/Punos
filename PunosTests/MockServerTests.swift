@@ -238,6 +238,11 @@ class MockServerTests: XCTestCase {
         
         request("POST", "/foo/bar?a=1&b=2", body: "i used to be with it", headers: ["X-Eka":"eka", "X-Toka":"toka"]) { data, response, error in
             XCTAssertEqual(self.server.latestRequests.count, 3)
+            XCTAssertEqual(self.server.latestRequestEndpoints, [
+                "GET /gettersson",
+                "HEAD /headster",
+                "POST /foo/bar",
+                ])
             
             XCTAssertNotNil(self.server.lastRequest)
             if self.server.lastRequest != nil {
