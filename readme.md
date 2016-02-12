@@ -19,9 +19,15 @@ func testLogin_HandlingOfServerErrorStatus() {
 	// request, and assert that the behavior is as expected:
 	//
     waitForResponse(apiConsumer.login(username: "foo")) { response in
-        XCTAssertTrue(response.isFailure)
+        XCTAssertFalse(response.success)
         XCTAssertEqual(response.error.description,
             "The server is down again")
+
+        // Assert that our API consumer performed two HTTP requests:
+        XCTAssertEqual(self.server.latestRequests.count, 2)
+        XCTAssertEqual(self.server.latestRequestEndpoints,
+            ["POST /auth/step-one", "POST /auth/step-two"])
+        XCTAssertEqual(self.server.lastRequest!.query, ["username":"foo"])
     }
 }
 ```
