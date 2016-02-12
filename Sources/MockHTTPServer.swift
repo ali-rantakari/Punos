@@ -155,9 +155,10 @@ public class MockHTTPServer {
         }
         let mockData = mockConfig.response
         
+        let statusCode = mockData.statusCode ?? 200
         let response = HttpResponse(
-            mockData.statusCode ?? 200,
-            "", // status code "reason phrase"
+            statusCode,
+            RFC2616.reasonsForStatusCodes[statusCode] ?? "",
             mockData.headers,
             { responseBodyWriter in
                 if let bodyData = mockData.data {

@@ -19,6 +19,7 @@
 		C97916961C6A7BD700E5B379 /* MockServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916951C6A7BD700E5B379 /* MockServerTests.swift */; };
 		C97916A11C6A7C0700E5B379 /* MockHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */; };
 		C97916A71C6A917100E5B379 /* HTTPRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A61C6A917100E5B379 /* HTTPRequest.swift */; };
+		C979172B1C6E6E4300E5B379 /* RFC2616.swift in Sources */ = {isa = PBXBuildFile; fileRef = C979172A1C6E6E4300E5B379 /* RFC2616.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		C97916971C6A7BD700E5B379 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockHTTPServer.swift; sourceTree = "<group>"; };
 		C97916A61C6A917100E5B379 /* HTTPRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequest.swift; sourceTree = "<group>"; };
+		C979172A1C6E6E4300E5B379 /* RFC2616.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RFC2616.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +121,7 @@
 			children = (
 				C979168B1C6A7BD700E5B379 /* Info.plist */,
 				A4DE4FAD1C6B1BCA00005441 /* Utils.swift */,
+				C979172A1C6E6E4300E5B379 /* RFC2616.swift */,
 				C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */,
 				C97916A61C6A917100E5B379 /* HTTPRequest.swift */,
 			);
@@ -248,6 +251,7 @@
 				A4DE4FFC1C6E1D0D00005441 /* HttpRequest.swift in Sources */,
 				C97916A11C6A7C0700E5B379 /* MockHTTPServer.swift in Sources */,
 				A4DE4FFE1C6E1D0D00005441 /* HttpServerIO.swift in Sources */,
+				C979172B1C6E6E4300E5B379 /* RFC2616.swift in Sources */,
 				C97916A71C6A917100E5B379 /* HTTPRequest.swift in Sources */,
 				A4DE50001C6E1D0D00005441 /* String+Misc.swift in Sources */,
 				A4DE4FAE1C6B1BCA00005441 /* Utils.swift in Sources */,
