@@ -14,10 +14,8 @@
 		C97916911C6A7BD700E5B379 /* Punos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916861C6A7BD700E5B379 /* Punos.framework */; };
 		C97916961C6A7BD700E5B379 /* MockServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916951C6A7BD700E5B379 /* MockServerTests.swift */; };
 		C97916A11C6A7C0700E5B379 /* MockHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */; };
-		C97916A31C6A7EC400E5B379 /* GCDWebServers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */; };
 		C97916A71C6A917100E5B379 /* HTTPRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A61C6A917100E5B379 /* HTTPRequest.swift */; };
 		C97916A91C6A949500E5B379 /* HTTPRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A81C6A949500E5B379 /* HTTPRequestTests.swift */; };
-		C97916AA1C6A959000E5B379 /* GCDWebServers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,7 +38,6 @@
 		C97916951C6A7BD700E5B379 /* MockServerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServerTests.swift; sourceTree = "<group>"; };
 		C97916971C6A7BD700E5B379 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockHTTPServer.swift; sourceTree = "<group>"; };
-		C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCDWebServers.framework; path = Carthage/Build/iOS/GCDWebServers.framework; sourceTree = "<group>"; };
 		C97916A61C6A917100E5B379 /* HTTPRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequest.swift; sourceTree = "<group>"; };
 		C97916A81C6A949500E5B379 /* HTTPRequestTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequestTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,7 +48,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A4DE4FCA1C6DBF5800005441 /* Swifter.framework in Frameworks */,
-				C97916A31C6A7EC400E5B379 /* GCDWebServers.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +55,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C97916AA1C6A959000E5B379 /* GCDWebServers.framework in Frameworks */,
 				C97916911C6A7BD700E5B379 /* Punos.framework in Frameworks */,
 				A4DE4FCB1C6DBF7400005441 /* Swifter.framework in Frameworks */,
 			);
@@ -113,7 +108,6 @@
 			isa = PBXGroup;
 			children = (
 				A4DE4FC91C6DBF5800005441 /* Swifter.framework */,
-				C97916A21C6A7EC400E5B379 /* GCDWebServers.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -230,7 +224,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/GCDWebServers.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Swifter.framework",
 			);
 			name = "Copy Carthage Frameworks";
@@ -247,7 +240,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/GCDWebServers.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Swifter.framework",
 			);
 			name = "Copy Carthage Frameworks";
