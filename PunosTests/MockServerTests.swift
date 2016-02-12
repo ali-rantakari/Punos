@@ -237,13 +237,16 @@ class MockServerTests: XCTestCase {
         request("POST", "/foo/bar?a=1&b=2", body: "i used to be with it", headers: ["X-Eka":"eka", "X-Toka":"toka"]) { data, response, error in
             XCTAssertEqual(self.server.latestRequests.count, 3)
             
-            XCTAssertEqual(self.server.lastRequest?.endpoint, "POST /foo/bar")
-            XCTAssertEqual(self.server.lastRequest?.method, "POST")
-            XCTAssertEqual(self.server.lastRequest?.path, "/foo/bar")
-            XCTAssertEqual(self.server.lastRequest!.query, ["a":"1", "b":"2"])
-            XCTAssertEqual(self.server.lastRequest!.headers["X-Eka"], "eka")
-            XCTAssertEqual(self.server.lastRequest!.headers["X-Toka"], "toka")
-            XCTAssertEqual(self.server.lastRequest?.data, "i used to be with it".dataUsingEncoding(NSUTF8StringEncoding))
+            XCTAssertNotNil(self.server.lastRequest)
+            if self.server.lastRequest != nil {
+                XCTAssertEqual(self.server.lastRequest?.endpoint, "POST /foo/bar")
+                XCTAssertEqual(self.server.lastRequest?.method, "POST")
+                XCTAssertEqual(self.server.lastRequest?.path, "/foo/bar")
+                XCTAssertEqual(self.server.lastRequest!.query, ["a":"1", "b":"2"])
+                XCTAssertEqual(self.server.lastRequest!.headers["X-Eka"], "eka")
+                XCTAssertEqual(self.server.lastRequest!.headers["X-Toka"], "toka")
+                XCTAssertEqual(self.server.lastRequest?.data, "i used to be with it".dataUsingEncoding(NSUTF8StringEncoding))
+            }
             
             self.server.clearLatestRequests()
             
