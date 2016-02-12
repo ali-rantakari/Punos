@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import Punos
+import Punos
 
 private extension NSHTTPURLResponse {
     func headerWithName(name: String) -> String? {
