@@ -12,6 +12,13 @@ func dispatchAfterInterval(interval: NSTimeInterval, queue: dispatch_queue_t, bl
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(interval * Double(NSEC_PER_SEC))), queue, block);
 }
 
+func lock<T>(lockObject: NSLock, fn: () -> T) -> T {
+    lockObject.lock()
+    let ret = fn()
+    lockObject.unlock();
+    return ret
+}
+
 extension Dictionary {
     
     /// Returns a copy of `self`, adding the key-value pairs
