@@ -92,14 +92,14 @@ class MockServerTests: XCTestCase {
     func testResponseMocking_defaultsWhenNoMockResponsesConfigured() {
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 200)
-            XCTAssertEqual(response.allHeaderNames, ["Server", "Date", "Connection", "Cache-Control"])
+            XCTAssertEqual(response.allHeaderNames, ["Server", "Connection", "Content-Length"])
             XCTAssertEqual(data.length, 0)
             XCTAssertNil(error)
         }
     }
     
     func testResponseMocking_defaultMockResponseWithNoMatcher() {
-        let mockData = "foofoo".dataUsingEncoding(NSUTF16StringEncoding)
+        let mockData = "foofoo".dataUsingEncoding(NSUTF16StringEncoding)!
         server.mockResponse(
             status: 201,
             data: mockData,
@@ -110,9 +110,10 @@ class MockServerTests: XCTestCase {
         
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 201)
-            XCTAssertEqual(response.allHeaderNames, ["Server", "Date", "Connection", "Cache-Control", "X-Greeting", "Content-Type", "Content-Length"])
+            XCTAssertEqual(response.allHeaderNames, ["Server", "X-Greeting", "Content-Type", "Content-Length"])
             XCTAssertEqual(response.headerWithName("X-Greeting"), "Hey yall")
             XCTAssertEqual(response.headerWithName("Content-Type"), "thing/foobar")
+            XCTAssertEqual(response.headerWithName("Content-Length"), "\(mockData.length)")
             XCTAssertEqual(data, mockData)
             XCTAssertNil(error)
         }
