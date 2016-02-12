@@ -23,9 +23,6 @@ public struct MockResponse {
     /// The body data
     let data: NSData?
     
-    /// The `Content-Type` header value
-    let contentType: String?
-    
     /// The HTTP headers
     let headers: [String:String]?
 }
@@ -230,8 +227,8 @@ public class MockHTTPServer {
     ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. If set, this will
     ///       supersede `matcher`.
     ///     - status: The response HTTP status code. Default: 200
-    ///     - data: The response body data
-    ///     - contentType: The content type of the response body data (i.e. the `Content-Type` header)
+    ///     - data: The response body data. If non-nil, the `"Content-Length"` header will
+    ///       be given an appropriate value.
     ///     - headers: The response headers
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
@@ -243,12 +240,18 @@ public class MockHTTPServer {
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockResponse(endpoint endpoint: String? = nil, status: Int? = nil, data: NSData? = nil, contentType: String? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    func mockResponse(endpoint endpoint: String? = nil, status: Int? = nil, data: NSData? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+        var effectiveHeaders = headers
+        if let data = data {
+            if effectiveHeaders == nil {
+                effectiveHeaders = [:]
+            }
+            effectiveHeaders!["Content-Length"] = "\(data.length)"
+        }
         let response = MockResponse(
             statusCode: status,
             data: data,
-            contentType: contentType,
-            headers: headers)
+            headers: effectiveHeaders)
         mockResponse(endpoint: endpoint, response: response, onlyOnce: onlyOnce, delay: delay, matcher: matcher)
     }
     
@@ -276,8 +279,7 @@ public class MockHTTPServer {
         mockResponse(
             status: status,
             data: json?.dataUsingEncoding(NSUTF8StringEncoding),
-            contentType: "application/json",
-            headers: headers,
+            headers: ["Content-Type": "application/json"].merged(headers),
             onlyOnce: onlyOnce,
             delay: delay,
             endpoint: endpoint,

@@ -103,8 +103,7 @@ class MockServerTests: XCTestCase {
         server.mockResponse(
             status: 201,
             data: mockData,
-            contentType: "thing/foobar",
-            headers: ["X-Greeting": "Hey yall"],
+            headers: ["X-Greeting": "Hey yall", "Content-Type": "thing/foobar"],
             onlyOnce: false,
             matcher: nil)
         
