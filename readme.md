@@ -37,6 +37,7 @@ Here's how you would __set it up for a test case:__
 ```swift
 import XCTest
 import Punos
+@testable import MyAppModule
 
 private let sharedServer = Punos.MockHTTPServer()
 
@@ -44,6 +45,7 @@ private let sharedServer = Punos.MockHTTPServer()
 class MockHTTPServerTestCase: XCTestCase {
 	
 	var server: Punos.MockHTTPServer { return sharedServer }
+    let apiConsumer = MyAppModule.BackendAPIConsumer()
 	
 	override class func setUp() {
 		super.setUp()
@@ -53,6 +55,11 @@ class MockHTTPServerTestCase: XCTestCase {
             fatalError("Could not start mock server: \(error)")
         }
 	}
+
+    override func setUp() {
+        super.setUp()
+        apiConsumer.baseURL = "http://localhost:\(server.port)"
+    }
 	
     override func tearDown() {
         super.tearDown()
