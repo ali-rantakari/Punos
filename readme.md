@@ -12,16 +12,17 @@ func testLogin_HandlingOfServerErrorStatus() {
 	// Tell the server to respond a certain way when it receives
 	// an incoming request:
 	//
-    server.mockResponse(endpoint: "POST /login", status: 500)
+    server.mockResponse(endpoint: "POST /auth/step-one", status: 200)
+    server.mockJSONResponse(endpoint: "POST /auth/step-two", status: 500,
+        json: "{\"error\": \"Down for good\"}")
 
 	// Exercise the system under test — tell your networking code
-	// (perhaps a “backend API consumer” object) to perform a
-	// request, and assert that the behavior is as expected:
+	// (perhaps a “backend API consumer” object) to talk to the server,
+	// and assert that the behavior is as expected:
 	//
     waitForResponse(apiConsumer.login(username: "foo")) { response in
         XCTAssertFalse(response.success)
-        XCTAssertEqual(response.error.description,
-            "The server is down again")
+        XCTAssertEqual(response.error.description, "Down for good")
 
         // Assert that our API consumer performed two HTTP requests:
         XCTAssertEqual(self.server.latestRequests.count, 2)
