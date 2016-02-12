@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		A4DE4FAE1C6B1BCA00005441 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DE4FAD1C6B1BCA00005441 /* Utils.swift */; };
 		A4DE4FCA1C6DBF5800005441 /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DE4FC91C6DBF5800005441 /* Swifter.framework */; };
-		A4DE4FCB1C6DBF7400005441 /* Swifter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4DE4FC91C6DBF5800005441 /* Swifter.framework */; };
+		A4DE4FD31C6E127400005441 /* Punos.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C97916861C6A7BD700E5B379 /* Punos.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C97916911C6A7BD700E5B379 /* Punos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97916861C6A7BD700E5B379 /* Punos.framework */; };
 		C97916961C6A7BD700E5B379 /* MockServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916951C6A7BD700E5B379 /* MockServerTests.swift */; };
 		C97916A11C6A7C0700E5B379 /* MockHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */; };
@@ -25,6 +25,19 @@
 			remoteInfo = Punos;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A4DE4FD21C6E126500005441 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A4DE4FD31C6E127400005441 /* Punos.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A4DE4FAD1C6B1BCA00005441 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -52,7 +65,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C97916911C6A7BD700E5B379 /* Punos.framework in Frameworks */,
-				A4DE4FCB1C6DBF7400005441 /* Swifter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +139,6 @@
 				C97916821C6A7BD700E5B379 /* Frameworks */,
 				C97916831C6A7BD700E5B379 /* Headers */,
 				C97916841C6A7BD700E5B379 /* Resources */,
-				C97916A51C6A7ED500E5B379 /* Copy Carthage Frameworks */,
 			);
 			buildRules = (
 			);
@@ -145,7 +156,7 @@
 				C979168C1C6A7BD700E5B379 /* Sources */,
 				C979168D1C6A7BD700E5B379 /* Frameworks */,
 				C979168E1C6A7BD700E5B379 /* Resources */,
-				C97916AB1C6A95B500E5B379 /* Copy Carthage Frameworks */,
+				A4DE4FD21C6E126500005441 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -209,41 +220,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		C97916A51C6A7ED500E5B379 /* Copy Carthage Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Swifter.framework",
-			);
-			name = "Copy Carthage Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
-			showEnvVarsInLog = 0;
-		};
-		C97916AB1C6A95B500E5B379 /* Copy Carthage Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Swifter.framework",
-			);
-			name = "Copy Carthage Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C97916811C6A7BD700E5B379 /* Sources */ = {
