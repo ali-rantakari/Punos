@@ -20,6 +20,8 @@
 		C97916A11C6A7C0700E5B379 /* MockHTTPServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */; };
 		C97916A71C6A917100E5B379 /* HTTPRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97916A61C6A917100E5B379 /* HTTPRequest.swift */; };
 		C979172B1C6E6E4300E5B379 /* RFC2616.swift in Sources */ = {isa = PBXBuildFile; fileRef = C979172A1C6E6E4300E5B379 /* RFC2616.swift */; };
+		C979172D1C6E754400E5B379 /* BaseMockServerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C979172C1C6E754400E5B379 /* BaseMockServerTestCase.swift */; };
+		C979172F1C6E75B700E5B379 /* ResponseMockingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C979172E1C6E75B700E5B379 /* ResponseMockingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +64,8 @@
 		C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockHTTPServer.swift; sourceTree = "<group>"; };
 		C97916A61C6A917100E5B379 /* HTTPRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequest.swift; sourceTree = "<group>"; };
 		C979172A1C6E6E4300E5B379 /* RFC2616.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RFC2616.swift; sourceTree = "<group>"; };
+		C979172C1C6E754400E5B379 /* BaseMockServerTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseMockServerTestCase.swift; sourceTree = "<group>"; };
+		C979172E1C6E75B700E5B379 /* ResponseMockingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseMockingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,8 +135,10 @@
 		C97916941C6A7BD700E5B379 /* PunosTests */ = {
 			isa = PBXGroup;
 			children = (
-				C97916951C6A7BD700E5B379 /* MockServerTests.swift */,
 				C97916971C6A7BD700E5B379 /* Info.plist */,
+				C979172C1C6E754400E5B379 /* BaseMockServerTestCase.swift */,
+				C97916951C6A7BD700E5B379 /* MockServerTests.swift */,
+				C979172E1C6E75B700E5B379 /* ResponseMockingTests.swift */,
 			);
 			path = PunosTests;
 			sourceTree = "<group>";
@@ -263,6 +269,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C97916961C6A7BD700E5B379 /* MockServerTests.swift in Sources */,
+				C979172F1C6E75B700E5B379 /* ResponseMockingTests.swift in Sources */,
+				C979172D1C6E754400E5B379 /* BaseMockServerTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
