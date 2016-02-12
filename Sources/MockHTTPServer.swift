@@ -59,7 +59,7 @@ private class OurSwifterServer: HttpServerIO {
 ///
 public class MockHTTPServer {
     
-    private let server = OurSwifterServer()
+    private let server = OurSwifterServer(queue: dispatch_queue_create("org.hasseg.Punos.server", DISPATCH_QUEUE_CONCURRENT))
     
     public init() {
         server.responder = respondToRequest

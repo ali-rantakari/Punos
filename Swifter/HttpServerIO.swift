@@ -17,16 +17,21 @@ internal class HttpServerIO {
     private var listenSocket: Socket = Socket(socketFileDescriptor: -1)
     private var clientSockets: Set<Socket> = []
     private let clientSocketsLock = NSLock()
+    private let queue: dispatch_queue_t
+    
+    init(queue: dispatch_queue_t) {
+        self.queue = queue
+    }
     
     internal func start(listenPort: in_port_t = 8080) throws {
         stop()
         listenSocket = try Socket.tcpSocketForListen(listenPort)
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+        dispatch_async(self.queue) {
             while let socket = try? self.listenSocket.acceptClientSocket() {
                 self.lock(self.clientSocketsLock) {
                     self.clientSockets.insert(socket)
                 }
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), {
+                dispatch_async(self.queue, {
                     self.handleConnection(socket)
                     self.lock(self.clientSocketsLock) {
                         self.clientSockets.remove(socket)
