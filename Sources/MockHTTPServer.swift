@@ -139,11 +139,16 @@ public class MockHTTPServer {
         return nil
     }
     
+    private let responseLock = NSLock()
+    
     private func respondToRequest(request: HttpRequest) -> HttpResponse {
-        let publicRequest = HTTPRequest(request)
-        latestRequests.append(publicRequest)
-        
-        guard let mockConfig = mockResponseConfigForRequest(publicRequest) else {
+        let maybeMockConfig: MockResponseConfiguration? = lock(responseLock) {
+            let publicRequest = HTTPRequest(request)
+            self.latestRequests.append(publicRequest)
+            
+            return self.mockResponseConfigForRequest(publicRequest)
+        }
+        guard let mockConfig = maybeMockConfig else {
             return OurSwifterServer.defaultResponse()
         }
         let mockData = mockConfig.response
