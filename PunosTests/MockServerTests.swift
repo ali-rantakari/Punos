@@ -19,26 +19,32 @@ private extension NSHTTPURLResponse {
     }
 }
 
+private var sharedServer = MockHTTPServer()
+
 class MockServerTests: XCTestCase {
     
     // ------------------------------------------------
     // MARK: Helpers; plumbing
     
-    var server = MockHTTPServer()
+    var server: MockHTTPServer { return sharedServer }
     
-    override func setUp() {
+    override class func setUp() {
         super.setUp()
-        server = MockHTTPServer()
+        sharedServer = MockHTTPServer()
         do {
-            try server.start()
+            try sharedServer.start()
         } catch let error {
             fatalError("\(error)")
         }
     }
     
+    override func setUp() {
+        super.setUp()
+    }
+    
     override func tearDown() {
         super.tearDown()
-        server.stop()
+        server.clearAllMockingState()
     }
     
     func request(method: String, _ path: String, body: String? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
