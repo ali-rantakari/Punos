@@ -378,8 +378,16 @@ class MockServerTests: XCTestCase {
             XCTAssertEqual(response.statusCode, 204)
         }
         NSThread.sleepForTimeInterval(waitBetweenRequestSends)
-        request("GET", "/foo5") { data, response, error in
+        request("GET", "/foo5", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 205)
+        }
+        
+        waitForExpectationsWithTimeout(2) { error in
+            if error != nil {
+                XCTFail("Request error: \(error)")
+                return
+            }
+            
             XCTAssertEqual(self.server.latestRequestEndpoints, [
                 "GET /foo1",
                 "GET /foo2",
