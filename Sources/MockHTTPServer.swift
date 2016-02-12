@@ -76,6 +76,7 @@ public class MockHTTPServer {
             try server.start(effectivePort)
             self.port = effectivePort
             isRunning = true
+            debugPrint("\(self.dynamicType) started at port \(effectivePort)")
         } catch let error {
             fatalError("The mock server failed to start on port \(port). Error: \(error)")
         }
@@ -87,6 +88,7 @@ public class MockHTTPServer {
         server.stop()
         port = 0
         isRunning = false
+        debugPrint("\(self.dynamicType) stopped.")
     }
     
     /// Whether the server is currently running.
