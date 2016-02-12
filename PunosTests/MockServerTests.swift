@@ -316,6 +316,80 @@ class MockServerTests: XCTestCase {
         }
     }
     
+    func testManyRequestsInQuickSuccession() {
+        server.mockResponse(status: 201, onlyOnce: true)
+        server.mockResponse(status: 202, onlyOnce: true)
+        server.mockResponse(status: 203, onlyOnce: true)
+        server.mockResponse(status: 204, onlyOnce: true)
+        server.mockResponse(status: 205, onlyOnce: true)
+        
+        let waitBetweenRequestSends: NSTimeInterval = 0.01
+        
+        request("GET", "/foo1", wait: false) { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        request("GET", "/foo2", wait: false) { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        request("GET", "/foo3", wait: false) { data, response, error in
+            XCTAssertEqual(response.statusCode, 203)
+        }
+        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        request("GET", "/foo4", wait: false) { data, response, error in
+            XCTAssertEqual(response.statusCode, 204)
+        }
+        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        request("GET", "/foo5") { data, response, error in
+            XCTAssertEqual(response.statusCode, 205)
+            XCTAssertEqual(self.server.latestRequestEndpoints, [
+                "GET /foo1",
+                "GET /foo2",
+                "GET /foo3",
+                "GET /foo4",
+                "GET /foo5",
+                ])
+        }
+    }
+    
+    func testConcurrentRequests() {
+        server.mockResponse(status: 201, delay: 0.5, onlyOnce: true)
+        server.mockResponse(status: 202, delay: 0.1, onlyOnce: true)
+        server.mockResponse(status: 203, delay: 0.4, onlyOnce: true)
+        server.mockResponse(status: 204, delay: 0.1, onlyOnce: true)
+        server.mockResponse(status: 205, onlyOnce: true)
+        
+        let waitBetweenRequestSends: NSTimeInterval = 0.05
+        
+        request("GET", "/foo1", wait: false) { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        request("GET", "/foo2", wait: false) { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        request("GET", "/foo3", wait: false) { data, response, error in
+            XCTAssertEqual(response.statusCode, 203)
+        }
+        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        request("GET", "/foo4", wait: false) { data, response, error in
+            XCTAssertEqual(response.statusCode, 204)
+        }
+        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        request("GET", "/foo5") { data, response, error in
+            XCTAssertEqual(response.statusCode, 205)
+            XCTAssertEqual(self.server.latestRequestEndpoints, [
+                "GET /foo1",
+                "GET /foo2",
+                "GET /foo3",
+                "GET /foo4",
+                "GET /foo5",
+                ])
+        }
+    }
+    
     // TODO: test "convenience" versions of .mockResponse()
     
 }
