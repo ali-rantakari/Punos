@@ -170,6 +170,12 @@ public class MockHTTPServer {
     ///
     public var latestRequests = [HTTPRequest]()
     
+    /// The `.endpoint` values for `latestRequests`.
+    ///
+    public var latestRequestEndpoints: [String] {
+        return latestRequests.map { $0.endpoint }
+    }
+    
     /// The most recent HTTP request this server has received, or `nil` if none.
     ///
     public var lastRequest: HTTPRequest? {
