@@ -29,7 +29,11 @@ class MockServerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         server = MockHTTPServer()
-        server.start()
+        do {
+            try server.start()
+        } catch let error {
+            fatalError("\(error)")
+        }
     }
     
     override func tearDown() {
@@ -78,7 +82,7 @@ class MockServerTests: XCTestCase {
         XCTAssertEqual(s.port, 0)
         XCTAssertNil(s.baseURLString)
         
-        s.start(8888)
+        try! s.start(8888)
         
         XCTAssertTrue(s.isRunning)
         XCTAssertEqual(s.port, 8888)

@@ -70,15 +70,17 @@ public class MockHTTPServer {
     
     /// Start the server on the given `port` (`8080` by default.)
     ///
-    public func start(port: in_port_t? = nil) {
+    /// - throws: `NSError` if the server could not be started.
+    ///
+    public func start(port: in_port_t? = nil) throws {
+        let effectivePort = port ?? 8080
         do {
-            let effectivePort = port ?? 8080
             try server.start(effectivePort)
             self.port = effectivePort
             isRunning = true
             print("\(self.dynamicType) started at port \(effectivePort)")
         } catch let error {
-            fatalError("The mock server failed to start on port \(port). Error: \(error)")
+            throw punosError(Int(effectivePort), "The mock server failed to start on port \(effectivePort). Error: \(error)")
         }
     }
     
