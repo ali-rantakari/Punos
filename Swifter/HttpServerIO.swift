@@ -12,13 +12,13 @@ import Foundation
     import NSLinux
 #endif
 
-public class HttpServerIO {
+internal class HttpServerIO {
     
     private var listenSocket: Socket = Socket(socketFileDescriptor: -1)
     private var clientSockets: Set<Socket> = []
     private let clientSocketsLock = NSLock()
     
-    public func start(listenPort: in_port_t = 8080) throws {
+    internal func start(listenPort: in_port_t = 8080) throws {
         stop()
         listenSocket = try Socket.tcpSocketForListen(listenPort)
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
@@ -37,7 +37,7 @@ public class HttpServerIO {
         }
     }
     
-    public func stop() {
+    internal func stop() {
         listenSocket.release()
         lock(self.clientSocketsLock) {
             for socket in self.clientSockets {
@@ -47,7 +47,7 @@ public class HttpServerIO {
         }
     }
     
-    public func dispatch(method: String, path: String) -> ([String: String], HttpRequest -> HttpResponse) {
+    internal func dispatch(method: String, path: String) -> ([String: String], HttpRequest -> HttpResponse) {
         return ([:], { _ in HttpResponse.NotFound })
     }
     

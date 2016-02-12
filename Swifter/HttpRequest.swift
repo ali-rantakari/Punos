@@ -7,17 +7,17 @@
 
 import Foundation
 
-public class HttpRequest {
+internal class HttpRequest {
     
-    public var path: String = ""
-    public var queryParams: [(String, String)] = []
-    public var method: String = ""
-    public var headers: [String: String] = [:]
-    public var body: [UInt8] = []
-    public var address: String? = ""
-    public var params: [String: String] = [:]
+    internal var path: String = ""
+    internal var queryParams: [(String, String)] = []
+    internal var method: String = ""
+    internal var headers: [String: String] = [:]
+    internal var body: [UInt8] = []
+    internal var address: String? = ""
+    internal var params: [String: String] = [:]
     
-    public func parseUrlencodedForm() -> [(String, String)] {
+    internal func parseUrlencodedForm() -> [(String, String)] {
         guard let contentTypeHeader = headers["content-type"] else {
             return []
         }
@@ -35,16 +35,16 @@ public class HttpRequest {
         }
     }
     
-    public struct MultiPart {
+    internal struct MultiPart {
         
-        public let headers: [String: String]
-        public let body: [UInt8]
+        internal let headers: [String: String]
+        internal let body: [UInt8]
         
-        public var name: String? {
+        internal var name: String? {
             return valueFor("content-disposition", parameter: "name")?.unquote()
         }
         
-        public var fileName: String? {
+        internal var fileName: String? {
             return valueFor("content-disposition", parameter: "filename")?.unquote()
         }
         
@@ -65,7 +65,7 @@ public class HttpRequest {
         }
     }
     
-    public func parseMultiPartFormData() -> [MultiPart] {
+    internal func parseMultiPartFormData() -> [MultiPart] {
         guard let contentTypeHeader = headers["content-type"] else {
             return []
         }

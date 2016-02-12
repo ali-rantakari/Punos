@@ -13,7 +13,7 @@
 
 /* Low level routines for POSIX sockets */
 
-public enum SocketError: ErrorType {
+internal enum SocketError: ErrorType {
     case SocketCreationFailed(String)
     case SocketSettingReUseAddrFailed(String)
     case BindFailed(String)
@@ -26,9 +26,9 @@ public enum SocketError: ErrorType {
     case RecvFailed(String)
 }
 
-public class Socket: Hashable, Equatable {
+internal class Socket: Hashable, Equatable {
     
-    public class func tcpSocketForListen(port: in_port_t, maxPendingConnection: Int32 = SOMAXCONN) throws -> Socket {
+    internal class func tcpSocketForListen(port: in_port_t, maxPendingConnection: Int32 = SOMAXCONN) throws -> Socket {
         
         #if os(Linux)
             let socketFileDescriptor = socket(AF_INET, Int32(SOCK_STREAM.rawValue), 0)
@@ -82,21 +82,21 @@ public class Socket: Hashable, Equatable {
     
     private let socketFileDescriptor: Int32
     
-    public init(socketFileDescriptor: Int32) {
+    internal init(socketFileDescriptor: Int32) {
         self.socketFileDescriptor = socketFileDescriptor
     }
     
-    public var hashValue: Int { return Int(self.socketFileDescriptor) }
+    internal var hashValue: Int { return Int(self.socketFileDescriptor) }
     
-    public func release() {
+    internal func release() {
         Socket.release(self.socketFileDescriptor)
     }
     
-    public func shutdwn() {
+    internal func shutdwn() {
         Socket.shutdwn(self.socketFileDescriptor)
     }
     
-    public func acceptClientSocket() throws -> Socket {
+    internal func acceptClientSocket() throws -> Socket {
         var addr = sockaddr()        
         var len: socklen_t = 0
         let clientSocket = accept(self.socketFileDescriptor, &addr, &len)
@@ -107,11 +107,11 @@ public class Socket: Hashable, Equatable {
         return Socket(socketFileDescriptor: clientSocket)
     }
     
-    public func writeUTF8(string: String) throws {
+    internal func writeUTF8(string: String) throws {
         try writeUInt8([UInt8](string.utf8))
     }
     
-    public func writeUInt8(data: [UInt8]) throws {
+    internal func writeUInt8(data: [UInt8]) throws {
         try data.withUnsafeBufferPointer {
             var sent = 0
             while sent < data.count {
@@ -128,7 +128,7 @@ public class Socket: Hashable, Equatable {
         }
     }
     
-    public func read() throws -> UInt8 {
+    internal func read() throws -> UInt8 {
         var buffer = [UInt8](count: 1, repeatedValue: 0)
         let next = recv(self.socketFileDescriptor as Int32, &buffer, Int(buffer.count), 0)
         if next <= 0 {
@@ -140,7 +140,7 @@ public class Socket: Hashable, Equatable {
     private static let CR = UInt8(13)
     private static let NL = UInt8(10)
     
-    public func readLine() throws -> String {
+    internal func readLine() throws -> String {
         var characters: String = ""
         var n: UInt8 = 0
         repeat {
@@ -150,7 +150,7 @@ public class Socket: Hashable, Equatable {
         return characters
     }
     
-    public func peername() throws -> String {
+    internal func peername() throws -> String {
         var addr = sockaddr(), len: socklen_t = socklen_t(sizeof(sockaddr))
         if getpeername(self.socketFileDescriptor, &addr, &len) != 0 {
             throw SocketError.GetPeerNameFailed(Socket.descriptionOfLastError())
@@ -207,6 +207,6 @@ public class Socket: Hashable, Equatable {
     }
 }
 
-public func ==(socket1: Socket, socket2: Socket) -> Bool {
+internal func ==(socket1: Socket, socket2: Socket) -> Bool {
     return socket1.socketFileDescriptor == socket2.socketFileDescriptor
 }

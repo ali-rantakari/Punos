@@ -7,16 +7,16 @@
 
 import Foundation
 
-public enum SerializationError: ErrorType {
+internal enum SerializationError: ErrorType {
     case InvalidObject
     case NotSupported
 }
 
-public protocol HttpResponseBodyWriter {
+internal protocol HttpResponseBodyWriter {
     func write(data: [UInt8])
 }
 
-public enum HttpResponseBody {
+internal enum HttpResponseBody {
     
     case Json(AnyObject)
     case Html(String)
@@ -62,7 +62,7 @@ public enum HttpResponseBody {
     }
 }
 
-public enum HttpResponse {
+internal enum HttpResponse {
     
     case SwitchProtocols([String: String], Socket -> Void)
     case OK(HttpResponseBody), Created, Accepted
