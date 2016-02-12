@@ -356,30 +356,43 @@ class MockServerTests: XCTestCase {
     func testConcurrentRequests() {
         server.mockResponse(status: 201, delay: 0.5, onlyOnce: true)
         server.mockResponse(status: 202, delay: 0.1, onlyOnce: true)
-        server.mockResponse(status: 203, delay: 0.4, onlyOnce: true)
+        server.mockResponse(status: 203, delay: 0.2, onlyOnce: true)
         server.mockResponse(status: 204, delay: 0.1, onlyOnce: true)
         server.mockResponse(status: 205, onlyOnce: true)
         
         let waitBetweenRequestSends: NSTimeInterval = 0.05
         
+        let finishedRequestStatusesLock = NSLock()
+        var finishedRequestStatuses = [Int]()
+        func statusFinished(status: Int) {
+            finishedRequestStatusesLock.lock()
+            finishedRequestStatuses.append(status)
+            finishedRequestStatusesLock.unlock()
+        }
+        
         request("GET", "/foo1", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 201)
+            statusFinished(response.statusCode)
         }
         NSThread.sleepForTimeInterval(waitBetweenRequestSends)
         request("GET", "/foo2", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 202)
+            statusFinished(response.statusCode)
         }
         NSThread.sleepForTimeInterval(waitBetweenRequestSends)
         request("GET", "/foo3", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 203)
+            statusFinished(response.statusCode)
         }
         NSThread.sleepForTimeInterval(waitBetweenRequestSends)
         request("GET", "/foo4", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 204)
+            statusFinished(response.statusCode)
         }
         NSThread.sleepForTimeInterval(waitBetweenRequestSends)
         request("GET", "/foo5", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 205)
+            statusFinished(response.statusCode)
         }
         
         waitForExpectationsWithTimeout(2) { error in
@@ -395,6 +408,11 @@ class MockServerTests: XCTestCase {
                 "GET /foo4",
                 "GET /foo5",
                 ])
+            
+            // The first request (that got the status 201) should have
+            // gotten its response the _last_, due to the long delay):
+            XCTAssertEqual(finishedRequestStatuses.count, 5)
+            XCTAssertEqual(finishedRequestStatuses.last, 201)
         }
     }
     
