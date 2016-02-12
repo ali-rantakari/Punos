@@ -7,11 +7,12 @@
 //
 
 import XCTest
-import GCDWebServers
 @testable import Punos
 
 class HTTPRequestTests: XCTestCase {
     
+    /* // TODO: Test "init from Swifter.HttpRequest" (not easy because it doesn't have a public init())
+
     func testInitFromGCDWebServerRequest_empty() {
         let gr = GCDWebServerRequest()
         let req = HTTPRequest(gr)
@@ -38,6 +39,6 @@ class HTTPRequestTests: XCTestCase {
         XCTAssertNil(req.data)
     }
     
-    // TODO: Test GCDWebServerDataRequest (not easy because it doesn't have a public setter for .data)
+    */
     
 }

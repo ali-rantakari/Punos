@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import GCDWebServers
+import Swifter
 
 
 /// An HTTP request sent to the `MockServer`.
@@ -37,18 +37,39 @@ public struct HTTPRequest {
 }
 
 
+private func pathWithoutQueryOrAnchor(path: String) -> String {
+    let nsString = path as NSString
+    
+    let queryIndex = nsString.rangeOfString("?").location
+    if queryIndex != NSNotFound {
+        return nsString.substringToIndex(queryIndex)
+    }
+    
+    return path
+}
+
+private func headersWithCapitalizedNames(headers: [String:String]) -> [String:String] {
+    var ret = [String:String]()
+    for (k, v) in headers {
+        ret[k.capitalizedString] = v
+    }
+    return ret
+}
+
 internal extension HTTPRequest {
     
-    init(_ request: GCDWebServerRequest) {
-        self.path = request.path != nil ? request.path : ""
-        self.method = request.method != nil ? request.method : ""
-        self.query = (request.query as? [String:String]) ?? [:]
-        self.headers = (request.headers as? [String:String]) ?? [:]
+    init(_ request: HttpRequest) {
+        self.path = pathWithoutQueryOrAnchor(request.path)
+        self.method = request.method
+        self.headers = headersWithCapitalizedNames(request.headers)
         
-        if let dataRequest = request as? GCDWebServerDataRequest {
-            self.data = dataRequest.data
-        } else {
-            self.data = nil
+        var q = [String:String]()
+        for (k, v) in request.queryParams {
+            q[k] = v
         }
+        self.query = q
+        
+        let bytes = request.body
+        self.data = NSData(bytes: bytes, length: bytes.count)
     }
 }

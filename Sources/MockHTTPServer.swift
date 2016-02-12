@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import GCDWebServers
+import Swifter
 
 
 typealias MockResponseMatcher = (request: HTTPRequest) -> Bool
@@ -36,15 +36,30 @@ private struct MockResponseConfiguration {
 }
 
 
+private class OurSwifterServer: HttpServer {
+    
+    var responder: (HttpRequest -> HttpResponse)?
+    
+    override func dispatch(method: String, path: String) -> ([String : String], HttpRequest -> HttpResponse) {
+        if let responder = responder {
+            return ([:], responder)
+        }
+        return ([:], { req in
+            return .OK(.Text(""))
+        })
+    }
+}
+
+
 /// A web server that runs on `localhost` and can be told how to respond
 /// to incoming requests. Meant for automated tests.
 ///
 public class MockHTTPServer {
     
-    private let server = GCDWebServer()
+    private let server = OurSwifterServer()
     
     init() {
-        attachHandlers()
+        server.responder = respondToRequest
     }
     
     // ------------------------------------
@@ -52,13 +67,12 @@ public class MockHTTPServer {
     
     /// Start the server on the given `port` (`8080` by default.)
     ///
-    func start(port: UInt? = nil) {
+    func start(port: in_port_t? = nil) {
         do {
-            try server.startWithOptions([
-                GCDWebServerOption_Port: port ?? 8080,
-                GCDWebServerOption_BindToLocalhost: true,
-                GCDWebServerOption_ServerName: "",
-                ])
+            let effectivePort = port ?? 8080
+            try server.start(effectivePort)
+            self.port = effectivePort
+            isRunning = true
         } catch let error {
             fatalError("The mock server failed to start on port \(port). Error: \(error)")
         }
@@ -68,50 +82,40 @@ public class MockHTTPServer {
     ///
     func stop() {
         server.stop()
+        port = 0
+        isRunning = false
     }
     
     /// Whether the server is currently running.
     ///
-    var isRunning: Bool { return server.running }
+    private(set) var isRunning: Bool = false
     
     /// The port the server is running on, or 0 if the server
     /// is not running.
     ///
-    var port: UInt {
-        return isRunning ? server.port : 0
-    }
+    private(set) var port: in_port_t = 0
     
     /// The “base URL” (protocol, hostname, port) for the
     /// running server, or `nil` if the server is not running.
     ///
     var baseURLString: String? {
-        if !server.running {
+        if !isRunning {
             return nil
         }
-        return "http://localhost:\(server.port)"
+        return "http://localhost:\(port)"
     }
     
     
     // ------------------------------------
     // MARK: Responding
     
-    private let allHTTPVerbs = ["OPTIONS", "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT"]
-    
-    private func attachHandlers() {
-        for method in allHTTPVerbs {
-            server.addDefaultHandlerForMethod(method, requestClass: GCDWebServerDataRequest.self, asyncProcessBlock: respondToRequest)
-        }
-    }
-    
-    private func mockResponseConfigForRequest(request: GCDWebServerRequest!) -> MockResponseConfiguration? {
-        
-        let publicRequest = HTTPRequest(request)
+    private func mockResponseConfigForRequest(request: HTTPRequest) -> MockResponseConfiguration? {
         
         for i in mockResponsesWithMatchers.indices {
             let responseConfig = mockResponsesWithMatchers[i]
             guard let matcher = responseConfig.matcher else { continue }
             
-            if matcher(request: publicRequest) {
+            if matcher(request: request) {
                 if responseConfig.onlyOnce {
                     mockResponsesWithMatchers.removeAtIndex(i)
                 }
@@ -130,31 +134,31 @@ public class MockHTTPServer {
         return nil
     }
     
-    private func respondToRequest(request: GCDWebServerRequest!, completion: ((GCDWebServerResponse!) -> Void)!) {
-        latestRequests.append(HTTPRequest(request))
+    private func respondToRequest(request: HttpRequest) -> HttpResponse {
+        let publicRequest = HTTPRequest(request)
+        latestRequests.append(publicRequest)
         
-        guard let mockConfig = mockResponseConfigForRequest(request) else {
-            completion(GCDWebServerResponse())
-            return
+        guard let mockConfig = mockResponseConfigForRequest(publicRequest) else {
+            return .OK(.Text(""))
         }
         let mockData = mockConfig.response
         
-        let response: GCDWebServerResponse = {
-            if let bodyData = mockData.data, contentType = mockData.contentType {
-                return GCDWebServerDataResponse(data: bodyData, contentType: contentType)
-            }
-            return GCDWebServerResponse()
-        }()
+        let response = HttpResponse.RAW(
+            mockData.statusCode ?? 200,
+            "", // status code "reason phrase"
+            mockData.headers,
+            { responseBodyWriter in
+                if let bodyData = mockData.data {
+                    let bytes = Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>(bodyData.bytes), count: bodyData.length))
+                    responseBodyWriter.write(bytes)
+                }
+            })
         
-        response.statusCode = mockData.statusCode ?? 200
-        
-        if let headers = mockData.headers {
-            headers.forEach { k, v in response.setValue(v, forAdditionalHeader: k) }
+        if 0 < mockConfig.delay {
+            NSThread.sleepForTimeInterval(mockConfig.delay)
         }
         
-        dispatchAfterInterval(mockConfig.delay, queue: dispatch_get_main_queue()) {
-            completion(response)
-        }
+        return response
     }
     
     /// The latest HTTP requests this server has received, in order of receipt.
