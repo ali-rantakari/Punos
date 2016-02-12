@@ -66,6 +66,7 @@
 		A4DE4FE01C6E153D00005441 /* String+BASE64.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+BASE64.swift"; path = "Vendor/swifter/Sources/String+BASE64.swift"; sourceTree = "<group>"; };
 		A4DE4FE11C6E153D00005441 /* String+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+Misc.swift"; path = "Vendor/swifter/Sources/String+Misc.swift"; sourceTree = "<group>"; };
 		A4DE4FE21C6E153D00005441 /* String+SHA1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+SHA1.swift"; path = "Vendor/swifter/Sources/String+SHA1.swift"; sourceTree = "<group>"; };
+		A4DE4FF11C6E16BA00005441 /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		C97916861C6A7BD700E5B379 /* Punos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Punos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C979168B1C6A7BD700E5B379 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C97916901C6A7BD700E5B379 /* PunosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PunosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -117,6 +118,7 @@
 		C979167C1C6A7BD700E5B379 = {
 			isa = PBXGroup;
 			children = (
+				A4DE4FF11C6E16BA00005441 /* Package.swift */,
 				A4DE4FD41C6E151500005441 /* Swifter */,
 				C97916881C6A7BD700E5B379 /* Sources */,
 				C97916941C6A7BD700E5B379 /* PunosTests */,
