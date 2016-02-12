@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Swifter
 
 
 public typealias MockResponseMatcher = (request: HTTPRequest) -> Bool

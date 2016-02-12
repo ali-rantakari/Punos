@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Swifter
 
 
 /// An HTTP request sent to the `MockServer`.
