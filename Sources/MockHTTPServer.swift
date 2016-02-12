@@ -10,7 +10,7 @@ import Foundation
 import Swifter
 
 
-typealias MockResponseMatcher = (request: HTTPRequest) -> Bool
+public typealias MockResponseMatcher = (request: HTTPRequest) -> Bool
 
 
 /// Data for a mocked HTTP server response.
@@ -18,13 +18,13 @@ typealias MockResponseMatcher = (request: HTTPRequest) -> Bool
 public struct MockResponse {
     
     /// The HTTP status code
-    let statusCode: Int?
+    public let statusCode: Int?
     
     /// The body data
-    let data: NSData?
+    public let data: NSData?
     
     /// The HTTP headers
-    let headers: [String:String]?
+    public let headers: [String:String]?
 }
 
 
@@ -58,7 +58,7 @@ public class MockHTTPServer {
     
     private let server = OurSwifterServer()
     
-    init() {
+    public init() {
         server.responder = respondToRequest
     }
     
@@ -67,7 +67,7 @@ public class MockHTTPServer {
     
     /// Start the server on the given `port` (`8080` by default.)
     ///
-    func start(port: in_port_t? = nil) {
+    public func start(port: in_port_t? = nil) {
         do {
             let effectivePort = port ?? 8080
             try server.start(effectivePort)
@@ -80,7 +80,7 @@ public class MockHTTPServer {
     
     /// Stop the server.
     ///
-    func stop() {
+    public func stop() {
         server.stop()
         port = 0
         isRunning = false
@@ -88,17 +88,17 @@ public class MockHTTPServer {
     
     /// Whether the server is currently running.
     ///
-    private(set) var isRunning: Bool = false
+    public private(set) var isRunning: Bool = false
     
     /// The port the server is running on, or 0 if the server
     /// is not running.
     ///
-    private(set) var port: in_port_t = 0
+    public private(set) var port: in_port_t = 0
     
     /// The “base URL” (protocol, hostname, port) for the
     /// running server, or `nil` if the server is not running.
     ///
-    var baseURLString: String? {
+    public var baseURLString: String? {
         if !isRunning {
             return nil
         }
@@ -163,17 +163,17 @@ public class MockHTTPServer {
     
     /// The latest HTTP requests this server has received, in order of receipt.
     ///
-    var latestRequests = [HTTPRequest]()
+    public var latestRequests = [HTTPRequest]()
     
     /// The most recent HTTP request this server has received, or `nil` if none.
     ///
-    var lastRequest: HTTPRequest? {
+    public var lastRequest: HTTPRequest? {
         return latestRequests.last
     }
     
     /// Clear the `latestRequests` list (and `lastRequest`.)
     ///
-    func clearLatestRequests() {
+    public func clearLatestRequests() {
         latestRequests.removeAll()
     }
     
@@ -211,7 +211,7 @@ public class MockHTTPServer {
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockResponse(endpoint endpoint: String? = nil, response: MockResponse, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockResponse(endpoint endpoint: String? = nil, response: MockResponse, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let config = MockResponseConfiguration(
             response: response,
             matcher: matcherForEndpoint(endpoint) ?? matcher,
@@ -244,7 +244,7 @@ public class MockHTTPServer {
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockResponse(endpoint endpoint: String? = nil, status: Int? = nil, data: NSData? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockResponse(endpoint endpoint: String? = nil, status: Int? = nil, data: NSData? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         var effectiveHeaders = headers
         if let data = data {
             if effectiveHeaders == nil {
@@ -279,7 +279,7 @@ public class MockHTTPServer {
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    func mockJSONResponse(endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockJSONResponse(endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         mockResponse(
             status: status,
             data: json?.dataUsingEncoding(NSUTF8StringEncoding),
@@ -292,7 +292,7 @@ public class MockHTTPServer {
     
     /// Remove all mock responses previously added with `mockResponse()`.
     ///
-    func clearMockResponses() {
+    public func clearMockResponses() {
         defaultMockResponses.removeAll()
         mockResponsesWithMatchers.removeAll()
     }

@@ -15,23 +15,23 @@ import Swifter
 public struct HTTPRequest {
     
     /// The path component of the request URL
-    let path: String
+    public let path: String
     
     /// The HTTP method
-    let method: String
+    public let method: String
     
     /// The query parameters
-    let query: [String:String]
+    public let query: [String:String]
     
     /// The HTTP headers
-    let headers: [String:String]
+    public let headers: [String:String]
     
     /// The body data
-    let data: NSData?
+    public let data: NSData?
     
     /// The HTTP method and path, separated by a 
     /// space. E.g. `"GET /foo/bar"`
-    var endpoint: String {
+    public var endpoint: String {
         return "\(method) \(path)"
     }
 }
