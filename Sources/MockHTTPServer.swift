@@ -314,5 +314,12 @@ public class MockHTTPServer {
         defaultMockResponses.removeAll()
         mockResponsesWithMatchers.removeAll()
     }
+    
+    /// Removes all “mocking” state: the mock responses, and the latest request list.
+    ///
+    public func clearAllMockingState() {
+        clearLatestRequests()
+        clearMockResponses()
+    }
 }
 
