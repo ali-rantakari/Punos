@@ -104,7 +104,7 @@ public enum HttpResponse {
     }
     
     func headers() -> [String: String] {
-        var headers = ["Server" : "Swifter \(HttpServer.VERSION)"]
+        var headers = ["Server" : "Swifter"]
         switch self {
         case .SwitchProtocols(let switchHeaders, _):
             for (key, value) in switchHeaders {
