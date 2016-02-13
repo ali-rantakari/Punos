@@ -40,7 +40,7 @@ private struct MockResponseConfiguration {
 ///
 public class MockHTTPServer {
     
-    private let server = BaseServer(queue: dispatch_queue_create("org.hasseg.Punos.server", DISPATCH_QUEUE_CONCURRENT))
+    private let server = PunosHTTPServer(queue: dispatch_queue_create("org.hasseg.Punos.server", DISPATCH_QUEUE_CONCURRENT))
     
     public init() {
         server.responder = respondToRequest

@@ -1,5 +1,5 @@
 //
-//  BaseServer.swift
+//  PunosHTTPServer.swift
 //  Punos
 //
 //  Created by Ali Rantakari on 13.2.16.
@@ -13,7 +13,7 @@
 import Foundation
 
 
-class BaseServer {
+class PunosHTTPServer {
     
     let queue: dispatch_queue_t
     
