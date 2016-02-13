@@ -134,11 +134,12 @@ class PunosHTTPServer {
         
         let content = response.content
         
-        if content.length >= 0 {
+        if 0 <= content.length {
             try socket.writeUTF8("Content-Length: \(content.length)\r\n")
         }
         
-        if keepAlive && content.length != -1 {
+        let respondKeepAlive = keepAlive && content.length != -1
+        if respondKeepAlive {
             try socket.writeUTF8("Connection: keep-alive\r\n")
         }
         
@@ -153,6 +154,6 @@ class PunosHTTPServer {
             try writeClosure(context)
         }
         
-        return keepAlive && content.length != -1;
+        return respondKeepAlive
     }
 }
