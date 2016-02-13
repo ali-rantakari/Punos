@@ -48,7 +48,7 @@ class BaseServer: HttpServerIO {
         return source
     }
     
-    override func start(listenPort: in_port_t) throws {
+    func start(listenPort: in_port_t) throws {
         dispatchSource = createDispatchSource(try Socket.tcpSocketForListen(listenPort))
         guard let source = dispatchSource else {
             throw punosError(0, "Could not create dispatch source")
@@ -56,7 +56,7 @@ class BaseServer: HttpServerIO {
         dispatch_resume(source)
     }
     
-    override func stop() {
+    func stop() {
         if let source = dispatchSource {
             dispatch_source_cancel(source)
         }

@@ -14,42 +14,10 @@ import Foundation
 
 internal class HttpServerIO {
     
-    var listenSocket: Socket = Socket(socketFileDescriptor: -1)
-    private var clientSockets: Set<Socket> = []
-    private let clientSocketsLock = NSLock()
     let queue: dispatch_queue_t
     
     init(queue: dispatch_queue_t) {
         self.queue = queue
-    }
-    
-    internal func start(listenPort: in_port_t = 8080) throws {
-        stop()
-        listenSocket = try Socket.tcpSocketForListen(listenPort)
-        dispatch_async(self.queue) {
-            while let socket = try? self.listenSocket.acceptClientSocket() {
-                self.lock(self.clientSocketsLock) {
-                    self.clientSockets.insert(socket)
-                }
-                dispatch_async(self.queue, {
-                    self.handleConnection(socket)
-                    self.lock(self.clientSocketsLock) {
-                        self.clientSockets.remove(socket)
-                    }
-                })
-            }
-            self.stop()
-        }
-    }
-    
-    internal func stop() {
-        listenSocket.release()
-        lock(self.clientSocketsLock) {
-            for socket in self.clientSockets {
-                socket.shutdwn()
-            }
-            self.clientSockets.removeAll(keepCapacity: true)
-        }
     }
     
     internal func respondToRequestAsync(request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
@@ -84,12 +52,6 @@ internal class HttpServerIO {
         }
         
         handleNextRequest()
-    }
-    
-    private func lock(handle: NSLock, closure: () -> ()) {
-        handle.lock()
-        closure()
-        handle.unlock();
     }
     
     private struct InnerWriteContext: HttpResponseBodyWriter {
