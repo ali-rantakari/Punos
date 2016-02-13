@@ -165,7 +165,7 @@ internal class Socket: Hashable, Equatable {
         return name
     }
     
-    private class func descriptionOfLastError() -> String {
+    internal class func descriptionOfLastError() -> String {
         return String.fromCString(UnsafePointer(strerror(errno))) ?? "Error: \(errno)"
     }
     
