@@ -50,10 +50,12 @@ class MockHTTPServerTestCase: XCTestCase {
 	
 	override class func setUp() {
 		super.setUp()
-        do {
-            try sharedServer.start()
-        } catch let error {
-            fatalError("Could not start mock server: \(error)")
+        if !sharedServer.isRunning {
+            do {
+                try sharedServer.start()
+            } catch let error {
+                fatalError("Could not start mock server: \(error)")
+            }
         }
 	}
 
