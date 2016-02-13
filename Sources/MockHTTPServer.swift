@@ -35,7 +35,7 @@ private struct MockResponseConfiguration {
 }
 
 
-private class OurSwifterServer: HttpServerIO {
+private class OurSwifterServer: BaseServer {
     
     var responder: (HttpRequest -> HttpResponse)?
     

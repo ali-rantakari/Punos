@@ -14,10 +14,10 @@ import Foundation
 
 internal class HttpServerIO {
     
-    private var listenSocket: Socket = Socket(socketFileDescriptor: -1)
+    var listenSocket: Socket = Socket(socketFileDescriptor: -1)
     private var clientSockets: Set<Socket> = []
     private let clientSocketsLock = NSLock()
-    private let queue: dispatch_queue_t
+    let queue: dispatch_queue_t
     
     init(queue: dispatch_queue_t) {
         self.queue = queue
@@ -56,7 +56,7 @@ internal class HttpServerIO {
         return ([:], { _ in HttpResponse(404, "Not Found", nil, nil) })
     }
     
-    private func handleConnection(socket: Socket) {
+    internal func handleConnection(socket: Socket) {
         let address = try? socket.peername()
         let parser = HttpParser()
         while let request = try? parser.readHttpRequest(socket) {

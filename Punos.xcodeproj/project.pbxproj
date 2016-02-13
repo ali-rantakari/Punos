@@ -22,6 +22,7 @@
 		C979172B1C6E6E4300E5B379 /* RFC2616.swift in Sources */ = {isa = PBXBuildFile; fileRef = C979172A1C6E6E4300E5B379 /* RFC2616.swift */; };
 		C979172D1C6E754400E5B379 /* BaseMockServerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C979172C1C6E754400E5B379 /* BaseMockServerTestCase.swift */; };
 		C979172F1C6E75B700E5B379 /* ResponseMockingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C979172E1C6E75B700E5B379 /* ResponseMockingTests.swift */; };
+		C97917321C6F69F600E5B379 /* BaseServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C97917301C6F5D4600E5B379 /* BaseServer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 		C979172A1C6E6E4300E5B379 /* RFC2616.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RFC2616.swift; sourceTree = "<group>"; };
 		C979172C1C6E754400E5B379 /* BaseMockServerTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseMockServerTestCase.swift; sourceTree = "<group>"; };
 		C979172E1C6E75B700E5B379 /* ResponseMockingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseMockingTests.swift; sourceTree = "<group>"; };
+		C97917301C6F5D4600E5B379 /* BaseServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseServer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 			children = (
 				C979168B1C6A7BD700E5B379 /* Info.plist */,
 				A4DE4FAD1C6B1BCA00005441 /* Utils.swift */,
+				C97917301C6F5D4600E5B379 /* BaseServer.swift */,
 				C979172A1C6E6E4300E5B379 /* RFC2616.swift */,
 				C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */,
 				C97916A61C6A917100E5B379 /* HTTPRequest.swift */,
@@ -260,6 +263,7 @@
 				C979172B1C6E6E4300E5B379 /* RFC2616.swift in Sources */,
 				C97916A71C6A917100E5B379 /* HTTPRequest.swift in Sources */,
 				A4DE50001C6E1D0D00005441 /* String+Misc.swift in Sources */,
+				C97917321C6F69F600E5B379 /* BaseServer.swift in Sources */,
 				A4DE4FAE1C6B1BCA00005441 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

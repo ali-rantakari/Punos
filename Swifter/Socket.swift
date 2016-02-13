@@ -80,7 +80,7 @@ internal class Socket: Hashable, Equatable {
         return Socket(socketFileDescriptor: socketFileDescriptor)
     }
     
-    private let socketFileDescriptor: Int32
+    internal let socketFileDescriptor: Int32
     
     internal init(socketFileDescriptor: Int32) {
         self.socketFileDescriptor = socketFileDescriptor
