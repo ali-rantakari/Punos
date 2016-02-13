@@ -65,4 +65,15 @@ class BaseServer: HttpServerIO {
         // guarantees the listening sockets are closed
         dispatch_group_wait(sourceGroup, DISPATCH_TIME_FOREVER)
     }
+    
+    var responder: ((HttpRequest, (HttpResponse) -> Void) -> Void)?
+    var defaultResponse = HttpResponse(200, "OK", nil, { writer in writer.write([])})
+    
+    override func respondToRequestAsync(request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
+        if let responder = responder {
+            responder(request, responseCallback)
+        } else {
+            responseCallback(defaultResponse)
+        }
+    }
 }

@@ -35,30 +35,12 @@ private struct MockResponseConfiguration {
 }
 
 
-private class OurSwifterServer: BaseServer {
-    
-    var responder: ((HttpRequest, (HttpResponse) -> Void) -> Void)?
-    
-    class func defaultResponse() -> HttpResponse {
-        return HttpResponse(200, "OK", nil, { writer in writer.write([])})
-    }
-    
-    override func respondToRequestAsync(request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
-        if let responder = responder {
-            responder(request, responseCallback)
-        } else {
-            responseCallback(OurSwifterServer.defaultResponse())
-        }
-    }
-}
-
-
 /// A web server that runs on `localhost` and can be told how to respond
 /// to incoming requests. Meant for automated tests.
 ///
 public class MockHTTPServer {
     
-    private let server = OurSwifterServer(queue: dispatch_queue_create("org.hasseg.Punos.server", DISPATCH_QUEUE_CONCURRENT))
+    private let server = BaseServer(queue: dispatch_queue_create("org.hasseg.Punos.server", DISPATCH_QUEUE_CONCURRENT))
     
     public init() {
         server.responder = respondToRequest
@@ -150,7 +132,7 @@ public class MockHTTPServer {
             return self.mockResponseConfigForRequest(publicRequest)
         }
         guard let mockConfig = maybeMockConfig else {
-            callback(OurSwifterServer.defaultResponse())
+            callback(server.defaultResponse)
             return
         }
         let mockData = mockConfig.response
