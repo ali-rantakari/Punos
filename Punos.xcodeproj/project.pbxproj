@@ -50,11 +50,11 @@
 /* Begin PBXFileReference section */
 		A4DE4FAD1C6B1BCA00005441 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		A4DE4FF11C6E16BA00005441 /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		A4DE4FF51C6E1D0D00005441 /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HttpParser.swift; path = Swifter/HttpParser.swift; sourceTree = "<group>"; };
-		A4DE4FF61C6E1D0D00005441 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HttpRequest.swift; path = Swifter/HttpRequest.swift; sourceTree = "<group>"; };
-		A4DE4FF71C6E1D0D00005441 /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HttpResponse.swift; path = Swifter/HttpResponse.swift; sourceTree = "<group>"; };
-		A4DE4FF91C6E1D0D00005441 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Socket.swift; path = Swifter/Socket.swift; sourceTree = "<group>"; };
-		A4DE4FFA1C6E1D0D00005441 /* String+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+Misc.swift"; path = "Swifter/String+Misc.swift"; sourceTree = "<group>"; };
+		A4DE4FF51C6E1D0D00005441 /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HttpParser.swift; path = HttpParser.swift; sourceTree = "<group>"; };
+		A4DE4FF61C6E1D0D00005441 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HttpRequest.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
+		A4DE4FF71C6E1D0D00005441 /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HttpResponse.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
+		A4DE4FF91C6E1D0D00005441 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Socket.swift; path = Socket.swift; sourceTree = "<group>"; };
+		A4DE4FFA1C6E1D0D00005441 /* String+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+Misc.swift"; path = "String+Misc.swift"; sourceTree = "<group>"; };
 		C97916861C6A7BD700E5B379 /* Punos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Punos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C979168B1C6A7BD700E5B379 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C97916901C6A7BD700E5B379 /* PunosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PunosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,14 +96,13 @@
 				A4DE4FF91C6E1D0D00005441 /* Socket.swift */,
 				A4DE4FFA1C6E1D0D00005441 /* String+Misc.swift */,
 			);
-			name = Swifter;
+			path = Swifter;
 			sourceTree = "<group>";
 		};
 		C979167C1C6A7BD700E5B379 = {
 			isa = PBXGroup;
 			children = (
 				A4DE4FF11C6E16BA00005441 /* Package.swift */,
-				A4DE4FD41C6E151500005441 /* Swifter */,
 				C97916881C6A7BD700E5B379 /* Sources */,
 				C97916941C6A7BD700E5B379 /* PunosTests */,
 				C97916871C6A7BD700E5B379 /* Products */,
@@ -123,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				C979168B1C6A7BD700E5B379 /* Info.plist */,
+				A4DE4FD41C6E151500005441 /* Swifter */,
 				A4DE4FAD1C6B1BCA00005441 /* Utils.swift */,
 				C97917301C6F5D4600E5B379 /* PunosHTTPServer.swift */,
 				C979172A1C6E6E4300E5B379 /* RFC2616.swift */,
