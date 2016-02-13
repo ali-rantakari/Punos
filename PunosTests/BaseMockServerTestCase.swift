@@ -56,9 +56,10 @@ class MockServerTestCase: XCTestCase {
             request.HTTPBody = data
         }
         
-        NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in
-            guard let response = response as? NSHTTPURLResponse else {
-                XCTFail("The response should always be an NSHTTPURLResponse")
+        NSURLSession.sharedSession().dataTaskWithRequest(request) { data, maybeResponse, error in
+            guard let response = maybeResponse as? NSHTTPURLResponse else {
+                XCTFail("The response is: \(maybeResponse) -- Error: \(error)")
+                expectation.fulfill()
                 return
             }
             completionHandler?(data!, response, error)
