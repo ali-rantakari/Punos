@@ -44,7 +44,7 @@ class MockServerTestCase: XCTestCase {
     }
     
     
-    func request(method: String, _ path: String, body: String? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
+    func request(method: String, _ path: String, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
         let expectation: XCTestExpectation = expectationWithDescription("Request \(method) \(path)")
         
         let request = NSMutableURLRequest(URL: NSURL(string: "\(server.baseURLString ?? "")\(path)")!)
@@ -52,8 +52,8 @@ class MockServerTestCase: XCTestCase {
         if let headers = headers {
             headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
         }
-        if let body = body {
-            request.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding)
+        if let data = data {
+            request.HTTPBody = data
         }
         
         NSURLSession.sharedSession().dataTaskWithRequest(request) { data, response, error in

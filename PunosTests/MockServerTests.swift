@@ -35,7 +35,8 @@ class MockServerTests: MockServerTestCase {
         request("GET", "/gettersson")
         request("HEAD", "/headster")
         
-        request("POST", "/foo/bar?a=1&b=2", body: "i used to be with it", headers: ["X-Eka":"eka", "X-Toka":"toka"]) { data, response, error in
+        let requestData = "i used to be with it".dataUsingEncoding(NSUTF8StringEncoding)
+        request("POST", "/foo/bar?a=1&b=2", data: requestData, headers: ["X-Eka":"eka", "X-Toka":"toka"]) { data, response, error in
             XCTAssertEqual(self.server.latestRequests.count, 3)
             XCTAssertEqual(self.server.latestRequestEndpoints, [
                 "GET /gettersson",
