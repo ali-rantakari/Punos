@@ -138,16 +138,21 @@ public class MockHTTPServer {
         let mockData = mockConfig.response
         
         let statusCode = mockData.statusCode ?? 200
+        let content: HttpResponseContent? = {
+            if let bodyData = mockData.data {
+                return (length: bodyData.length, write: { responseBodyWriter in
+                    let bytes = Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>(bodyData.bytes), count: bodyData.length))
+                    responseBodyWriter.write(bytes)
+                })
+            }
+            return nil
+        }()
+        
         let response = HttpResponse(
             statusCode,
             RFC2616.reasonsForStatusCodes[statusCode] ?? "",
             mockData.headers,
-            { responseBodyWriter in
-                if let bodyData = mockData.data {
-                    let bytes = Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>(bodyData.bytes), count: bodyData.length))
-                    responseBodyWriter.write(bytes)
-                }
-            })
+            content)
         
         if 0 < mockConfig.delay {
             dispatchAfterInterval(mockConfig.delay, queue: server.queue) {
@@ -248,17 +253,10 @@ public class MockHTTPServer {
     ///       first one added wins.
     ///
     public func mockResponse(endpoint endpoint: String? = nil, status: Int? = nil, data: NSData? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
-        var effectiveHeaders = headers
-        if let data = data {
-            if effectiveHeaders == nil {
-                effectiveHeaders = [:]
-            }
-            effectiveHeaders!["Content-Length"] = "\(data.length)"
-        }
         let response = MockResponse(
             statusCode: status,
             data: data,
-            headers: effectiveHeaders)
+            headers: headers)
         mockResponse(endpoint: endpoint, response: response, onlyOnce: onlyOnce, delay: delay, matcher: matcher)
     }
     

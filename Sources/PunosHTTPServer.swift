@@ -77,7 +77,7 @@ class PunosHTTPServer {
     }
     
     var responder: ((HttpRequest, (HttpResponse) -> Void) -> Void)?
-    var defaultResponse = HttpResponse(200, "OK", nil, { writer in writer.write([])})
+    var defaultResponse = HttpResponse(200, "OK", nil, nil)
     
     private func respondToRequestAsync(request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
         if let responder = responder {
