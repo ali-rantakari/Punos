@@ -17,7 +17,7 @@ public typealias MockResponseMatcher = (request: HTTPRequest) -> Bool
 public struct MockResponse {
     
     /// The HTTP status code
-    public let statusCode: Int?
+    public let statusCode: Int
     
     /// The body data
     public let data: NSData?
@@ -151,7 +151,7 @@ public class MockHTTPServer {
         }
         let mockData = mockConfig.response
         
-        let statusCode = mockData.statusCode ?? 200
+        let statusCode = mockData.statusCode
         let content: HttpResponseContent? = {
             if let bodyData = mockData.data {
                 return (length: bodyData.length, write: { responseBodyWriter in
@@ -268,7 +268,7 @@ public class MockHTTPServer {
     ///
     public func mockResponse(endpoint endpoint: String? = nil, status: Int? = nil, data: NSData? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let response = MockResponse(
-            statusCode: status,
+            statusCode: status ?? 200,
             data: data,
             headers: headers)
         mockResponse(endpoint: endpoint, response: response, onlyOnce: onlyOnce, delay: delay, matcher: matcher)
