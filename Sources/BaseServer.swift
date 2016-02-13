@@ -5,11 +5,21 @@
 //  Created by Ali Rantakari on 13.2.16.
 //  Copyright © 2016 Ali Rantakari. All rights reserved.
 //
+//  This implementation is based on:
+//  Swifter by Damian Kołakowski -- https://github.com/glock45/swifter
+//  GCDWebServer by Pierre-Olivier Latour -- https://github.com/swisspol/GCDWebServer
+//
 
 import Foundation
 
 
-class BaseServer: HttpServerIO {
+class BaseServer {
+    
+    let queue: dispatch_queue_t
+    
+    init(queue: dispatch_queue_t) {
+        self.queue = queue
+    }
     
     private func log(message: String) {
         debugPrint(message)
@@ -69,11 +79,80 @@ class BaseServer: HttpServerIO {
     var responder: ((HttpRequest, (HttpResponse) -> Void) -> Void)?
     var defaultResponse = HttpResponse(200, "OK", nil, { writer in writer.write([])})
     
-    override func respondToRequestAsync(request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
+    private func respondToRequestAsync(request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
         if let responder = responder {
             responder(request, responseCallback)
         } else {
             responseCallback(defaultResponse)
         }
+    }
+    
+    private func handleConnection(socket: Socket) {
+        let address = try? socket.peername()
+        let parser = HttpParser()
+        
+        func handleNextRequest() {
+            guard let request = try? parser.readHttpRequest(socket) else {
+                return
+            }
+            
+            request.address = address
+            let clientSupportsKeepAlive = parser.supportsKeepAlive(request.headers)
+            
+            self.respondToRequestAsync(request) { response in
+                do {
+                    let keepConnection = try self.respond(socket, response: response, keepAlive: clientSupportsKeepAlive)
+                    if keepConnection {
+                        handleNextRequest()
+                    } else {
+                        socket.release()
+                    }
+                } catch {
+                    print("Failed to send response: \(error)")
+                    socket.release()
+                    return
+                }
+            }
+        }
+        
+        handleNextRequest()
+    }
+    
+    private struct InnerWriteContext: HttpResponseBodyWriter {
+        let socket: Socket
+        func write(data: [UInt8]) {
+            do {
+                try socket.writeUInt8(data)
+            } catch {
+                print("\(error)")
+            }
+        }
+    }
+    
+    private func respond(socket: Socket, response: HttpResponse, keepAlive: Bool) throws -> Bool {
+        try socket.writeUTF8("HTTP/1.1 \(response.statusCode) \(response.reasonPhrase)\r\n")
+        
+        let content = response.content
+        
+        if content.length >= 0 {
+            try socket.writeUTF8("Content-Length: \(content.length)\r\n")
+        }
+        
+        if keepAlive && content.length != -1 {
+            try socket.writeUTF8("Connection: keep-alive\r\n")
+        }
+        
+        for (name, value) in response.headers {
+            try socket.writeUTF8("\(name): \(value)\r\n")
+        }
+        
+        try socket.writeUTF8("\r\n")
+        
+        if let writeClosure = content.write {
+            let context = InnerWriteContext(socket: socket)
+            try writeClosure(context)
+        }
+        
+        return keepAlive && content.length != -1;
     }
 }
