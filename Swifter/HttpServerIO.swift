@@ -52,29 +52,38 @@ internal class HttpServerIO {
         }
     }
     
-    internal func dispatch(method: String, path: String) -> ([String: String], HttpRequest -> HttpResponse) {
-        return ([:], { _ in HttpResponse(404, "Not Found", nil, nil) })
+    internal func respondToRequestAsync(request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
+        responseCallback(HttpResponse(404, "Not Found", nil, nil))
     }
     
     internal func handleConnection(socket: Socket) {
         let address = try? socket.peername()
         let parser = HttpParser()
-        while let request = try? parser.readHttpRequest(socket) {
-            let request = request
-            let (params, handler) = self.dispatch(request.method, path: request.path)
-            request.address = address
-            request.params = params;
-            let response = handler(request)
-            var keepConnection = parser.supportsKeepAlive(request.headers)
-            do {
-                keepConnection = try self.respond(socket, response: response, keepAlive: keepConnection)
-            } catch {
-                print("Failed to send response: \(error)")
-                break
+        
+        func handleNextRequest() {
+            if let request = try? parser.readHttpRequest(socket) {
+                let request = request
+                request.address = address
+                var keepConnection = parser.supportsKeepAlive(request.headers)
+                
+                self.respondToRequestAsync(request) { response in
+                    do {
+                        keepConnection = try self.respond(socket, response: response, keepAlive: keepConnection)
+                    } catch {
+                        print("Failed to send response: \(error)")
+                        socket.release()
+                        return
+                    }
+                    if keepConnection {
+                        handleNextRequest()
+                    } else {
+                        socket.release()
+                    }
+                }
             }
-            if !keepConnection { break }
         }
-        socket.release()
+        
+        handleNextRequest()
     }
     
     private func lock(handle: NSLock, closure: () -> ()) {

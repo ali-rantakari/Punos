@@ -37,19 +37,18 @@ private struct MockResponseConfiguration {
 
 private class OurSwifterServer: BaseServer {
     
-    var responder: (HttpRequest -> HttpResponse)?
+    var responder: ((HttpRequest, (HttpResponse) -> Void) -> Void)?
     
     class func defaultResponse() -> HttpResponse {
         return HttpResponse(200, "OK", nil, { writer in writer.write([])})
     }
     
-    override func dispatch(method: String, path: String) -> ([String : String], HttpRequest -> HttpResponse) {
+    override func respondToRequestAsync(request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
         if let responder = responder {
-            return ([:], responder)
+            responder(request, responseCallback)
+        } else {
+            responseCallback(OurSwifterServer.defaultResponse())
         }
-        return ([:], { req in
-            return OurSwifterServer.defaultResponse()
-        })
     }
 }
 
@@ -143,7 +142,7 @@ public class MockHTTPServer {
     
     private let responseLock = NSLock()
     
-    private func respondToRequest(request: HttpRequest) -> HttpResponse {
+    private func respondToRequest(request: HttpRequest, _ callback: (HttpResponse) -> Void) {
         let maybeMockConfig: MockResponseConfiguration? = lock(responseLock) {
             let publicRequest = HTTPRequest(request)
             self.latestRequests.append(publicRequest)
@@ -151,7 +150,8 @@ public class MockHTTPServer {
             return self.mockResponseConfigForRequest(publicRequest)
         }
         guard let mockConfig = maybeMockConfig else {
-            return OurSwifterServer.defaultResponse()
+            callback(OurSwifterServer.defaultResponse())
+            return
         }
         let mockData = mockConfig.response
         
@@ -168,10 +168,12 @@ public class MockHTTPServer {
             })
         
         if 0 < mockConfig.delay {
-            NSThread.sleepForTimeInterval(mockConfig.delay)
+            dispatchAfterInterval(mockConfig.delay, queue: server.queue) {
+                callback(response)
+            }
+        } else {
+            callback(response)
         }
-        
-        return response
     }
     
     /// The latest HTTP requests this server has received, in order of receipt.

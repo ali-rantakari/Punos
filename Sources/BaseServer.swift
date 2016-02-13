@@ -36,9 +36,9 @@ class BaseServer: HttpServerIO {
             autoreleasepool {
                 do {
                     let clientSocket = try listeningSocket.acceptClientSocket()
-                    Socket.setNoSigPipe(clientSocket.socketFileDescriptor)
-                    self.handleConnection(clientSocket)
-                    Socket.release(clientSocket.socketFileDescriptor)
+                    dispatch_async(self.queue) {
+                        self.handleConnection(clientSocket)
+                    }
                 } catch let error {
                     self.log("Failed to accept socket. Error: \(error)")
                 }
