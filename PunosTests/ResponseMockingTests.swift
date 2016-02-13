@@ -61,6 +61,30 @@ class ResponseMockingTests: MockServerTestCase {
         }
     }
     
+    func testResponseMocking_matcher_matchByData() {
+        let dataToMatchOn = "woohoo".dataUsingEncoding(NSUTF8StringEncoding)
+        let otherData = "something else".dataUsingEncoding(NSUTF8StringEncoding)
+        
+        server.mockResponse(status: 500) // default fallback
+        server.mockResponse(status: 202) { request in
+            return request.data == dataToMatchOn
+        }
+        
+        request("POST", "/foo", data: dataToMatchOn) { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+        request("POST", "/dom/xfoobar/gg", data: dataToMatchOn) { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+        
+        request("POST", "/foo") { data, response, error in // no data
+            XCTAssertEqual(response.statusCode, 500)
+        }
+        request("POST", "/foo2", data: otherData) { data, response, error in
+            XCTAssertEqual(response.statusCode, 500)
+        }
+    }
+    
     func testResponseMocking_matcher_overlapping() {
         server.mockResponse(status: 201) { request in
             return request.path.containsString("foo")
