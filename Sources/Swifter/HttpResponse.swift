@@ -4,6 +4,8 @@
 //
 //  Copyright (c) 2014-2016 Damian Kołakowski. All rights reserved.
 //
+//  Modified in 2016 by Ali Rantakari for Punos.
+//
 
 import Foundation
 
