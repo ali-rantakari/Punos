@@ -35,14 +35,29 @@ private struct MockResponseConfiguration {
 }
 
 
+private func printMessageToLog(message: String) {
+    print("Punos: \(message)")
+}
+
+
 /// A web server that runs on `localhost` and can be told how to respond
 /// to incoming requests. Meant for automated tests.
 ///
 public class MockHTTPServer {
     
-    private let server = PunosHTTPServer(queue: dispatch_queue_create("org.hasseg.Punos.server", DISPATCH_QUEUE_CONCURRENT))
+    private let server: PunosHTTPServer
+    private let log: Logger
     
-    public init() {
+    /// Create a new MockHTTPServer.
+    ///
+    /// - parameter loggingEnabled: Whether to print status messages to stdout.
+    ///
+    public init(loggingEnabled: Bool = false) {
+        log = loggingEnabled ? printMessageToLog : { _ in }
+        server = PunosHTTPServer(
+            queue: dispatch_queue_create("org.hasseg.Punos.server", DISPATCH_QUEUE_CONCURRENT),
+            logger: log
+        )
         server.responder = respondToRequest
     }
     
@@ -58,7 +73,7 @@ public class MockHTTPServer {
             try server.start(port)
             self.port = port
             isRunning = true
-            print("\(self.dynamicType) started at port \(port)")
+            log("\(self.dynamicType) started at port \(port)")
         } catch let error {
             throw punosError(Int(port), "The mock server failed to start on port \(port). Error: \(error)")
         }
@@ -70,7 +85,7 @@ public class MockHTTPServer {
         server.stop()
         port = 0
         isRunning = false
-        print("\(self.dynamicType) stopped.")
+        log("\(self.dynamicType) stopped.")
     }
     
     /// Whether the server is currently running.

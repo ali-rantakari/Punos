@@ -12,17 +12,16 @@
 
 import Foundation
 
+typealias Logger = String -> Void
 
 class PunosHTTPServer {
     
     let queue: dispatch_queue_t
+    private let log: Logger
     
-    init(queue: dispatch_queue_t) {
+    init(queue: dispatch_queue_t, logger: Logger = { _ in }) {
+        self.log = logger
         self.queue = queue
-    }
-    
-    private func log(message: String) {
-        debugPrint(message)
     }
     
     private let sourceGroup = dispatch_group_create()
