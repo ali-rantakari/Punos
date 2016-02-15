@@ -126,7 +126,6 @@ class PunosHTTPServer {
     }
     
     private func handleConnection(socket: Socket, doneCallback: () -> Void) {
-        let address = try? socket.peername()
         let parser = HttpParser()
         
         guard let request = try? parser.readHttpRequest(socket) else {
@@ -135,7 +134,7 @@ class PunosHTTPServer {
             return
         }
         
-        request.address = address
+        request.address = try? socket.peername()
         
         self.respondToRequestAsync(request) { response in
             do {
