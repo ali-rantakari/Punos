@@ -54,6 +54,7 @@ class PunosHTTPServer {
             }
         }
         
+        self.log("Started dispatch source for listening socket \(listeningSocketFD)")
         return source
     }
     
