@@ -18,6 +18,44 @@ class MockServerTests: MockServerTestCase {
         XCTAssertEqual(s.port, 0)
         XCTAssertNil(s.baseURLString)
         
+        s.stop() // Already stopped; shouldn't do anything:
+        XCTAssertFalse(s.isRunning)
+        XCTAssertEqual(s.port, 0)
+        XCTAssertNil(s.baseURLString)
+        
+        try! s.start(8888)
+        
+        XCTAssertTrue(s.isRunning)
+        XCTAssertEqual(s.port, 8888)
+        XCTAssertEqual(s.baseURLString, "http://localhost:8888")
+        
+        do {
+            try s.start(8888) // Same port
+            XCTFail("start() should throw error: already running")
+        } catch let error {
+            XCTAssertNotNil(error)
+        }
+        do {
+            try s.start(8889) // Different port
+            XCTFail("start() should throw error: already running")
+        } catch let error {
+            XCTAssertNotNil(error)
+        }
+        
+        s.stop()
+        
+        XCTAssertFalse(s.isRunning)
+        XCTAssertEqual(s.port, 0)
+        XCTAssertNil(s.baseURLString)
+        
+        s.stop() // Already stopped; shouldn't do anything:
+        s.stop()
+        s.stop()
+        XCTAssertFalse(s.isRunning)
+        XCTAssertEqual(s.port, 0)
+        XCTAssertNil(s.baseURLString)
+        
+        // Start it again!
         try! s.start(8888)
         
         XCTAssertTrue(s.isRunning)
@@ -26,6 +64,13 @@ class MockServerTests: MockServerTestCase {
         
         s.stop()
         
+        XCTAssertFalse(s.isRunning)
+        XCTAssertEqual(s.port, 0)
+        XCTAssertNil(s.baseURLString)
+        
+        s.stop() // Already stopped; shouldn't do anything:
+        s.stop()
+        s.stop()
         XCTAssertFalse(s.isRunning)
         XCTAssertEqual(s.port, 0)
         XCTAssertNil(s.baseURLString)
