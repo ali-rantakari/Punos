@@ -14,7 +14,7 @@ class ResponseMockingTests: MockServerTestCase {
     func testResponseMocking_defaultsWhenNoMockResponsesConfigured() {
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 200)
-            XCTAssertEqual(response.allHeaderNames, [])
+            XCTAssertEqual(response.allHeaderNames, ["Connection"])
             XCTAssertEqual(data.length, 0)
             XCTAssertNil(error)
         }
@@ -31,7 +31,7 @@ class ResponseMockingTests: MockServerTestCase {
         
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 201)
-            XCTAssertEqual(response.allHeaderNames, ["X-Greeting", "Content-Type", "Content-Length"])
+            XCTAssertEqual(response.allHeaderNames, ["X-Greeting", "Content-Type", "Content-Length", "Connection"])
             XCTAssertEqual(response.headerWithName("X-Greeting"), "Hey yall")
             XCTAssertEqual(response.headerWithName("Content-Type"), "thing/foobar")
             XCTAssertEqual(response.headerWithName("Content-Length"), "\(mockData.length)")
