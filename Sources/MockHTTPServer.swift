@@ -142,20 +142,22 @@ public class MockHTTPServer {
         return nil
     }
     
+    private let defaultMockResponseConfiguration = MockResponseConfiguration(
+        response: MockResponse(statusCode: 200, data: nil, headers: nil),
+        matcher: nil,
+        onlyOnce: false,
+        delay: 0)
+    
     private let responseLock = NSLock()
     
     private func respondToRequest(request: HttpRequest, _ callback: (HttpResponse) -> Void) {
-        let maybeMockConfig: MockResponseConfiguration? = lock(responseLock) {
+        let mockConfig: MockResponseConfiguration = lock(responseLock) {
             let publicRequest = HTTPRequest(request)
             self.latestRequests.append(publicRequest)
             
-            return self.mockResponseConfigForRequest(publicRequest)
+            return self.mockResponseConfigForRequest(publicRequest) ?? self.defaultMockResponseConfiguration
         }
-        guard let mockConfig = maybeMockConfig else {
-            callback(server.defaultResponse)
-            return
-        }
-        let mockData = mockConfig.response
+        let mockData = commonResponseModifier(mockConfig.response)
         
         let statusCode = mockData.statusCode
         let content: HttpResponseContent? = {
@@ -221,6 +223,12 @@ public class MockHTTPServer {
             return request.method == method && request.path == path
         }
     }
+    
+    /// A function that modifies each response before it is sent.
+    /// Useful for e.g. setting common headers like `"Server"`.
+    /// By default, the “identity” function (`{ $0 }`).
+    ///
+    public var commonResponseModifier: (MockResponse -> MockResponse) = { $0 }
     
     /// Tell the server to send this response to incoming requests.
     ///
@@ -318,11 +326,13 @@ public class MockHTTPServer {
         mockResponsesWithMatchers.removeAll()
     }
     
-    /// Removes all “mocking” state: the mock responses, and the latest request list.
+    /// Removes all “mocking” state: the mock responses, the
+    /// common response modifier, and the latest request list.
     ///
     public func clearAllMockingState() {
         clearLatestRequests()
         clearMockResponses()
+        commonResponseModifier = { $0 }
     }
 }
 

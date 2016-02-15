@@ -231,4 +231,53 @@ class MockServerTests: MockServerTestCase {
         }
     }
     
+    func testCommonResponseModifier_noMockedResponsesConfigured() {
+        let commonData = "common override".dataUsingEncoding(NSUTF8StringEncoding)
+        server.commonResponseModifier = { response in
+            return response.copyWithChanges(statusCode: 207, data: commonData, headers: ["Date": "today"])
+        }
+        
+        request("GET", "/foo1") { data, response, error in
+            XCTAssertEqual(response.statusCode, 207)
+            XCTAssertEqual(response.allHeaderNames, ["Date", "Connection", "Content-Length"])
+            XCTAssertEqual(response.headerWithName("Date"), "today")
+            XCTAssertEqual(data, commonData)
+        }
+    }
+    
+    func testCommonResponseModifier_baseMockedResponseConfigured() {
+        server.mockResponse(status: 200)
+        
+        let commonData = "common override".dataUsingEncoding(NSUTF8StringEncoding)
+        server.commonResponseModifier = { response in
+            return response.copyWithChanges(statusCode: 207, data: commonData, headers: ["Date": "today"])
+        }
+        
+        request("GET", "/foo1") { data, response, error in
+            XCTAssertEqual(response.statusCode, 207)
+            XCTAssertEqual(response.allHeaderNames, ["Date", "Connection", "Content-Length"])
+            XCTAssertEqual(response.headerWithName("Date"), "today")
+            XCTAssertEqual(data, commonData)
+        }
+    }
+    
+    func testCommonResponseModifier_calledForEveryRequest() {
+        var counter = 0
+        
+        server.commonResponseModifier = { response in
+            counter += 1
+            return response
+        }
+        
+        request("GET", "/foo1") { data, response, error in
+            XCTAssertEqual(counter, 1)
+        }
+        request("GET", "/foo1") { data, response, error in
+            XCTAssertEqual(counter, 2)
+        }
+        request("GET", "/foo1") { data, response, error in
+            XCTAssertEqual(counter, 3)
+        }
+    }
+    
 }
