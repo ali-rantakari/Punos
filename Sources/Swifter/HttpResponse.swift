@@ -28,4 +28,8 @@ internal struct HttpResponse {
         self.headers = headers ?? [:]
         self.content = content ?? (-1, nil)
     }
+    
+    func containsHeader(headerName: String) -> Bool {
+        return headers.keys.map { $0.lowercaseString }.contains(headerName.lowercaseString)
+    }
 }
