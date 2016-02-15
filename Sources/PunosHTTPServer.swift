@@ -24,10 +24,12 @@ class PunosHTTPServer {
         self.queue = queue
     }
     
-    private let sourceGroup = dispatch_group_create()
+    private var sourceGroup: dispatch_group_t?
     private var dispatchSource: dispatch_source_t?
     
-    private func createDispatchSource(listeningSocket: Socket) -> dispatch_source_t {
+    private func createDispatchSource(listeningSocket: Socket) -> dispatch_source_t? {
+        guard let sourceGroup = sourceGroup else { return nil }
+        
         let listeningSocketFD = listeningSocket.socketFileDescriptor
         dispatch_group_enter(sourceGroup)
         let source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, UInt(listeningSocketFD), 0, queue)
@@ -38,7 +40,7 @@ class PunosHTTPServer {
             } else {
                 self.log("Closed listening socket \(listeningSocketFD)")
             }
-            dispatch_group_leave(self.sourceGroup)
+            dispatch_group_leave(sourceGroup)
         }
         
         dispatch_source_set_event_handler(source) { _ in
@@ -62,6 +64,7 @@ class PunosHTTPServer {
         if dispatchSource != nil {
             throw punosError(0, "Already running")
         }
+        sourceGroup = dispatch_group_create()
         dispatchSource = createDispatchSource(try Socket.tcpSocketForListen(listenPort))
         guard let source = dispatchSource else {
             throw punosError(0, "Could not create dispatch source")
@@ -70,13 +73,19 @@ class PunosHTTPServer {
     }
     
     func stop() {
-        if let source = dispatchSource {
-            dispatch_source_cancel(source)
+        guard let source = dispatchSource, group = sourceGroup else {
+            return
         }
         
-        // Wait until the cancellation handlers have been called which
-        // guarantees the listening sockets are closed
-        dispatch_group_wait(sourceGroup, DISPATCH_TIME_FOREVER)
+        self.dispatchSource = nil
+        self.sourceGroup = nil
+        
+        dispatch_source_cancel(source)
+        
+        // Wait until the cancellation handler has been called, which
+        // guarantees that the listening socket is closed.
+        //
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
     }
     
     var responder: ((HttpRequest, (HttpResponse) -> Void) -> Void)?
