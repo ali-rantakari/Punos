@@ -44,7 +44,7 @@ class MockServerTestCase: XCTestCase {
     }
     
     
-    func request(method: String, _ path: String, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
+    func requestThatCanFail(method: String, _ path: String, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData?, NSHTTPURLResponse?, NSError?) -> Void)? = nil) {
         let expectation: XCTestExpectation = expectationWithDescription("Request \(method) \(path)")
         
         let request = NSMutableURLRequest(URL: NSURL(string: "\(server.baseURLString ?? "")\(path)")!)
@@ -57,21 +57,28 @@ class MockServerTestCase: XCTestCase {
         }
         
         NSURLSession.sharedSession().dataTaskWithRequest(request) { data, maybeResponse, error in
-            guard let response = maybeResponse as? NSHTTPURLResponse else {
-                XCTFail("The response is: \(maybeResponse) -- Error: \(error)")
-                expectation.fulfill()
-                return
-            }
-            completionHandler?(data!, response, error)
+            completionHandler?(data, maybeResponse as? NSHTTPURLResponse, error)
             expectation.fulfill()
             }.resume()
         
         if wait {
             waitForExpectationsWithTimeout(timeout) { error in
-                if error != nil {
-                    XCTFail("Request error: \(error)")
-                }
+                XCTAssertNil(error, "Request expectation timeout error: \(error)")
             }
+        }
+    }
+    
+    func request(method: String, _ path: String, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
+        requestThatCanFail(method, path, data: data, headers: headers, timeout: timeout, wait: wait) { maybeData, maybeResponse, maybeError in
+            guard let data = maybeData else {
+                XCTFail("Data is expected to be non-nil")
+                return
+            }
+            guard let response = maybeResponse else {
+                XCTFail("Response is expected to be non-nil")
+                return
+            }
+            completionHandler?(data, response, maybeError)
         }
     }
     
