@@ -24,6 +24,12 @@ public struct MockResponse {
     
     /// The HTTP headers
     public let headers: [String:String]?
+    
+    public init(statusCode: Int, data: NSData?, headers: [String:String]?) {
+        self.statusCode = statusCode
+        self.data = data
+        self.headers = headers
+    }
 }
 
 
