@@ -59,6 +59,9 @@ class PunosHTTPServer {
     }
     
     func start(listenPort: in_port_t) throws {
+        if dispatchSource != nil {
+            throw punosError(0, "Already running")
+        }
         dispatchSource = createDispatchSource(try Socket.tcpSocketForListen(listenPort))
         guard let source = dispatchSource else {
             throw punosError(0, "Could not create dispatch source")
