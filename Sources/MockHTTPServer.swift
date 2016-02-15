@@ -30,6 +30,17 @@ public struct MockResponse {
         self.data = data
         self.headers = headers
     }
+    
+    /// Returns a copy of self by replacing members with the supplied
+    /// values.
+    ///
+    public func copyWithChanges(statusCode statusCode: Int? = nil, data: NSData? = nil, headers: [String:String]? = nil) -> MockResponse {
+        return MockResponse(
+            statusCode: statusCode ?? self.statusCode,
+            data: data ?? self.data,
+            headers: headers ?? self.headers
+        )
+    }
 }
 
 
