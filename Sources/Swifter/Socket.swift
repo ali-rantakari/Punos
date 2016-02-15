@@ -141,8 +141,8 @@ internal class Socket: Hashable, Equatable {
         return buffer[0]
     }
     
-    private static let CR = UInt8(13)
-    private static let NL = UInt8(10)
+    internal static let CR = UInt8(13)
+    internal static let NL = UInt8(10)
     
     internal func readLine() throws -> String {
         var characters: String = ""
