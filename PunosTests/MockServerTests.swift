@@ -76,6 +76,30 @@ class MockServerTests: MockServerTestCase {
         XCTAssertNil(s.baseURLString)
     }
     
+    func testPendingRequestsAreKilledUponShutdown() {
+        server.mockResponse(status: 210, delay: 2)
+        requestThatCanFail("GET", "/i-will-be-delayed", wait: false) { data, response, error in
+            XCTAssertNil(response, "This request should be interrupted when server.stop() is called")
+            XCTAssertNotNil(error, "This request should be interrupted when server.stop() is called")
+        }
+        
+        // Give the above request some time to reach the server, so that
+        // the server accepts the socket and starts the (delayed) response
+        // processing:
+        //
+        NSThread.sleepForTimeInterval(0.1)
+        
+        // Then stop the server while it's still processing the above
+        // request. It should cancel the request processing and shut
+        // down the client socket.
+        //
+        server.stop()
+        
+        waitForExpectationsWithTimeout(3) { error in
+            XCTAssertNil(error, "\(error)")
+        }
+    }
+    
     func testLatestRequestsGetters() {
         request("GET", "/gettersson")
         request("HEAD", "/headster")

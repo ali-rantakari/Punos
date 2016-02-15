@@ -27,6 +27,9 @@ class PunosHTTPServer {
     private var sourceGroup: dispatch_group_t?
     private var dispatchSource: dispatch_source_t?
     
+    private var clientSockets: Set<Socket> = []
+    private let clientSocketsLock = NSLock()
+    
     private func createDispatchSource(listeningSocket: Socket) -> dispatch_source_t? {
         guard let sourceGroup = sourceGroup else { return nil }
         
@@ -47,8 +50,17 @@ class PunosHTTPServer {
             autoreleasepool {
                 do {
                     let clientSocket = try listeningSocket.acceptClientSocket()
+                    
+                    lock(self.clientSocketsLock) {
+                        self.clientSockets.insert(clientSocket)
+                    }
+                    
                     dispatch_async(self.queue) {
-                        self.handleConnection(clientSocket)
+                        self.handleConnection(clientSocket) {
+                            lock(self.clientSocketsLock) {
+                                self.clientSockets.remove(clientSocket)
+                            }
+                        }
                     }
                 } catch let error {
                     self.log("Failed to accept socket. Error: \(error)")
@@ -82,6 +94,14 @@ class PunosHTTPServer {
         self.dispatchSource = nil
         self.sourceGroup = nil
         
+        // Shut down all the client sockets, so that our dispatch
+        // source can be cancelled:
+        //
+        for socket in self.clientSockets {
+            socket.shutdwn()
+        }
+        self.clientSockets.removeAll(keepCapacity: true)
+        
         // Cancel the main listening socket dispatch source (the
         // cancellation handler is responsible for closing the
         // socket):
@@ -105,7 +125,7 @@ class PunosHTTPServer {
         }
     }
     
-    private func handleConnection(socket: Socket) {
+    private func handleConnection(socket: Socket, doneCallback: () -> Void) {
         let address = try? socket.peername()
         let parser = HttpParser()
         
@@ -124,10 +144,12 @@ class PunosHTTPServer {
                         handleNextRequest()
                     } else {
                         socket.release()
+                        doneCallback()
                     }
                 } catch {
                     print("Failed to send response: \(error)")
                     socket.release()
+                    doneCallback()
                     return
                 }
             }
