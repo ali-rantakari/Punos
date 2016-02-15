@@ -111,6 +111,10 @@ internal class Socket: Hashable, Equatable {
         try writeUInt8([UInt8](string.utf8))
     }
     
+    internal func writeUTF8AndCRLF(string: String) throws {
+        try writeUTF8(string + "\r\n")
+    }
+    
     internal func writeUInt8(data: [UInt8]) throws {
         try data.withUnsafeBufferPointer {
             var sent = 0
