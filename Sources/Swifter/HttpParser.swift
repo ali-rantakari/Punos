@@ -12,6 +12,7 @@
 #endif
 
 enum HttpParserError: ErrorType {
+    case InvalidChunk(String)
     case InvalidStatusLine(String)
 }
 
@@ -32,6 +33,11 @@ internal class HttpParser {
         request.headers = try readHeaders(socket)
         if let contentLength = request.headers["content-length"], let contentLengthValue = Int(contentLength) {
             request.body = try readBody(socket, size: contentLengthValue)
+        } else if request.headers["transfer-encoding"]?.lowercaseString == "chunked" {
+            request.body = try readChunkedBody(socket)
+            // Read potential footers (and consume the blank line at the end):
+            let footers = try readHeaders(socket)
+            request.headers = request.headers.merged(footers)
         }
         return request
     }
@@ -53,6 +59,39 @@ internal class HttpParser {
         var body = [UInt8]()
         for _ in 0..<size { body.append(try socket.read()) }
         return body
+    }
+    
+    private func readChunkedBody(socket: Socket) throws -> [UInt8] {
+        var body = [UInt8]()
+        repeat {
+            // Read the chunk header, discard `;` and anything after it, and
+            // interpret the chunk size, which is expressed in hex:
+            //
+            let chunkHeaderLine = try socket.readLine()
+            if chunkHeaderLine == "0" || chunkHeaderLine.hasPrefix("0;") {
+                return body
+            }
+            let chunkSizeHexString: String = {
+                if chunkHeaderLine.containsString(";") {
+                    return chunkHeaderLine.substringToIndex(chunkHeaderLine.rangeOfString(";")!.startIndex)
+                }
+                return chunkHeaderLine
+            }()
+            
+            guard let chunkSizeBytes = Int(chunkSizeHexString, radix: 16) else {
+                throw HttpParserError.InvalidChunk("Invalid chunk header line: \(chunkHeaderLine)")
+            }
+            
+            // Read the chunk contents
+            //
+            for _ in 0..<chunkSizeBytes { body.append(try socket.read()) }
+            
+            // Assert that the contents end in CRLF
+            //
+            if try ((try socket.read() != Socket.CR) || (try socket.read() != Socket.NL)) {
+                throw HttpParserError.InvalidChunk("Chunk does not end in CRLF")
+            }
+        } while true
     }
     
     private func readHeaders(socket: Socket) throws -> [String: String] {

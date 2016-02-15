@@ -280,4 +280,62 @@ class MockServerTests: MockServerTestCase {
         }
     }
     
+    func testStreamedRequest_chunkedTransferEncoding() {
+        let testDataFilePath = "/usr/share/dict/words"
+        let testData = NSData(contentsOfFile: testDataFilePath)
+        
+        let expectation: XCTestExpectation = expectationWithDescription("Chunked request")
+        
+        let request = NSMutableURLRequest(URL: NSURL(string: "\(server.baseURLString ?? "")/stream")!)
+        request.HTTPMethod = "POST"
+        request.addValue("Chunked", forHTTPHeaderField: "Transfer-Encoding")
+        
+        // Note: We do NOT set a value for the "Content-Length" header here.
+        // This makes NSURLSession use "Transfer-Encoding: Chunked".
+        
+        class DataProviderDelegate: NSObject, NSURLSessionTaskDelegate, NSURLSessionDataDelegate {
+            let expectation: XCTestExpectation?
+            let testDataFilePath: String
+            init(_ expectation: XCTestExpectation, _ testDataFilePath: String) {
+                self.expectation = expectation
+                self.testDataFilePath = testDataFilePath
+            }
+            
+            @objc func URLSession(session: NSURLSession, task: NSURLSessionTask, needNewBodyStream completionHandler: (NSInputStream?) -> Void) {
+                completionHandler(NSInputStream(fileAtPath: testDataFilePath))
+            }
+            @objc func URLSession(session: NSURLSession, task: NSURLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+                print("bytesSent:\(bytesSent), totalBytesSent:\(totalBytesSent), totalBytesExpectedToSend:\(totalBytesExpectedToSend)");
+            }
+            @objc func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
+                expectation?.fulfill()
+                completionHandler(.Allow)
+            }
+        }
+        
+        let urlSession = NSURLSession(
+            configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
+            delegate: DataProviderDelegate(expectation, testDataFilePath),
+            delegateQueue: nil)
+        urlSession.uploadTaskWithStreamedRequest(request).resume()
+        
+        waitForExpectationsWithTimeout(10) { error in
+            XCTAssertNil(error, "Request expectation timeout error: \(error)")
+            
+            if error == nil {
+                let receivedData = self.server.lastRequest?.data
+                
+                XCTAssertEqual(self.server.lastRequest?.headers["Transfer-Encoding"], "Chunked")
+                
+                // Avoid failing on the data equality assertion (the file is so large
+                // that the length of the error message in Xcode will bog down the whole editor.)
+                //
+                XCTAssertEqual(receivedData?.length, testData?.length)
+                if receivedData?.length == testData?.length {
+                    XCTAssertEqual(receivedData, testData)
+                }
+            }
+        }
+    }
+    
 }
