@@ -129,33 +129,23 @@ class PunosHTTPServer {
         let address = try? socket.peername()
         let parser = HttpParser()
         
-        func handleNextRequest() {
-            guard let request = try? parser.readHttpRequest(socket) else {
-                return
-            }
-            
-            request.address = address
-            let clientSupportsKeepAlive = parser.supportsKeepAlive(request.headers)
-            
-            self.respondToRequestAsync(request) { response in
-                do {
-                    let keepConnection = try self.respond(socket, response: response, keepAlive: clientSupportsKeepAlive)
-                    if keepConnection {
-                        handleNextRequest()
-                    } else {
-                        socket.release()
-                        doneCallback()
-                    }
-                } catch {
-                    print("Failed to send response: \(error)")
-                    socket.release()
-                    doneCallback()
-                    return
-                }
-            }
+        guard let request = try? parser.readHttpRequest(socket) else {
+            socket.release()
+            doneCallback()
+            return
         }
         
-        handleNextRequest()
+        request.address = address
+        
+        self.respondToRequestAsync(request) { response in
+            do {
+                try self.respond(socket, response: response, keepAlive: false)
+            } catch {
+                print("Failed to send response: \(error)")
+            }
+            socket.release()
+            doneCallback()
+        }
     }
     
     private struct InnerWriteContext: HttpResponseBodyWriter {

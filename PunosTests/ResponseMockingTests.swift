@@ -31,7 +31,7 @@ class ResponseMockingTests: MockServerTestCase {
         
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 201)
-            XCTAssertEqual(response.allHeaderNames, ["X-Greeting", "Content-Type", "Content-Length", "Connection"])
+            XCTAssertEqual(response.allHeaderNames, ["X-Greeting", "Content-Type", "Content-Length"])
             XCTAssertEqual(response.headerWithName("X-Greeting"), "Hey yall")
             XCTAssertEqual(response.headerWithName("Content-Type"), "thing/foobar")
             XCTAssertEqual(response.headerWithName("Content-Length"), "\(mockData.length)")
