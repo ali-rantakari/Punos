@@ -77,13 +77,19 @@ class PunosHTTPServer {
             return
         }
         
+        // These properties are our implicit "are we running" state:
+        //
         self.dispatchSource = nil
         self.sourceGroup = nil
         
+        // Cancel the main listening socket dispatch source (the
+        // cancellation handler is responsible for closing the
+        // socket):
+        //
         dispatch_source_cancel(source)
         
         // Wait until the cancellation handler has been called, which
-        // guarantees that the listening socket is closed.
+        // guarantees that the listening socket is closed:
         //
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
     }
