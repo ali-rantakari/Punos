@@ -159,24 +159,24 @@ class PunosHTTPServer {
     }
     
     private func respond(socket: Socket, response: HttpResponse, keepAlive: Bool) throws -> Bool {
-        try socket.writeUTF8("HTTP/1.1 \(response.statusCode) \(response.reasonPhrase)\r\n")
+        try socket.writeUTF8AndCRLF("HTTP/1.1 \(response.statusCode) \(response.reasonPhrase)")
         
         let content = response.content
         
         if 0 <= content.length {
-            try socket.writeUTF8("Content-Length: \(content.length)\r\n")
+            try socket.writeUTF8AndCRLF("Content-Length: \(content.length)")
         }
         
         let respondKeepAlive = keepAlive && content.length != -1
         if respondKeepAlive {
-            try socket.writeUTF8("Connection: keep-alive\r\n")
+            try socket.writeUTF8AndCRLF("Connection: keep-alive")
         }
         
         for (name, value) in response.headers {
-            try socket.writeUTF8("\(name): \(value)\r\n")
+            try socket.writeUTF8AndCRLF("\(name): \(value)")
         }
         
-        try socket.writeUTF8("\r\n")
+        try socket.writeUTF8AndCRLF("")
         
         if let writeClosure = content.write {
             let context = InnerWriteContext(socket: socket)
