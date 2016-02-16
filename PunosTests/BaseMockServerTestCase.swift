@@ -44,10 +44,10 @@ class MockServerTestCase: XCTestCase {
     }
     
     
-    func requestThatCanFail(method: String, _ path: String, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData?, NSHTTPURLResponse?, NSError?) -> Void)? = nil) {
+    func requestThatCanFail(method: String, _ path: String, port: in_port_t? = nil, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData?, NSHTTPURLResponse?, NSError?) -> Void)? = nil) {
         let expectation: XCTestExpectation = expectationWithDescription("Request \(method) \(path)")
         
-        let request = NSMutableURLRequest(URL: NSURL(string: "\(server.baseURLString ?? "")\(path)")!)
+        let request = NSMutableURLRequest(URL: NSURL(string: "http://localhost:\(port ?? server.port)\(path)")!)
         request.HTTPMethod = method
         if let headers = headers {
             headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
@@ -68,8 +68,8 @@ class MockServerTestCase: XCTestCase {
         }
     }
     
-    func request(method: String, _ path: String, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
-        requestThatCanFail(method, path, data: data, headers: headers, timeout: timeout, wait: wait) { maybeData, maybeResponse, maybeError in
+    func request(method: String, _ path: String, port: in_port_t? = nil, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
+        requestThatCanFail(method, path, port: port, data: data, headers: headers, timeout: timeout, wait: wait) { maybeData, maybeResponse, maybeError in
             guard let data = maybeData else {
                 XCTFail("Data is expected to be non-nil")
                 return
