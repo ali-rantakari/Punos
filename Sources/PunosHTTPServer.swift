@@ -140,7 +140,7 @@ class PunosHTTPServer {
             do {
                 try self.respond(socket, response: response, keepAlive: false)
             } catch {
-                print("Failed to send response: \(error)")
+                self.log("Failed to send response: \(error)")
             }
             socket.release()
             doneCallback()
