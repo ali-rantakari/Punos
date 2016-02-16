@@ -77,8 +77,11 @@ class MockServerTests: MockServerTestCase {
     }
     
     func testPendingRequestsAreKilledUponShutdown() {
-        server.mockResponse(status: 210, delay: 2)
-        requestThatCanFail("GET", "/i-will-be-delayed", wait: false) { data, response, error in
+        let s = MockHTTPServer()
+        try! s.start(8888)
+        
+        s.mockResponse(status: 210, delay: 2)
+        requestThatCanFail("GET", "/i-will-be-delayed", port: s.port, wait: false) { data, response, error in
             XCTAssertNil(response, "This request should be interrupted when server.stop() is called")
             XCTAssertNotNil(error, "This request should be interrupted when server.stop() is called")
         }
@@ -93,7 +96,7 @@ class MockServerTests: MockServerTestCase {
         // request. It should cancel the request processing and shut
         // down the client socket.
         //
-        server.stop()
+        s.stop()
         
         waitForExpectationsWithTimeout(3) { error in
             XCTAssertNil(error, "\(error)")
