@@ -229,9 +229,9 @@ public class MockHTTPServer {
         guard let endpoint = endpoint else { return nil }
         let parts = endpoint.componentsSeparatedByString(" ")
         let method = parts.first
-        let path = parts.last
+        let path: String? = 1 < parts.count ? parts[1] : nil
         return { request in
-            return request.method == method && request.path == path
+            return request.method == method && (path == nil || request.path == path)
         }
     }
     
@@ -245,8 +245,8 @@ public class MockHTTPServer {
     ///
     /// - parameters:
     ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
-    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. If set, this will
-    ///       supersede `matcher`.
+    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. The HTTP verb is required
+    ///       but the path is optional. If set, this will supersede `matcher`.
     ///     - response: The mock response to send
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
@@ -275,8 +275,8 @@ public class MockHTTPServer {
     ///
     /// - parameters:
     ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
-    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. If set, this will
-    ///       supersede `matcher`.
+    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. The HTTP verb is required
+    ///       but the path is optional. If set, this will supersede `matcher`.
     ///     - status: The response HTTP status code. Default: 200
     ///     - data: The response body data. If non-nil, the `"Content-Length"` header will
     ///       be given an appropriate value.
@@ -304,8 +304,8 @@ public class MockHTTPServer {
     ///
     /// - parameters:
     ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
-    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. If set, this will
-    ///       supersede `matcher`.
+    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. The HTTP verb is required
+    ///       but the path is optional. If set, this will supersede `matcher`.
     ///     - json: The UTF-8 encoded JSON to be sent in the response body
     ///     - status: The response HTTP status code. Default: 200
     ///     - headers: The response headers

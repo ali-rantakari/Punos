@@ -138,6 +138,27 @@ class ResponseMockingTests: MockServerTestCase {
         }
     }
     
+    func testResponseMocking_matcher_viaEndpointParameter_methodOnly() {
+        server.mockResponse(endpoint: "GET", status: 201)
+        server.mockResponse(status: 500) // default fallback
+        
+        request("GET", "") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        request("GET", "/") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        request("GET", "/bar") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        request("POST", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 500, "Method doesn't match")
+        }
+    }
+    
     func testResponseMocking_onlyOnce_withoutMatcher() {
         
         // The responses should be dealt in the same order in which they were configured:
