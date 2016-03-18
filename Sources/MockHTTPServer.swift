@@ -319,7 +319,7 @@ public class MockHTTPServer {
     ///       incoming requests. If multiple matchers match an incoming request, the
     ///       first one added wins.
     ///
-    public func mockJSONResponse(endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockJSONResponse(endpoint endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         mockResponse(
             status: status,
             data: json?.dataUsingEncoding(NSUTF8StringEncoding),
