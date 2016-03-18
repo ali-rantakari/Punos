@@ -264,7 +264,7 @@ public class MockHTTPServer {
             matcher: matcherForEndpoint(endpoint) ?? matcher,
             onlyOnce: onlyOnce,
             delay: delay)
-        if matcher == nil {
+        if config.matcher == nil {
             defaultMockResponses.append(config)
         } else {
             mockResponsesWithMatchers.append(config)
