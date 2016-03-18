@@ -108,15 +108,32 @@ class ResponseMockingTests: MockServerTestCase {
     
     func testResponseMocking_matcher_viaEndpointParameter() {
         server.mockResponse(endpoint: "GET /foo", status: 201)
+        server.mockResponse(endpoint: "GET /bar", status: 202)
+        server.mockResponse(endpoint: "GET /bar/baz", status: 203)
+        server.mockResponse(endpoint: "GET /", status: 204)
+        server.mockResponse(status: 500) // default fallback
+        
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 201)
+        }
+        request("GET", "/bar") { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+        request("GET", "/bar/baz") { data, response, error in
+            XCTAssertEqual(response.statusCode, 203)
+        }
+        request("GET", "/") { data, response, error in
+            XCTAssertEqual(response.statusCode, 204)
+        }
+        request("POST", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 500, "Method doesn't match")
         }
         
         // If `matcher` and `endpoint` are both given, `endpoint`
         // takes precedence:
         //
-        server.mockResponse(endpoint: "GET /foo", status: 201) { req in return false }
-        request("GET", "/foo") { data, response, error in
+        server.mockResponse(endpoint: "GET /both", status: 201) { req in return false }
+        request("GET", "/both") { data, response, error in
             XCTAssertEqual(response.statusCode, 201)
         }
     }
