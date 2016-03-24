@@ -243,6 +243,12 @@ public class MockHTTPServer {
     
     /// Tell the server to send this response to incoming requests.
     ///
+    /// - If multiple configured responses match an incoming request, the _first_ one added wins.
+    /// - Responses with `endpoint` or `matcher` take precedence over ones without.
+    /// - “Permanent default fallback responses” (i.e. ones with no `endpoint` or `matcher`, and
+    ///   `onlyOnce == false`) can be overridden — configuring such a response will override
+    ///   previously added ones.
+    ///
     /// - parameters:
     ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
     ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. The HTTP verb is required
@@ -255,8 +261,7 @@ public class MockHTTPServer {
     ///       the response
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
-    ///       incoming requests. If multiple matchers match an incoming request, the
-    ///       first one added wins.
+    ///       incoming requests.
     ///
     public func mockResponse(endpoint endpoint: String? = nil, response: MockResponse, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let config = MockResponseConfiguration(
@@ -278,6 +283,12 @@ public class MockHTTPServer {
     
     /// Tell the server to send this response to incoming requests.
     ///
+    /// - If multiple configured responses match an incoming request, the _first_ one added wins.
+    /// - Responses with `endpoint` or `matcher` take precedence over ones without.
+    /// - “Permanent default fallback responses” (i.e. ones with no `endpoint` or `matcher`, and
+    ///   `onlyOnce == false`) can be overridden — configuring such a response will override
+    ///   previously added ones.
+    ///
     /// - parameters:
     ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
     ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. The HTTP verb is required
@@ -293,8 +304,7 @@ public class MockHTTPServer {
     ///       the response
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
-    ///       incoming requests. If multiple matchers match an incoming request, the
-    ///       first one added wins.
+    ///       incoming requests.
     ///
     public func mockResponse(endpoint endpoint: String? = nil, status: Int? = nil, data: NSData? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let response = MockResponse(
@@ -306,6 +316,12 @@ public class MockHTTPServer {
     
     /// Tell the server to send this JSON response to incoming requests (sending
     /// the `Content-Type` header as `"application/json"`.)
+    ///
+    /// - If multiple configured responses match an incoming request, the _first_ one added wins.
+    /// - Responses with `endpoint` or `matcher` take precedence over ones without.
+    /// - “Permanent default fallback responses” (i.e. ones with no `endpoint` or `matcher`, and
+    ///   `onlyOnce == false`) can be overridden — configuring such a response will override
+    ///   previously added ones.
     ///
     /// - parameters:
     ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
@@ -321,8 +337,7 @@ public class MockHTTPServer {
     ///       the response
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
-    ///       incoming requests. If multiple matchers match an incoming request, the
-    ///       first one added wins.
+    ///       incoming requests.
     ///
     public func mockJSONResponse(endpoint endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         mockResponse(
