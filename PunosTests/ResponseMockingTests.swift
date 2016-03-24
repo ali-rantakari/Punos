@@ -301,4 +301,13 @@ class ResponseMockingTests: MockServerTestCase {
         }
     }
     
+    func testResponseMocking_jsonObject() {
+        server.mockJSONResponse(status: 501, object: ["greeting": "Moro"])
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 501)
+            XCTAssertEqual(response.headerWithName("Content-Type"), "application/json")
+            XCTAssertEqual(String(data: data, encoding: NSUTF8StringEncoding), "{\"greeting\":\"Moro\"}")
+        }
+    }
+    
 }

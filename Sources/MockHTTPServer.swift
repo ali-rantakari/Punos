@@ -350,6 +350,47 @@ public class MockHTTPServer {
             matcher: matcher)
     }
     
+    /// Tell the server to send this JSON response to incoming requests (sending
+    /// the `Content-Type` header as `"application/json"`.)
+    ///
+    /// - If multiple configured responses match an incoming request, the _first_ one added wins.
+    /// - Responses with `endpoint` or `matcher` take precedence over ones without.
+    /// - “Permanent default fallback responses” (i.e. ones with no `endpoint` or `matcher`, and
+    ///   `onlyOnce == false`) can be overridden — configuring such a response will override
+    ///   previously added ones.
+    ///
+    /// - parameters:
+    ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
+    ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. The HTTP verb is required
+    ///       but the path is optional. If set, this will supersede `matcher`.
+    ///     - object: The object to be sent in the response body, serialized as JSON. Serialization
+    ///       failures will be silent and yield an empty response body.
+    ///     - status: The response HTTP status code. Default: 200
+    ///     - headers: The response headers
+    ///     - onlyOnce: Whether to only mock this response once — if `true`, this
+    ///       mock response will only be sent for the first matching request and not
+    ///       thereafter
+    ///     - delay: How long to wait (after processing the incoming request) before sending
+    ///       the response
+    ///     - matcher: An “evaluator” function that determines what requests this response
+    ///       should be sent for. If omitted or `nil`, this response will match _all_
+    ///       incoming requests.
+    ///
+    public func mockJSONResponse(endpoint endpoint: String? = nil, object: AnyObject? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+        let jsonData: NSData? = {
+            guard let o = object else { return nil }
+            return try? NSJSONSerialization.dataWithJSONObject(o, options: NSJSONWritingOptions())
+        }()
+        mockResponse(
+            status: status,
+            data: jsonData,
+            headers: ["Content-Type": "application/json"].merged(headers),
+            onlyOnce: onlyOnce,
+            delay: delay,
+            endpoint: endpoint,
+            matcher: matcher)
+    }
+    
     /// Remove all mock responses previously added with `mockResponse()`.
     ///
     public func clearMockResponses() {
