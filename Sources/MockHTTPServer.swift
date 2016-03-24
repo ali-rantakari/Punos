@@ -265,7 +265,12 @@ public class MockHTTPServer {
             onlyOnce: onlyOnce,
             delay: delay)
         if config.matcher == nil {
-            defaultMockResponses.append(config)
+            // "Permanent" response overrides any previously added permanent response:
+            if !config.onlyOnce, let indexToOverride = defaultMockResponses.indexOf({ !$0.onlyOnce }) {
+                defaultMockResponses[indexToOverride] = config
+            } else {
+                defaultMockResponses.append(config)
+            }
         } else {
             mockResponsesWithMatchers.append(config)
         }

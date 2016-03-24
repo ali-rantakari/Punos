@@ -40,6 +40,30 @@ class ResponseMockingTests: MockServerTestCase {
         }
     }
     
+    func testResponseMocking_defaultMockResponseWithNoMatcher_overriding() {
+        server.mockResponse(status: 201)
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+        server.mockResponse(status: 202)
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+    }
+    
+    func testResponseMocking_defaultMockResponseWithNoMatcher_overriding_withOnlyOnceBefore() {
+        server.mockResponse(status: 202, onlyOnce: true)
+        server.mockResponse(status: 201)
+        server.mockResponse(status: 203) // Overrides previously configured 201
+        
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 202) // 202 onlyOnce
+        }
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 203) // fallback
+        }
+    }
+    
     func testResponseMocking_matcher() {
         server.mockResponse(status: 500) // default fallback
         server.mockResponse(status: 202) { request in
