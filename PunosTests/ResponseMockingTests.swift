@@ -291,7 +291,14 @@ class ResponseMockingTests: MockServerTestCase {
             XCTAssertEqual(response.allHeaderFields as! [String:String], fakeHeaders)
         }
     }
-  
-    // TODO: test "convenience" versions of .mockResponse()
+    
+    func testResponseMocking_jsonString() {
+        server.mockJSONResponse(status: 501, json: "{\"greeting\": \"Moro\"}")
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 501)
+            XCTAssertEqual(response.headerWithName("Content-Type"), "application/json")
+            XCTAssertEqual(String(data: data, encoding: NSUTF8StringEncoding), "{\"greeting\": \"Moro\"}")
+        }
+    }
     
 }
