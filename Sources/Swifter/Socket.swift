@@ -146,7 +146,7 @@ internal class Socket: Hashable, Equatable {
         }
     }
     
-    internal func read() throws -> UInt8 {
+    internal func readOneByte() throws -> UInt8 {
         var buffer = [UInt8](count: 1, repeatedValue: 0)
         let next = recv(self.socketFileDescriptor, &buffer, buffer.count, 0)
         if next <= 0 {
@@ -178,7 +178,7 @@ internal class Socket: Hashable, Equatable {
         var characters: String = ""
         var n: UInt8 = 0
         repeat {
-            n = try self.read()
+            n = try self.readOneByte()
             if n > Socket.CR { characters.append(Character(UnicodeScalar(n))) }
         } while n != Socket.NL
         return characters

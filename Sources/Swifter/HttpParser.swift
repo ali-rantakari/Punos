@@ -86,7 +86,7 @@ internal class HttpParser {
             
             // Assert that the contents end in CRLF
             //
-            if try ((try socket.read() != Socket.CR) || (try socket.read() != Socket.NL)) {
+            if try ((try socket.readOneByte() != Socket.CR) || (try socket.readOneByte() != Socket.NL)) {
                 throw HttpParserError.InvalidChunk("Chunk does not end in CRLF")
             }
         } while true
