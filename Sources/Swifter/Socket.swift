@@ -148,7 +148,7 @@ internal class Socket: Hashable, Equatable {
     
     internal func read() throws -> UInt8 {
         var buffer = [UInt8](count: 1, repeatedValue: 0)
-        let next = recv(self.socketFileDescriptor as Int32, &buffer, Int(buffer.count), 0)
+        let next = recv(self.socketFileDescriptor, &buffer, Int(buffer.count), 0)
         if next <= 0 {
             throw SocketError.RecvFailed(Socket.descriptionOfLastError())
         }
