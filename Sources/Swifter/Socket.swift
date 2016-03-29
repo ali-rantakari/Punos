@@ -156,9 +156,19 @@ internal class Socket: Hashable, Equatable {
     }
     
     internal func readNumBytes(count: Int) throws -> [UInt8] {
-        var buffer = [UInt8]()
-        for _ in 0..<count { buffer.append(try read()) }
-        return buffer
+        var ret = [UInt8]()
+        while ret.count < count {
+            let maxBufferSize = 2048
+            let remainingExpectedBytes = count - ret.count
+            let bufferSize = min(remainingExpectedBytes, maxBufferSize)
+            var buffer = [UInt8](count: bufferSize, repeatedValue: 0)
+            let numBytesReceived = recv(self.socketFileDescriptor, &buffer, buffer.count, 0)
+            if numBytesReceived <= 0 {
+                throw SocketError.RecvFailed(Socket.descriptionOfLastError())
+            }
+            ret.appendContentsOf(buffer)
+        }
+        return ret
     }
     
     internal static let CR = UInt8(13)
