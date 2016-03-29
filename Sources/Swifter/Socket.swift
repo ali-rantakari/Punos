@@ -134,9 +134,9 @@ internal class Socket: Hashable, Equatable {
             var sent = 0
             while sent < data.count {
                 #if os(Linux)
-                    let s = send(self.socketFileDescriptor, $0.baseAddress + sent, Int(data.count - sent), Int32(MSG_NOSIGNAL))
+                    let s = send(self.socketFileDescriptor, $0.baseAddress + sent, data.count - sent, Int32(MSG_NOSIGNAL))
                 #else
-                    let s = write(self.socketFileDescriptor, $0.baseAddress + sent, Int(data.count - sent))
+                    let s = write(self.socketFileDescriptor, $0.baseAddress + sent, data.count - sent)
                 #endif
                 if s <= 0 {
                     throw SocketError.WriteFailed(Socket.descriptionOfLastError())
