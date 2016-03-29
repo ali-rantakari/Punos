@@ -155,6 +155,12 @@ internal class Socket: Hashable, Equatable {
         return buffer[0]
     }
     
+    internal func readNumBytes(count: Int) throws -> [UInt8] {
+        var buffer = [UInt8]()
+        for _ in 0..<count { buffer.append(try read()) }
+        return buffer
+    }
+    
     internal static let CR = UInt8(13)
     internal static let NL = UInt8(10)
     
