@@ -72,7 +72,7 @@ internal class Socket: Hashable, Equatable {
             throw SocketError.BindFailed(details)
         }
         
-        if listen(socketFileDescriptor, maxPendingConnection ) == -1 {
+        if listen(socketFileDescriptor, maxPendingConnection) == -1 {
             let details = Socket.descriptionOfLastError()
             Socket.release(socketFileDescriptor)
             throw SocketError.ListenFailed(details)
