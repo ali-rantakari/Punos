@@ -56,9 +56,7 @@ internal class HttpParser {
     }
     
     private func readBody(socket: Socket, size: Int) throws -> [UInt8] {
-        var body = [UInt8]()
-        for _ in 0..<size { body.append(try socket.read()) }
-        return body
+        return try socket.readNumBytes(size)
     }
     
     private func readChunkedBody(socket: Socket) throws -> [UInt8] {
@@ -84,7 +82,7 @@ internal class HttpParser {
             
             // Read the chunk contents
             //
-            for _ in 0..<chunkSizeBytes { body.append(try socket.read()) }
+            body.appendContentsOf(try socket.readNumBytes(chunkSizeBytes))
             
             // Assert that the contents end in CRLF
             //
