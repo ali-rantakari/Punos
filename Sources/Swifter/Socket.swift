@@ -40,8 +40,12 @@ internal class Socket: Hashable, Equatable {
             throw SocketError.SocketCreationFailed(Socket.descriptionOfLastError())
         }
         
-        var value: Int32 = 1
-        if setsockopt(socketFileDescriptor, SOL_SOCKET, SO_REUSEADDR, &value, socklen_t(sizeof(Int32))) == -1 {
+        var sockoptValueYES: Int32 = 1
+        var sockoptValueNO: Int32 = 0
+        
+        // Allow reuse of local addresses:
+        //
+        if setsockopt(socketFileDescriptor, SOL_SOCKET, SO_REUSEADDR, &sockoptValueYES, socklen_t(sizeof(Int32))) == -1 {
             let details = Socket.descriptionOfLastError()
             Socket.release(socketFileDescriptor)
             throw SocketError.SocketSettingReUseAddrFailed(details)
