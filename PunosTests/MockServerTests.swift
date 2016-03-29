@@ -341,4 +341,20 @@ class MockServerTests: MockServerTestCase {
         }
     }
     
+    func testIPv4Support() {
+        server.mockResponse(status: 201)
+        
+        request("GET", "/foo", host: "127.0.0.1") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+    }
+    
+    func testIPv6Support() {
+        server.mockResponse(status: 201)
+        
+        request("GET", "/foo", host: "[::1]") { data, response, error in
+            XCTAssertEqual(response.statusCode, 201)
+        }
+    }
+    
 }

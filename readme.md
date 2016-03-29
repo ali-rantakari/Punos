@@ -77,6 +77,5 @@ Current Limitations
 
 - HTTP keep-alive is not supported (the server responds `Connection: close` every time)
 - `100 Continue` responses are never sent
-- IPv6 is not supported
 
 

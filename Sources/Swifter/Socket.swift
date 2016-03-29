@@ -16,6 +16,7 @@
 internal enum SocketError: ErrorType {
     case SocketCreationFailed(String)
     case SocketSettingReUseAddrFailed(String)
+    case SocketSettingIPV6OnlyFailed(String)
     case BindFailed(String)
     case ListenFailed(String)
     case WriteFailed(String)
@@ -31,9 +32,9 @@ internal class Socket: Hashable, Equatable {
     internal class func tcpSocketForListen(port: in_port_t, maxPendingConnection: Int32 = SOMAXCONN) throws -> Socket {
         
         #if os(Linux)
-            let socketFileDescriptor = socket(AF_INET, Int32(SOCK_STREAM.rawValue), 0)
+            let socketFileDescriptor = socket(AF_INET6, Int32(SOCK_STREAM.rawValue), 0)
         #else
-            let socketFileDescriptor = socket(AF_INET, SOCK_STREAM, 0)
+            let socketFileDescriptor = socket(AF_INET6, SOCK_STREAM, 0)
         #endif
         
         if socketFileDescriptor == -1 {
@@ -50,27 +51,36 @@ internal class Socket: Hashable, Equatable {
             Socket.release(socketFileDescriptor)
             throw SocketError.SocketSettingReUseAddrFailed(details)
         }
+        
+        // Accept also IPv4 connections (note that this means we must bind to
+        // in6addr_any — binding to in6addr_loopback will effectively rule out
+        // IPv4 addresses):
+        //
+        if setsockopt(socketFileDescriptor, IPPROTO_IPV6, IPV6_V6ONLY, &sockoptValueNO, socklen_t(sizeof(Int32))) == -1 {
+            let details = Socket.descriptionOfLastError()
+            Socket.release(socketFileDescriptor)
+            throw SocketError.SocketSettingIPV6OnlyFailed(details)
+        }
+        
         Socket.setNoSigPipe(socketFileDescriptor)
         
         #if os(Linux)
-            var addr = sockaddr_in()
-            addr.sin_family = sa_family_t(AF_INET)
-            addr.sin_port = Socket.htonsPort(port)
-            addr.sin_addr = in_addr(s_addr: in_addr_t(0))
-            addr.sin_zero = (0, 0, 0, 0, 0, 0, 0, 0)
+            var addr = sockaddr_in6()
+            addr.sin6_family = sa_family_t(AF_INET6)
+            addr.sin6_port = Socket.htonsPort(port)
+            addr.sin6_addr = in6addr_any
         #else
-            var addr = sockaddr_in()
-            addr.sin_len = __uint8_t(sizeof(sockaddr_in))
-            addr.sin_family = sa_family_t(AF_INET)
-            addr.sin_port = Socket.htonsPort(port)
-            addr.sin_addr = in_addr(s_addr: inet_addr("0.0.0.0"))
-            addr.sin_zero = (0, 0, 0, 0, 0, 0, 0, 0)
+            var addr = sockaddr_in6()
+            addr.sin6_len = __uint8_t(sizeof(sockaddr_in6))
+            addr.sin6_family = sa_family_t(AF_INET6)
+            addr.sin6_port = Socket.htonsPort(port)
+            addr.sin6_addr = in6addr_any
         #endif
         
         var bind_addr = sockaddr()
-        memcpy(&bind_addr, &addr, Int(sizeof(sockaddr_in)))
+        memcpy(&bind_addr, &addr, Int(sizeof(sockaddr_in6)))
         
-        if bind(socketFileDescriptor, &bind_addr, socklen_t(sizeof(sockaddr_in))) == -1 {
+        if bind(socketFileDescriptor, &bind_addr, socklen_t(sizeof(sockaddr_in6))) == -1 {
             let details = Socket.descriptionOfLastError()
             Socket.release(socketFileDescriptor)
             throw SocketError.BindFailed(details)

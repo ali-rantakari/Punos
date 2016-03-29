@@ -47,6 +47,9 @@ class MockServerTestCase: XCTestCase {
     func requestThatCanFail(method: String, _ path: String, host: String = "localhost", port: in_port_t? = nil, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData?, NSHTTPURLResponse?, NSError?) -> Void)? = nil) {
         let expectation: XCTestExpectation = expectationWithDescription("Request \(method) \(path)")
         
+        // Note: "localhost" will automatically map to either "127.0.0.1" (IPv4) or
+        // "::1" (IPv6) even if only one of the two is available.
+        //
         let request = NSMutableURLRequest(URL: NSURL(string: "http://\(host):\(port ?? server.port)\(path)")!)
         request.HTTPMethod = method
         if let headers = headers {
