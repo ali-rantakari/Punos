@@ -143,6 +143,12 @@ class ResponseMockingTests: MockServerTestCase {
         request("GET", "/bar") { data, response, error in
             XCTAssertEqual(response.statusCode, 202)
         }
+        request("GET", "/bar?a=1") { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
+        request("GET", "/bar?a=1&b=2") { data, response, error in
+            XCTAssertEqual(response.statusCode, 202)
+        }
         request("GET", "/bar/baz") { data, response, error in
             XCTAssertEqual(response.statusCode, 203)
         }
