@@ -52,11 +52,11 @@
 		A4AA82ED1D12855600245CB5 /* UtilityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UtilityTests.swift; sourceTree = "<group>"; };
 		A4DE4FAD1C6B1BCA00005441 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		A4DE4FF11C6E16BA00005441 /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		A4DE4FF51C6E1D0D00005441 /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HttpParser.swift; path = HttpParser.swift; sourceTree = "<group>"; };
-		A4DE4FF61C6E1D0D00005441 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HttpRequest.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
-		A4DE4FF71C6E1D0D00005441 /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HttpResponse.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
-		A4DE4FF91C6E1D0D00005441 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Socket.swift; path = Socket.swift; sourceTree = "<group>"; };
-		A4DE4FFA1C6E1D0D00005441 /* String+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+Misc.swift"; path = "String+Misc.swift"; sourceTree = "<group>"; };
+		A4DE4FF51C6E1D0D00005441 /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
+		A4DE4FF61C6E1D0D00005441 /* HttpRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
+		A4DE4FF71C6E1D0D00005441 /* HttpResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpResponse.swift; sourceTree = "<group>"; };
+		A4DE4FF91C6E1D0D00005441 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		A4DE4FFA1C6E1D0D00005441 /* String+Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Misc.swift"; sourceTree = "<group>"; };
 		C97916861C6A7BD700E5B379 /* Punos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Punos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C979168B1C6A7BD700E5B379 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C97916901C6A7BD700E5B379 /* PunosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PunosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
