@@ -186,7 +186,6 @@ public class MockHTTPServer {
         
         let response = HttpResponse(
             statusCode,
-            RFC2616.reasonsForStatusCodes[statusCode] ?? "",
             mockData.headers,
             content)
         

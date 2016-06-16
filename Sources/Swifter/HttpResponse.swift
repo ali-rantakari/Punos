@@ -22,9 +22,9 @@ internal struct HttpResponse {
     let headers: [String:String]
     let content: HttpResponseContent
     
-    init(_ statusCode: Int, _ reasonPhrase: String, _ headers: [String:String]?, _ content: HttpResponseContent?) {
+    init(_ statusCode: Int, _ headers: [String:String]?, _ content: HttpResponseContent?) {
         self.statusCode = statusCode
-        self.reasonPhrase = reasonPhrase
+        self.reasonPhrase = RFC2616.reasonsForStatusCodes[statusCode] ?? ""
         self.headers = headers ?? [:]
         self.content = content ?? (-1, nil)
     }
