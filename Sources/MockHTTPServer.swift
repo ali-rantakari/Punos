@@ -85,7 +85,7 @@ public class MockHTTPServer {
     ///
     /// - throws: `NSError` if the server could not be started.
     ///
-    public func start(port: in_port_t = 8080) throws {
+    public func start(port port: in_port_t = 8080) throws {
         do {
             try server.start(port)
             self.port = port

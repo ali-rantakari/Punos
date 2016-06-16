@@ -23,20 +23,20 @@ class MockServerTests: MockServerTestCase {
         XCTAssertEqual(s.port, 0)
         XCTAssertNil(s.baseURLString)
         
-        try! s.start(8888)
+        try! s.start(port: 8888)
         
         XCTAssertTrue(s.isRunning)
         XCTAssertEqual(s.port, 8888)
         XCTAssertEqual(s.baseURLString, "http://localhost:8888")
         
         do {
-            try s.start(8888) // Same port
+            try s.start(port: 8888) // Same port
             XCTFail("start() should throw error: already running")
         } catch let error {
             XCTAssertNotNil(error)
         }
         do {
-            try s.start(8889) // Different port
+            try s.start(port: 8889) // Different port
             XCTFail("start() should throw error: already running")
         } catch let error {
             XCTAssertNotNil(error)
@@ -56,7 +56,7 @@ class MockServerTests: MockServerTestCase {
         XCTAssertNil(s.baseURLString)
         
         // Start it again!
-        try! s.start(8888)
+        try! s.start(port: 8888)
         
         XCTAssertTrue(s.isRunning)
         XCTAssertEqual(s.port, 8888)
@@ -78,7 +78,7 @@ class MockServerTests: MockServerTestCase {
     
     func testPendingRequestsAreKilledUponShutdown() {
         let s = MockHTTPServer()
-        try! s.start(8888)
+        try! s.start(port: 8888)
         
         s.mockResponse(status: 210, delay: 2)
         requestThatCanFail("GET", "/i-will-be-delayed", port: s.port, wait: false) { data, response, error in
