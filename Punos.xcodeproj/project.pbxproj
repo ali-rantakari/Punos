@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A4AA82EE1D12855600245CB5 /* UtilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4AA82ED1D12855600245CB5 /* UtilityTests.swift */; };
+		A4AA82F01D129A6300245CB5 /* Assertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4AA82EF1D129A6300245CB5 /* Assertions.swift */; };
 		A4DE4FAE1C6B1BCA00005441 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DE4FAD1C6B1BCA00005441 /* Utils.swift */; };
 		A4DE4FD31C6E127400005441 /* Punos.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C97916861C6A7BD700E5B379 /* Punos.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A4DE4FFB1C6E1D0D00005441 /* HttpParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DE4FF51C6E1D0D00005441 /* HttpParser.swift */; };
@@ -50,6 +51,7 @@
 
 /* Begin PBXFileReference section */
 		A4AA82ED1D12855600245CB5 /* UtilityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UtilityTests.swift; sourceTree = "<group>"; };
+		A4AA82EF1D129A6300245CB5 /* Assertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assertions.swift; sourceTree = "<group>"; };
 		A4DE4FAD1C6B1BCA00005441 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		A4DE4FF11C6E16BA00005441 /* Package.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		A4DE4FF51C6E1D0D00005441 /* HttpParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HttpParser.swift; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				C97916971C6A7BD700E5B379 /* Info.plist */,
+				A4AA82EF1D129A6300245CB5 /* Assertions.swift */,
 				C979172C1C6E754400E5B379 /* BaseMockServerTestCase.swift */,
 				A4AA82ED1D12855600245CB5 /* UtilityTests.swift */,
 				C97916951C6A7BD700E5B379 /* MockServerTests.swift */,
@@ -274,6 +277,7 @@
 				A4AA82EE1D12855600245CB5 /* UtilityTests.swift in Sources */,
 				C97916961C6A7BD700E5B379 /* MockServerTests.swift in Sources */,
 				C979172F1C6E75B700E5B379 /* ResponseMockingTests.swift in Sources */,
+				A4AA82F01D129A6300245CB5 /* Assertions.swift in Sources */,
 				C979172D1C6E754400E5B379 /* BaseMockServerTestCase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
