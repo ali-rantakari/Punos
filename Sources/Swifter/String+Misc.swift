@@ -45,8 +45,7 @@ extension String {
     }
     
     internal static func fromUInt8(array: [UInt8]) -> String {
-        // Apple changes the definition of String(data: .... ) every release so let's stay with 'fromUInt8(...)' wrapper.
-        return array.reduce("", combine: { $0.0 + String(UnicodeScalar($0.1)) })
+        return String(data: NSData(bytes: array, length: array.count), encoding: NSUTF8StringEncoding) ?? ""
     }
     
     internal func removePercentEncoding() -> String {
