@@ -72,12 +72,35 @@ class PunosHTTPServer {
         return source
     }
     
-    func start(listenPort: in_port_t) throws {
+    private(set) var port: in_port_t?
+    
+    func start(portsToTry portsToTry: [in_port_t]) throws {
         if dispatchSource != nil {
             throw punosError(0, "Already running")
         }
+        
+        var maybeSocket: Socket? = nil
+        for port in portsToTry {
+            self.log("Attempting to bind to port \(port)")
+            do {
+                maybeSocket = try Socket.tcpSocketForListen(port)
+            } catch let error {
+                if case SocketError.BindFailedAddressAlreadyInUse(_) = error {
+                    continue
+                }
+                throw error
+            }
+            self.port = port
+            break
+        }
+        
+        guard let socket = maybeSocket else {
+            throw punosError(0, "Could not bind to any given port")
+        }
+        
         sourceGroup = dispatch_group_create()
-        dispatchSource = createDispatchSource(try Socket.tcpSocketForListen(listenPort))
+        dispatchSource = createDispatchSource(socket)
+        
         guard let source = dispatchSource else {
             throw punosError(0, "Could not create dispatch source")
         }
@@ -112,6 +135,8 @@ class PunosHTTPServer {
         // guarantees that the listening socket is closed:
         //
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
+        
+        port = nil
     }
     
     var responder: ((HttpRequest, (HttpResponse) -> Void) -> Void)?

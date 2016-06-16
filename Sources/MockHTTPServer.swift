@@ -81,18 +81,20 @@ public class MockHTTPServer {
     // ------------------------------------
     // MARK: Starting and stopping
     
-    /// Start the server on the given `port` (`8080` by default.)
+    /// Start the server.
+    ///
+    /// - parameter preferredPorts: A list of ports to try and bind to, in order of
+    ///                             preference. By default, `[8080, 8081, 8082]`.
     ///
     /// - throws: `NSError` if the server could not be started.
     ///
-    public func start(port port: in_port_t = 8080) throws {
+    public func start(preferredPorts ports: [in_port_t] = [8080, 8081, 8082]) throws {
         do {
-            try server.start(port)
-            self.port = port
+            try server.start(portsToTry: ports)
             isRunning = true
             log("\(self.dynamicType) started at port \(port)")
         } catch let error {
-            throw punosError(Int(port), "The mock server failed to start on port \(port). Error: \(error)")
+            throw punosError(Int(port), "The mock server failed to start with preferred ports \(ports). Error: \(error)")
         }
     }
     
@@ -100,7 +102,6 @@ public class MockHTTPServer {
     ///
     public func stop() {
         server.stop()
-        port = 0
         isRunning = false
         log("\(self.dynamicType) stopped.")
     }
@@ -112,7 +113,9 @@ public class MockHTTPServer {
     /// The port the server is running on, or 0 if the server
     /// is not running.
     ///
-    public private(set) var port: in_port_t = 0
+    public var port: in_port_t {
+        return server.port ?? 0
+    }
     
     /// The “base URL” (protocol, hostname, port) for the
     /// running server, or `nil` if the server is not running.

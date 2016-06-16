@@ -18,6 +18,7 @@ internal enum SocketError: ErrorType {
     case SocketSettingReUseAddrFailed(String)
     case SocketSettingIPV6OnlyFailed(String)
     case BindFailed(String)
+    case BindFailedAddressAlreadyInUse(String)
     case ListenFailed(String)
     case WriteFailed(String)
     case GetPeerNameFailed(String)
@@ -81,8 +82,12 @@ internal class Socket: Hashable, Equatable {
         memcpy(&bind_addr, &addr, Int(sizeof(sockaddr_in6)))
         
         if bind(socketFileDescriptor, &bind_addr, socklen_t(sizeof(sockaddr_in6))) == -1 {
+            let myErrno = errno
             let details = Socket.descriptionOfLastError()
             Socket.release(socketFileDescriptor)
+            if myErrno == EADDRINUSE {
+                throw SocketError.BindFailedAddressAlreadyInUse(details)
+            }
             throw SocketError.BindFailed(details)
         }
         

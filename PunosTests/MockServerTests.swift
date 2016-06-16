@@ -23,20 +23,20 @@ class MockServerTests: MockServerTestCase {
         XCTAssertEqual(s.port, 0)
         XCTAssertNil(s.baseURLString)
         
-        try! s.start(port: 8888)
+        try! s.start(preferredPorts: [8888])
         
         XCTAssertTrue(s.isRunning)
         XCTAssertEqual(s.port, 8888)
         XCTAssertEqual(s.baseURLString, "http://localhost:8888")
         
         do {
-            try s.start(port: 8888) // Same port
+            try s.start(preferredPorts: [8888]) // Same port
             XCTFail("start() should throw error: already running")
         } catch let error {
             XCTAssertNotNil(error)
         }
         do {
-            try s.start(port: 8889) // Different port
+            try s.start(preferredPorts: [8889]) // Different port
             XCTFail("start() should throw error: already running")
         } catch let error {
             XCTAssertNotNil(error)
@@ -56,7 +56,7 @@ class MockServerTests: MockServerTestCase {
         XCTAssertNil(s.baseURLString)
         
         // Start it again!
-        try! s.start(port: 8888)
+        try! s.start(preferredPorts: [8888])
         
         XCTAssertTrue(s.isRunning)
         XCTAssertEqual(s.port, 8888)
@@ -76,9 +76,35 @@ class MockServerTests: MockServerTestCase {
         XCTAssertNil(s.baseURLString)
     }
     
+    func testPortPreferences() {
+        let ports: [in_port_t] = [8081, 8082, 8083]
+        
+        let s1 = MockHTTPServer()
+        AssertDoesNotThrowError(try s1.start(preferredPorts: ports))
+        XCTAssertTrue(s1.isRunning)
+        XCTAssertEqual(s1.port, 8081)
+        
+        let s2 = MockHTTPServer()
+        AssertDoesNotThrowError(try s2.start(preferredPorts: ports))
+        XCTAssertTrue(s2.isRunning)
+        XCTAssertEqual(s2.port, 8082)
+        
+        let s3 = MockHTTPServer()
+        AssertDoesNotThrowError(try s3.start(preferredPorts: ports))
+        XCTAssertTrue(s3.isRunning)
+        XCTAssertEqual(s3.port, 8083)
+        
+        let s4 = MockHTTPServer()
+        XCTAssertThrowsError(try s4.start(preferredPorts: ports))
+        
+        s1.stop()
+        s2.stop()
+        s3.stop()
+    }
+    
     func testPendingRequestsAreKilledUponShutdown() {
         let s = MockHTTPServer()
-        try! s.start(port: 8888)
+        try! s.start(preferredPorts: [8888])
         
         s.mockResponse(status: 210, delay: 2)
         requestThatCanFail("GET", "/i-will-be-delayed", port: s.port, wait: false) { data, response, error in
