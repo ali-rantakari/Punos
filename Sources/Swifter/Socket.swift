@@ -221,9 +221,9 @@ internal class Socket: Hashable, Equatable {
     
     private class func shutdown(_ socketFileDescriptor: Int32) {
         #if os(Linux)
-            shutdown(socket, Int32(SHUT_RDWR))
+            _ = shutdown(socket, Int32(SHUT_RDWR))
         #else
-            Darwin.shutdown(socketFileDescriptor, SHUT_RDWR)
+            _ = Darwin.shutdown(socketFileDescriptor, SHUT_RDWR)
         #endif
     }
     
