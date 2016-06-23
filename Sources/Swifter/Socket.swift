@@ -210,7 +210,7 @@ internal class Socket: Hashable, Equatable {
     }
     
     internal class func descriptionOfLastError() -> String {
-        return String(cString: UnsafePointer(strerror(errno))) ?? "Error: \(errno)"
+        return String(cString: strerror(errno)) ?? "Error: \(errno)"
     }
     
     internal class func setNoSigPipe(_ socketFileDescriptor: Int32) {
