@@ -21,7 +21,7 @@ internal class HttpRequest {
         guard let contentTypeHeader = headers["content-type"] else {
             return []
         }
-        let contentTypeHeaderTokens = contentTypeHeader.split(";").map { $0.trim() }
+        let contentTypeHeaderTokens = contentTypeHeader.split(";").map { $0.trimmed }
         guard let contentType = contentTypeHeaderTokens.first where contentType == "application/x-www-form-urlencoded" else {
             return []
         }
@@ -53,7 +53,7 @@ internal class HttpRequest {
                 guard header.key == headerName else {
                     return combined
                 }
-                let headerValueParams = header.value.split(";").map { $0.trim() }
+                let headerValueParams = header.value.split(";").map { $0.trimmed }
                 return headerValueParams.reduce(combined, combine: { (results, token) -> [String] in
                     let parameterTokens = token.split(1, separator: "=")
                     if parameterTokens.first == parameter, let value = parameterTokens.last {
@@ -69,7 +69,7 @@ internal class HttpRequest {
         guard let contentTypeHeader = headers["content-type"] else {
             return []
         }
-        let contentTypeHeaderTokens = contentTypeHeader.split(";").map { $0.trim() }
+        let contentTypeHeaderTokens = contentTypeHeader.split(";").map { $0.trimmed }
         guard let contentType = contentTypeHeaderTokens.first where contentType == "multipart/form-data" else {
             return []
         }
@@ -107,7 +107,7 @@ internal class HttpRequest {
         while let line = nextMultiPartLine(&generator) where !line.isEmpty {
             let tokens = line.split(":")
             if let name = tokens.first, value = tokens.last where tokens.count == 2 {
-                headers[name.lowercased()] = value.trim()
+                headers[name.lowercased()] = value.trimmed
             }
         }
         guard let body = nextMultiPartBody(&generator, boundary: boundary) else {

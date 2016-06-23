@@ -37,11 +37,8 @@ extension String {
         return self
     }
     
-    internal func trim() -> String {
-        var scalars = self.unicodeScalars
-        while let _ = scalars.first?.asWhitespace() { scalars.removeFirst() }
-        while let _ = scalars.last?.asWhitespace() { scalars.removeLast() }
-        return String(scalars)
+    internal var trimmed: String {
+        return trimmingCharacters(in: CharacterSet.whitespaces)
     }
     
     internal static func fromUInt8(_ array: [UInt8]) -> String {
