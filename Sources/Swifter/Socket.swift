@@ -116,7 +116,7 @@ internal class Socket: Hashable, Equatable {
         Socket.releaseIgnoringErrors(self.socketFileDescriptor)
     }
     
-    internal func shutdwn() {
+    internal func shutdown() {
         Socket.shutdown(self.socketFileDescriptor)
     }
     

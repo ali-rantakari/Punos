@@ -122,7 +122,7 @@ class PunosHTTPServer {
         // source can be cancelled:
         //
         for socket in self.clientSockets {
-            socket.shutdwn()
+            socket.shutdown()
         }
         self.clientSockets.removeAll(keepingCapacity: true)
         
