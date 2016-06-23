@@ -208,28 +208,28 @@ internal class Socket: Hashable, Equatable {
         return String(cString: UnsafePointer(strerror(errno))) ?? "Error: \(errno)"
     }
     
-    internal class func setNoSigPipe(_ socket: Int32) {
+    internal class func setNoSigPipe(_ socketFileDescriptor: Int32) {
         #if os(Linux)
             // There is no SO_NOSIGPIPE in Linux (nor some other systems). You can instead use the MSG_NOSIGNAL flag when calling send(),
             // or use signal(SIGPIPE, SIG_IGN) to make your entire application ignore SIGPIPE.
         #else
             // Prevents crashes when blocking calls are pending and the app is paused ( via Home button ).
             var no_sig_pipe: Int32 = 1
-            setsockopt(socket, SOL_SOCKET, SO_NOSIGPIPE, &no_sig_pipe, socklen_t(sizeof(Int32)))
+            setsockopt(socketFileDescriptor, SOL_SOCKET, SO_NOSIGPIPE, &no_sig_pipe, socklen_t(sizeof(Int32)))
         #endif
     }
     
-    private class func shutdwn(_ socket: Int32) {
+    private class func shutdwn(_ socketFileDescriptor: Int32) {
         #if os(Linux)
             shutdown(socket, Int32(SHUT_RDWR))
         #else
-            Darwin.shutdown(socket, SHUT_RDWR)
+            Darwin.shutdown(socketFileDescriptor, SHUT_RDWR)
         #endif
     }
     
-    internal class func release(_ socket: Int32) -> Int32 {
-        shutdwn(socket)
-        return close(socket)
+    internal class func release(_ socketFileDescriptor: Int32) -> Int32 {
+        shutdwn(socketFileDescriptor)
+        return close(socketFileDescriptor)
     }
     
     private class func htonsPort(_ port: in_port_t) -> in_port_t {
