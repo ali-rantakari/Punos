@@ -173,11 +173,12 @@ class PunosHTTPServer {
     
     private struct InnerWriteContext: HttpResponseBodyWriter {
         let socket: Socket
+        let log: Logger
         func write(_ data: [UInt8]) {
             do {
                 try socket.writeUInt8(data)
             } catch {
-                print("\(error)")
+                log("Error writing to socket \(socket.socketFileDescriptor): \(error)")
             }
         }
     }
@@ -207,7 +208,7 @@ class PunosHTTPServer {
         try socket.writeUTF8AndCRLF("")
         
         if let writeClosure = content.write {
-            let context = InnerWriteContext(socket: socket)
+            let context = InnerWriteContext(socket: socket, log: log)
             try writeClosure(context)
         }
         
