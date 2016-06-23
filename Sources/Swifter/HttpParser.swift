@@ -105,11 +105,4 @@ internal class HttpParser {
             }
         } while true
     }
-    
-    func supportsKeepAlive(_ headers: [String: String]) -> Bool {
-        if let value = headers["connection"] {
-            return "keep-alive" == value.trim()
-        }
-        return false
-    }
 }
