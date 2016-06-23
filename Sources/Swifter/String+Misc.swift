@@ -28,10 +28,10 @@ extension String {
     }
     
     internal func unquote() -> String {
-        var scalars = self.unicodeScalars;
+        var scalars = self.unicodeScalars
         if scalars.first == "\"" && scalars.last == "\"" && scalars.count >= 2 {
-            scalars.removeFirst();
-            scalars.removeLast();
+            scalars.removeFirst()
+            scalars.removeLast()
             return String(scalars)
         }
         return self

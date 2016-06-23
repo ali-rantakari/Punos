@@ -28,7 +28,7 @@ extension DispatchQueue {
 func lock<T>(_ lockObject: Lock, fn: () -> T) -> T {
     lockObject.lock()
     let ret = fn()
-    lockObject.unlock();
+    lockObject.unlock()
     return ret
 }
 

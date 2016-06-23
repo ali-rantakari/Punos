@@ -135,7 +135,7 @@ internal class HttpRequest {
     private func nextMultiPartBody(_ generator: inout IndexingIterator<[UInt8]>, boundary: String) -> [UInt8]? {
         var body = [UInt8]()
         let boundaryArray = [UInt8](boundary.utf8)
-        var matchOffset = 0;
+        var matchOffset = 0
         while let x = generator.next() {
             matchOffset = ( x == boundaryArray[matchOffset] ? matchOffset + 1 : 0 )
             body.append(x)
