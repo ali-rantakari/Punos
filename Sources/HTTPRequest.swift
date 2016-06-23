@@ -19,11 +19,8 @@ public struct HTTPRequest {
     /// The HTTP method
     public let method: String
     
-    /// The query parameter pairs
-    public let queryPairs: [(String,String)]
-    
-    /// The query parameter dictionary
-    public let query: [String:String]
+    /// The query parameters
+    public let queryParameters: URLQueryParameters
     
     /// The HTTP headers
     public let headers: [String:String]

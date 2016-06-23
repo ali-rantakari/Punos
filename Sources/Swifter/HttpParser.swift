@@ -56,11 +56,6 @@ internal func readHttpRequest(_ socket: Socket) throws -> HTTPRequest {
         headers = headers.merged(footers)
     }
     
-    var queryDict = [String:String]()
-    for (k, v) in queryPairs {
-        queryDict[k] = v
-    }
-    
     let data: Data
     if let b = body {
         data = Data(bytes: UnsafePointer<UInt8>(b), count: b.count)
@@ -71,8 +66,7 @@ internal func readHttpRequest(_ socket: Socket) throws -> HTTPRequest {
     return HTTPRequest(
         path: path,
         method: method,
-        queryPairs: queryPairs,
-        query: queryDict,
+        queryParameters: URLQueryParameters(pairs: queryPairs),
         headers: headersWithCapitalizedNames(headers),
         data: data)
 }

@@ -147,7 +147,7 @@ class MockServerTests: MockServerTestCase {
                 XCTAssertEqual(self.server.lastRequest?.endpoint, "POST /foo/bar")
                 XCTAssertEqual(self.server.lastRequest?.method, "POST")
                 XCTAssertEqual(self.server.lastRequest?.path, "/foo/bar")
-                XCTAssertEqual(self.server.lastRequest!.query, ["a":"1", "b":"2", "c":"", "d":"å"])
+                XCTAssertEqual(self.server.lastRequest!.queryParameters.dictionary, ["a":"1", "b":"2", "c":"", "d":"å"])
                 XCTAssertEqual(self.server.lastRequest!.headers["X-Eka"], "eka")
                 XCTAssertEqual(self.server.lastRequest!.headers["X-Toka"], "toka")
                 XCTAssertEqual(self.server.lastRequest?.data, "i used to be with it".data(using: String.Encoding.utf8))
