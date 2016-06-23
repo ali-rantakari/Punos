@@ -45,6 +45,17 @@ public extension KeyValueList {
     // ------------------------------
     // MARK: Utilities
     
+    subscript(index: String) -> String? {
+        get {
+            for (k,v) in pairs {
+                if k == index {
+                    return v
+                }
+            }
+            return nil
+        }
+    }
+    
     public var dictionary: [String:String] {
         var dict = [String:String]()
         for (k,v) in pairs {
