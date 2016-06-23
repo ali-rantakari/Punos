@@ -112,7 +112,7 @@ internal class Socket: Hashable, Equatable {
     }
     
     internal func shutdwn() {
-        Socket.shutdwn(self.socketFileDescriptor)
+        Socket.shutdown(self.socketFileDescriptor)
     }
     
     internal func acceptClientSocket() throws -> Socket {
@@ -219,7 +219,7 @@ internal class Socket: Hashable, Equatable {
         #endif
     }
     
-    private class func shutdwn(_ socketFileDescriptor: Int32) {
+    private class func shutdown(_ socketFileDescriptor: Int32) {
         #if os(Linux)
             shutdown(socket, Int32(SHUT_RDWR))
         #else
@@ -228,7 +228,7 @@ internal class Socket: Hashable, Equatable {
     }
     
     internal class func release(_ socketFileDescriptor: Int32) -> Int32 {
-        shutdwn(socketFileDescriptor)
+        shutdown(socketFileDescriptor)
         return close(socketFileDescriptor)
     }
     
