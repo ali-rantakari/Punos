@@ -45,6 +45,14 @@ public extension KeyValueList {
     // ------------------------------
     // MARK: Utilities
     
+    public var dictionary: [String:String] {
+        var dict = [String:String]()
+        for (k,v) in pairs {
+            dict[k] = v
+        }
+        return dict
+    }
+    
     func contains(name: String) -> Bool {
         return pairs.map { $0.0.lowercased() }.contains(name.lowercased())
     }
