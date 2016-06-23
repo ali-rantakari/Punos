@@ -167,7 +167,7 @@ class MockServerTests: MockServerTestCase {
         server.mockResponse(status: 204, onlyOnce: true)
         server.mockResponse(status: 205, onlyOnce: true)
         
-        let waitBetweenRequestSends: TimeInterval = 0.01
+        let waitBetweenRequestSends: TimeInterval = 0.1
         
         request("GET", "/foo1", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 201)
