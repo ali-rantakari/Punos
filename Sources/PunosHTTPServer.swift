@@ -152,9 +152,7 @@ class PunosHTTPServer {
     }
     
     private func handleConnection(_ socket: Socket, doneCallback: () -> Void) {
-        let parser = HttpParser()
-        
-        guard let request = try? parser.readHttpRequest(socket) else {
+        guard let request = try? readHttpRequest(socket) else {
             socket.releaseIgnoringErrors()
             doneCallback()
             return
