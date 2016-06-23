@@ -23,7 +23,7 @@ public struct HTTPRequest {
     public let queryParameters: URLQueryParameters
     
     /// The HTTP headers
-    public let headers: [String:String]
+    public let headers: HTTPHeaders
     
     /// The body data
     public let data: Data?
