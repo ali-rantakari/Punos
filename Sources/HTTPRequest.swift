@@ -19,7 +19,10 @@ public struct HTTPRequest {
     /// The HTTP method
     public let method: String
     
-    /// The query parameters
+    /// The query parameter pairs
+    public let queryPairs: [(String,String)]
+    
+    /// The query parameter dictionary
     public let query: [String:String]
     
     /// The HTTP headers
@@ -32,43 +35,5 @@ public struct HTTPRequest {
     /// space. E.g. `"GET /foo/bar"`
     public var endpoint: String {
         return "\(method) \(path)"
-    }
-}
-
-
-private func pathWithoutQueryOrAnchor(_ path: String) -> String {
-    let nsString = path as NSString
-    
-    let queryIndex = nsString.range(of: "?").location
-    if queryIndex != NSNotFound {
-        return nsString.substring(to: queryIndex)
-    }
-    
-    return path
-}
-
-private func headersWithCapitalizedNames(_ headers: [String:String]) -> [String:String] {
-    var ret = [String:String]()
-    for (k, v) in headers {
-        ret[k.capitalized] = v
-    }
-    return ret
-}
-
-internal extension HTTPRequest {
-    
-    init(_ request: HttpRequest) {
-        self.path = pathWithoutQueryOrAnchor(request.path)
-        self.method = request.method
-        self.headers = headersWithCapitalizedNames(request.headers)
-        
-        var q = [String:String]()
-        for (k, v) in request.queryParams {
-            q[k] = v
-        }
-        self.query = q
-        
-        let bytes = request.body
-        self.data = Data(bytes: UnsafePointer<UInt8>(bytes), count: bytes.count)
     }
 }

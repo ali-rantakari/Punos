@@ -140,10 +140,10 @@ class PunosHTTPServer {
         port = nil
     }
     
-    var responder: ((HttpRequest, (HttpResponse) -> Void) -> Void)?
+    var responder: ((HTTPRequest, (HttpResponse) -> Void) -> Void)?
     var defaultResponse = HttpResponse(200, nil, nil)
     
-    private func respondToRequestAsync(_ request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
+    private func respondToRequestAsync(_ request: HTTPRequest, responseCallback: (HttpResponse) -> Void) {
         if let responder = responder {
             responder(request, responseCallback)
         } else {
@@ -157,8 +157,6 @@ class PunosHTTPServer {
             doneCallback()
             return
         }
-        
-        request.address = try? socket.peername()
         
         respondToRequestAsync(request) { response in
             do {

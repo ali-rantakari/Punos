@@ -16,26 +16,65 @@ enum HttpParserError: ErrorProtocol {
     case invalidStatusLine(String)
 }
 
-internal func readHttpRequest(_ socket: Socket) throws -> HttpRequest {
+private func pathWithoutQueryOrAnchor(_ path: String) -> String {
+    let nsString = path as NSString
+    
+    let queryIndex = nsString.range(of: "?").location
+    if queryIndex != NSNotFound {
+        return nsString.substring(to: queryIndex)
+    }
+    
+    return path
+}
+
+private func headersWithCapitalizedNames(_ headers: [String:String]) -> [String:String] {
+    var ret = [String:String]()
+    for (k, v) in headers {
+        ret[k.capitalized] = v
+    }
+    return ret
+}
+
+internal func readHttpRequest(_ socket: Socket) throws -> HTTPRequest {
     let statusLine = try socket.readLine()
     let statusLineTokens = statusLine.split(" ")
     if statusLineTokens.count < 3 {
         throw HttpParserError.invalidStatusLine(statusLine)
     }
-    let request = HttpRequest()
-    request.method = statusLineTokens[0]
-    request.path = statusLineTokens[1]
-    request.queryParams = extractQueryParams(request.path)
-    request.headers = try readHeaders(socket)
-    if let contentLength = request.headers["content-length"], let contentLengthValue = Int(contentLength) {
-        request.body = try readBody(socket, size: contentLengthValue)
-    } else if request.headers["transfer-encoding"]?.lowercased() == "chunked" {
-        request.body = try readChunkedBody(socket)
+    let method = statusLineTokens[0]
+    let pathLine = statusLineTokens[1]
+    let path = pathWithoutQueryOrAnchor(pathLine)
+    let queryPairs = extractQueryParams(pathLine)
+    var headers = try readHeaders(socket)
+    var body: [UInt8]?
+    if let contentLength = headers["content-length"], let contentLengthValue = Int(contentLength) {
+        body = try readBody(socket, size: contentLengthValue)
+    } else if headers["transfer-encoding"]?.lowercased() == "chunked" {
+        body = try readChunkedBody(socket)
         // Read potential footers (and consume the blank line at the end):
         let footers = try readHeaders(socket)
-        request.headers = request.headers.merged(footers)
+        headers = headers.merged(footers)
     }
-    return request
+    
+    var queryDict = [String:String]()
+    for (k, v) in queryPairs {
+        queryDict[k] = v
+    }
+    
+    let data: Data
+    if let b = body {
+        data = Data(bytes: UnsafePointer<UInt8>(b), count: b.count)
+    } else {
+        data = Data()
+    }
+    
+    return HTTPRequest(
+        path: path,
+        method: method,
+        queryPairs: queryPairs,
+        query: queryDict,
+        headers: headersWithCapitalizedNames(headers),
+        data: data)
 }
 
 private func extractQueryParams(_ url: String) -> [(String, String)] {
