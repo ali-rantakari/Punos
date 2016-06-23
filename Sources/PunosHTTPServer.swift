@@ -69,7 +69,7 @@ class PunosHTTPServer {
             }
         }
         
-        self.log("Started dispatch source for listening socket \(listeningSocketFD)")
+        log("Started dispatch source for listening socket \(listeningSocketFD)")
         return source
     }
     
@@ -82,7 +82,7 @@ class PunosHTTPServer {
         
         var maybeSocket: Socket? = nil
         for port in portsToTry {
-            self.log("Attempting to bind to port \(port)")
+            log("Attempting to bind to port \(port)")
             do {
                 maybeSocket = try Socket.tcpSocketForListen(port)
             } catch let error {
@@ -115,16 +115,16 @@ class PunosHTTPServer {
         
         // These properties are our implicit "are we running" state:
         //
-        self.dispatchSource = nil
-        self.sourceGroup = nil
+        dispatchSource = nil
+        sourceGroup = nil
         
         // Shut down all the client sockets, so that our dispatch
         // source can be cancelled:
         //
-        for socket in self.clientSockets {
+        for socket in clientSockets {
             socket.shutdown()
         }
-        self.clientSockets.removeAll(keepingCapacity: true)
+        clientSockets.removeAll(keepingCapacity: true)
         
         // Cancel the main listening socket dispatch source (the
         // cancellation handler is responsible for closing the
@@ -160,7 +160,7 @@ class PunosHTTPServer {
         
         request.address = try? socket.peername()
         
-        self.respondToRequestAsync(request) { response in
+        respondToRequestAsync(request) { response in
             do {
                 _ = try self.respond(socket, response: response, keepAlive: false)
             } catch {

@@ -106,24 +106,24 @@ internal class Socket: Hashable, Equatable {
         self.socketFileDescriptor = socketFileDescriptor
     }
     
-    internal var hashValue: Int { return Int(self.socketFileDescriptor) }
+    internal var hashValue: Int { return Int(socketFileDescriptor) }
     
     internal func release() throws {
-        try Socket.release(self.socketFileDescriptor)
+        try Socket.release(socketFileDescriptor)
     }
     
     internal func releaseIgnoringErrors() {
-        Socket.releaseIgnoringErrors(self.socketFileDescriptor)
+        Socket.releaseIgnoringErrors(socketFileDescriptor)
     }
     
     internal func shutdown() {
-        Socket.shutdown(self.socketFileDescriptor)
+        Socket.shutdown(socketFileDescriptor)
     }
     
     internal func acceptClientSocket() throws -> Socket {
         var addr = sockaddr()        
         var len: socklen_t = 0
-        let clientSocket = accept(self.socketFileDescriptor, &addr, &len)
+        let clientSocket = accept(socketFileDescriptor, &addr, &len)
         if clientSocket == -1 {
             throw SocketError.acceptFailed(Socket.descriptionOfLastError())
         }
@@ -144,9 +144,9 @@ internal class Socket: Hashable, Equatable {
             var sent = 0
             while sent < data.count {
                 #if os(Linux)
-                    let s = send(self.socketFileDescriptor, $0.baseAddress + sent, data.count - sent, Int32(MSG_NOSIGNAL))
+                    let s = send(socketFileDescriptor, $0.baseAddress + sent, data.count - sent, Int32(MSG_NOSIGNAL))
                 #else
-                    let s = write(self.socketFileDescriptor, $0.baseAddress! + sent, data.count - sent)
+                    let s = write(socketFileDescriptor, $0.baseAddress! + sent, data.count - sent)
                 #endif
                 if s <= 0 {
                     throw SocketError.writeFailed(Socket.descriptionOfLastError())
@@ -158,7 +158,7 @@ internal class Socket: Hashable, Equatable {
     
     internal func readOneByte() throws -> UInt8 {
         var buffer = [UInt8](repeating: 0, count: 1)
-        let next = recv(self.socketFileDescriptor, &buffer, buffer.count, 0)
+        let next = recv(socketFileDescriptor, &buffer, buffer.count, 0)
         if next <= 0 {
             throw SocketError.recvFailed(Socket.descriptionOfLastError())
         }
@@ -172,7 +172,7 @@ internal class Socket: Hashable, Equatable {
             let remainingExpectedBytes = count - ret.count
             let bufferSize = min(remainingExpectedBytes, maxBufferSize)
             var buffer = [UInt8](repeating: 0, count: bufferSize)
-            let numBytesReceived = recv(self.socketFileDescriptor, &buffer, buffer.count, 0)
+            let numBytesReceived = recv(socketFileDescriptor, &buffer, buffer.count, 0)
             if numBytesReceived <= 0 {
                 throw SocketError.recvFailed(Socket.descriptionOfLastError())
             }
@@ -188,7 +188,7 @@ internal class Socket: Hashable, Equatable {
         var characters: String = ""
         var n: UInt8 = 0
         repeat {
-            n = try self.readOneByte()
+            n = try readOneByte()
             if n > Socket.CR { characters.append(Character(UnicodeScalar(n))) }
         } while n != Socket.NL
         return characters
@@ -196,7 +196,7 @@ internal class Socket: Hashable, Equatable {
     
     internal func peername() throws -> String {
         var addr = sockaddr(), len: socklen_t = socklen_t(sizeof(sockaddr))
-        if getpeername(self.socketFileDescriptor, &addr, &len) != 0 {
+        if getpeername(socketFileDescriptor, &addr, &len) != 0 {
             throw SocketError.getPeerNameFailed(Socket.descriptionOfLastError())
         }
         var hostBuffer = [CChar](repeating: 0, count: Int(NI_MAXHOST))
