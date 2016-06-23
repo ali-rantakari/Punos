@@ -76,3 +76,13 @@ public struct HTTPHeaders: KeyValueList, DictionaryLiteralConvertible, ArrayLite
     }
 }
 
+
+/// A list of URL query parameters
+///
+public struct URLQueryParameters: KeyValueList, DictionaryLiteralConvertible, ArrayLiteralConvertible {
+    public let pairs: [(String,String)]
+    public init(pairs: [(String,String)]) {
+        self.pairs = pairs
+    }
+}
+
