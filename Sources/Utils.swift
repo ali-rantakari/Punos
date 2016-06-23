@@ -25,7 +25,7 @@ extension DispatchQueue {
 }
 
 @discardableResult
-func lock<T>(_ lockObject: Lock, fn: () -> T) -> T {
+func lock<T>(_ lockObject: Lock, fn: @noescape () -> T) -> T {
     lockObject.lock()
     let ret = fn()
     lockObject.unlock()
