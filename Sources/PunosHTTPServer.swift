@@ -38,10 +38,11 @@ class PunosHTTPServer {
         let source = DispatchSource.read(fileDescriptor: listeningSocketFD, queue: queue)
         
         source.setCancelHandler { _ in
-            if Socket.release(listeningSocketFD) != 0 {
-                self.log("Failed to close listening socket \(listeningSocketFD): \(Socket.descriptionOfLastError())")
-            } else {
+            do {
+                try Socket.release(listeningSocketFD)
                 self.log("Closed listening socket \(listeningSocketFD)")
+            } catch (let error) {
+                self.log("Failed to close listening socket \(listeningSocketFD): \(error)")
             }
             sourceGroup.leave()
         }
@@ -154,7 +155,7 @@ class PunosHTTPServer {
         let parser = HttpParser()
         
         guard let request = try? parser.readHttpRequest(socket) else {
-            socket.release()
+            socket.releaseIgnoringErrors()
             doneCallback()
             return
         }
@@ -167,7 +168,7 @@ class PunosHTTPServer {
             } catch {
                 self.log("Failed to send response: \(error)")
             }
-            socket.release()
+            socket.releaseIgnoringErrors()
             doneCallback()
         }
     }

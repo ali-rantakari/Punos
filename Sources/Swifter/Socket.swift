@@ -26,6 +26,7 @@ internal enum SocketError: ErrorProtocol {
     case getNameInfoFailed(String)
     case acceptFailed(String)
     case recvFailed(String)
+    case closeFailed(String)
 }
 
 internal class Socket: Hashable, Equatable {
@@ -49,7 +50,7 @@ internal class Socket: Hashable, Equatable {
         //
         if setsockopt(socketFileDescriptor, SOL_SOCKET, SO_REUSEADDR, &sockoptValueYES, socklen_t(sizeof(Int32))) == -1 {
             let details = Socket.descriptionOfLastError()
-            Socket.release(socketFileDescriptor)
+            Socket.releaseIgnoringErrors(socketFileDescriptor)
             throw SocketError.socketSettingReUseAddrFailed(details)
         }
         
@@ -59,7 +60,7 @@ internal class Socket: Hashable, Equatable {
         //
         if setsockopt(socketFileDescriptor, IPPROTO_IPV6, IPV6_V6ONLY, &sockoptValueNO, socklen_t(sizeof(Int32))) == -1 {
             let details = Socket.descriptionOfLastError()
-            Socket.release(socketFileDescriptor)
+            Socket.releaseIgnoringErrors(socketFileDescriptor)
             throw SocketError.socketSettingIPV6OnlyFailed(details)
         }
         
@@ -84,7 +85,7 @@ internal class Socket: Hashable, Equatable {
         if bind(socketFileDescriptor, &bind_addr, socklen_t(sizeof(sockaddr_in6))) == -1 {
             let myErrno = errno
             let details = Socket.descriptionOfLastError()
-            Socket.release(socketFileDescriptor)
+            Socket.releaseIgnoringErrors(socketFileDescriptor)
             if myErrno == EADDRINUSE {
                 throw SocketError.bindFailedAddressAlreadyInUse(details)
             }
@@ -93,7 +94,7 @@ internal class Socket: Hashable, Equatable {
         
         if listen(socketFileDescriptor, maxPendingConnection) == -1 {
             let details = Socket.descriptionOfLastError()
-            Socket.release(socketFileDescriptor)
+            Socket.releaseIgnoringErrors(socketFileDescriptor)
             throw SocketError.listenFailed(details)
         }
         return Socket(socketFileDescriptor: socketFileDescriptor)
@@ -107,8 +108,12 @@ internal class Socket: Hashable, Equatable {
     
     internal var hashValue: Int { return Int(self.socketFileDescriptor) }
     
-    internal func release() {
-        Socket.release(self.socketFileDescriptor)
+    internal func release() throws {
+        try Socket.release(self.socketFileDescriptor)
+    }
+    
+    internal func releaseIgnoringErrors() {
+        Socket.releaseIgnoringErrors(self.socketFileDescriptor)
     }
     
     internal func shutdwn() {
@@ -227,9 +232,15 @@ internal class Socket: Hashable, Equatable {
         #endif
     }
     
-    internal class func release(_ socketFileDescriptor: Int32) -> Int32 {
+    internal class func release(_ socketFileDescriptor: Int32) throws {
         shutdown(socketFileDescriptor)
-        return close(socketFileDescriptor)
+        if close(socketFileDescriptor) == -1 {
+            throw SocketError.closeFailed(Socket.descriptionOfLastError())
+        }
+    }
+    
+    private class func releaseIgnoringErrors(_ socketFileDescriptor: Int32) {
+        _ = try? release(socketFileDescriptor)
     }
     
     private class func htonsPort(_ port: in_port_t) -> in_port_t {
