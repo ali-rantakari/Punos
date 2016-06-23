@@ -228,11 +228,7 @@ internal class Socket: Hashable, Equatable {
     }
     
     internal class func release(_ socket: Int32) -> Int32 {
-        #if os(Linux)
-            shutdown(socket, Int32(SHUT_RDWR))
-        #else
-            Darwin.shutdown(socket, SHUT_RDWR)
-        #endif
+        shutdwn(socket)
         return close(socket)
     }
     
