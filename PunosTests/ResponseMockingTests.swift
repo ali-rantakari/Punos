@@ -15,13 +15,13 @@ class ResponseMockingTests: MockServerTestCase {
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 200)
             XCTAssertEqual(response.allHeaderNames, ["Connection"])
-            XCTAssertEqual(data.length, 0)
+            XCTAssertEqual(data.count, 0)
             XCTAssertNil(error)
         }
     }
     
     func testResponseMocking_defaultMockResponseWithNoMatcher() {
-        let mockData = "foofoo".dataUsingEncoding(NSUTF16StringEncoding)!
+        let mockData = "foofoo".data(using: String.Encoding.utf16)!
         server.mockResponse(
             status: 201,
             data: mockData,
@@ -34,7 +34,7 @@ class ResponseMockingTests: MockServerTestCase {
             XCTAssertEqual(response.allHeaderNames, ["X-Greeting", "Content-Type", "Content-Length", "Connection"])
             XCTAssertEqual(response.headerWithName("X-Greeting"), "Hey yall")
             XCTAssertEqual(response.headerWithName("Content-Type"), "thing/foobar")
-            XCTAssertEqual(response.headerWithName("Content-Length"), "\(mockData.length)")
+            XCTAssertEqual(response.headerWithName("Content-Length"), "\(mockData.count)")
             XCTAssertEqual(data, mockData)
             XCTAssertNil(error)
         }
@@ -67,7 +67,7 @@ class ResponseMockingTests: MockServerTestCase {
     func testResponseMocking_matcher() {
         server.mockResponse(status: 500) // default fallback
         server.mockResponse(status: 202) { request in
-            return (request.method == "GET" && request.path.containsString("foo"))
+            return (request.method == "GET" && request.path.contains("foo"))
         }
         
         request("GET", "/foo") { data, response, error in
@@ -86,8 +86,8 @@ class ResponseMockingTests: MockServerTestCase {
     }
     
     func testResponseMocking_matcher_matchByData() {
-        let dataToMatchOn = "woohoo".dataUsingEncoding(NSUTF8StringEncoding)
-        let otherData = "something else".dataUsingEncoding(NSUTF8StringEncoding)
+        let dataToMatchOn = "woohoo".data(using: String.Encoding.utf8)
+        let otherData = "something else".data(using: String.Encoding.utf8)
         
         server.mockResponse(status: 500) // default fallback
         server.mockResponse(status: 202) { request in
@@ -111,10 +111,10 @@ class ResponseMockingTests: MockServerTestCase {
     
     func testResponseMocking_matcher_overlapping() {
         server.mockResponse(status: 201) { request in
-            return request.path.containsString("foo")
+            return request.path.contains("foo")
         }
         server.mockResponse(status: 202) { request in
-            return request.path.containsString("bar")
+            return request.path.contains("bar")
         }
         
         request("GET", "/foo") { data, response, error in
@@ -249,17 +249,17 @@ class ResponseMockingTests: MockServerTestCase {
         // tests slow, but long enough for us to reliably check that
         // it was intentional and not accidental
         //
-        let delayToTest: NSTimeInterval = 0.5
+        let delayToTest: TimeInterval = 0.5
         
         // First try with NO delay:
         //
         server.mockResponse(status: 205, delay: 0)
         
-        let noDelayStartDate = NSDate()
+        let noDelayStartDate = Date()
         request("GET", "/foo") { data, response, error in
-            let endDate = NSDate()
+            let endDate = Date()
             XCTAssertEqual(response.statusCode, 205)
-            XCTAssertLessThan(endDate.timeIntervalSinceDate(noDelayStartDate), 0.1)
+            XCTAssertLessThan(endDate.timeIntervalSince(noDelayStartDate), 0.1)
         }
         
         // Then try with the delay:
@@ -267,11 +267,11 @@ class ResponseMockingTests: MockServerTestCase {
         server.clearMockResponses()
         server.mockResponse(status: 201, delay: delayToTest)
         
-        let withDelayStartDate = NSDate()
+        let withDelayStartDate = Date()
         request("GET", "/foo") { data, response, error in
-            let endDate = NSDate()
+            let endDate = Date()
             XCTAssertEqual(response.statusCode, 201)
-            XCTAssertGreaterThan(endDate.timeIntervalSinceDate(withDelayStartDate), delayToTest)
+            XCTAssertGreaterThan(endDate.timeIntervalSince(withDelayStartDate), delayToTest)
         }
     }
     
@@ -303,7 +303,7 @@ class ResponseMockingTests: MockServerTestCase {
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 501)
             XCTAssertEqual(response.headerWithName("Content-Type"), "application/json")
-            XCTAssertEqual(String(data: data, encoding: NSUTF8StringEncoding), "{\"greeting\": \"Moro\"}")
+            XCTAssertEqual(String(data: data, encoding: String.Encoding.utf8), "{\"greeting\": \"Moro\"}")
         }
     }
     
@@ -312,7 +312,7 @@ class ResponseMockingTests: MockServerTestCase {
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.statusCode, 501)
             XCTAssertEqual(response.headerWithName("Content-Type"), "application/json")
-            XCTAssertEqual(String(data: data, encoding: NSUTF8StringEncoding), "{\"greeting\":\"Moro\"}")
+            XCTAssertEqual(String(data: data, encoding: String.Encoding.utf8), "{\"greeting\":\"Moro\"}")
         }
     }
     

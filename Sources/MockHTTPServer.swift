@@ -20,12 +20,12 @@ public struct MockResponse {
     public let statusCode: Int
     
     /// The body data
-    public let data: NSData?
+    public let data: Data?
     
     /// The HTTP headers
     public let headers: [String:String]?
     
-    public init(statusCode: Int, data: NSData?, headers: [String:String]?) {
+    public init(statusCode: Int, data: Data?, headers: [String:String]?) {
         self.statusCode = statusCode
         self.data = data
         self.headers = headers
@@ -34,7 +34,7 @@ public struct MockResponse {
     /// Returns a copy of self by replacing members with the supplied
     /// values.
     ///
-    public func copyWithChanges(statusCode statusCode: Int? = nil, data: NSData? = nil, headers: [String:String]? = nil) -> MockResponse {
+    public func copyWithChanges(statusCode: Int? = nil, data: Data? = nil, headers: [String:String]? = nil) -> MockResponse {
         return MockResponse(
             statusCode: statusCode ?? self.statusCode,
             data: data ?? self.data,
@@ -48,11 +48,11 @@ private struct MockResponseConfiguration {
     let response: MockResponse
     let matcher: MockResponseMatcher?
     let onlyOnce: Bool
-    let delay: NSTimeInterval
+    let delay: TimeInterval
 }
 
 
-private func printMessageToLog(message: String) {
+private func printMessageToLog(_ message: String) {
     print("Punos: \(message)")
 }
 
@@ -72,7 +72,7 @@ public class MockHTTPServer {
     public init(loggingEnabled: Bool = false) {
         log = loggingEnabled ? printMessageToLog : { _ in }
         server = PunosHTTPServer(
-            queue: dispatch_queue_create("org.hasseg.Punos.server", DISPATCH_QUEUE_CONCURRENT),
+            queue: DispatchQueue(label: "org.hasseg.Punos.server", attributes: DispatchQueueAttributes.concurrent),
             logger: log
         )
         server.responder = respondToRequest
@@ -131,7 +131,7 @@ public class MockHTTPServer {
     // ------------------------------------
     // MARK: Responding
     
-    private func mockResponseConfigForRequest(request: HTTPRequest) -> MockResponseConfiguration? {
+    private func mockResponseConfigForRequest(_ request: HTTPRequest) -> MockResponseConfiguration? {
         
         for i in mockResponsesWithMatchers.indices {
             let responseConfig = mockResponsesWithMatchers[i]
@@ -139,7 +139,7 @@ public class MockHTTPServer {
             
             if matcher(request: request) {
                 if responseConfig.onlyOnce {
-                    mockResponsesWithMatchers.removeAtIndex(i)
+                    mockResponsesWithMatchers.remove(at: i)
                 }
                 return responseConfig
             }
@@ -148,7 +148,7 @@ public class MockHTTPServer {
         for i in defaultMockResponses.indices {
             let responseConfig = defaultMockResponses[i]
             if responseConfig.onlyOnce {
-                defaultMockResponses.removeAtIndex(i)
+                defaultMockResponses.remove(at: i)
             }
             return responseConfig
         }
@@ -162,9 +162,9 @@ public class MockHTTPServer {
         onlyOnce: false,
         delay: 0)
     
-    private let responseLock = NSLock()
+    private let responseLock = Lock()
     
-    private func respondToRequest(request: HttpRequest, _ callback: (HttpResponse) -> Void) {
+    private func respondToRequest(_ request: HttpRequest, _ callback: (HttpResponse) -> Void) {
         let mockConfig: MockResponseConfiguration = lock(responseLock) {
             let publicRequest = HTTPRequest(request)
             self.latestRequests.append(publicRequest)
@@ -176,8 +176,8 @@ public class MockHTTPServer {
         let statusCode = mockData.statusCode
         let content: HttpResponseContent? = {
             if let bodyData = mockData.data {
-                return (length: bodyData.length, write: { responseBodyWriter in
-                    let bytes = Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>(bodyData.bytes), count: bodyData.length))
+                return (length: bodyData.count, write: { responseBodyWriter in
+                    let bytes = Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>((bodyData as NSData).bytes), count: bodyData.count))
                     responseBodyWriter.write(bytes)
                 })
             }
@@ -227,9 +227,9 @@ public class MockHTTPServer {
     private var defaultMockResponses: [MockResponseConfiguration] = []
     private var mockResponsesWithMatchers: [MockResponseConfiguration] = []
     
-    private func matcherForEndpoint(endpoint: String?) -> MockResponseMatcher? {
+    private func matcherForEndpoint(_ endpoint: String?) -> MockResponseMatcher? {
         guard let endpoint = endpoint else { return nil }
-        let parts = endpoint.componentsSeparatedByString(" ")
+        let parts = endpoint.components(separatedBy: " ")
         let method = parts.first
         let path: String? = 1 < parts.count ? parts[1] : nil
         return { request in
@@ -241,7 +241,7 @@ public class MockHTTPServer {
     /// Useful for e.g. setting common headers like `"Server"`.
     /// By default, the “identity” function (`{ $0 }`).
     ///
-    public var commonResponseModifier: (MockResponse -> MockResponse) = { $0 }
+    public var commonResponseModifier: ((MockResponse) -> MockResponse) = { $0 }
     
     /// Tell the server to send this response to incoming requests.
     ///
@@ -265,7 +265,7 @@ public class MockHTTPServer {
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockResponse(endpoint endpoint: String? = nil, response: MockResponse, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockResponse(endpoint: String? = nil, response: MockResponse, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let config = MockResponseConfiguration(
             response: response,
             matcher: matcherForEndpoint(endpoint) ?? matcher,
@@ -273,7 +273,7 @@ public class MockHTTPServer {
             delay: delay)
         if config.matcher == nil {
             // "Permanent" response overrides any previously added permanent response:
-            if !config.onlyOnce, let indexToOverride = defaultMockResponses.indexOf({ !$0.onlyOnce }) {
+            if !config.onlyOnce, let indexToOverride = defaultMockResponses.index(where: { !$0.onlyOnce }) {
                 defaultMockResponses[indexToOverride] = config
             } else {
                 defaultMockResponses.append(config)
@@ -308,7 +308,7 @@ public class MockHTTPServer {
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockResponse(endpoint endpoint: String? = nil, status: Int? = nil, data: NSData? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockResponse(endpoint: String? = nil, status: Int? = nil, data: Data? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let response = MockResponse(
             statusCode: status ?? 200,
             data: data,
@@ -341,10 +341,10 @@ public class MockHTTPServer {
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockJSONResponse(endpoint endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockJSONResponse(endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         mockResponse(
             status: status,
-            data: json?.dataUsingEncoding(NSUTF8StringEncoding),
+            data: json?.data(using: String.Encoding.utf8),
             headers: ["Content-Type": "application/json"].merged(headers),
             onlyOnce: onlyOnce,
             delay: delay,
@@ -378,10 +378,10 @@ public class MockHTTPServer {
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockJSONResponse(endpoint endpoint: String? = nil, object: AnyObject? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: NSTimeInterval = 0, matcher: MockResponseMatcher? = nil) {
-        let jsonData: NSData? = {
+    public func mockJSONResponse(endpoint: String? = nil, object: AnyObject? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+        let jsonData: Data? = {
             guard let o = object else { return nil }
-            return try? NSJSONSerialization.dataWithJSONObject(o, options: NSJSONWritingOptions())
+            return try? JSONSerialization.data(withJSONObject: o, options: JSONSerialization.WritingOptions())
         }()
         mockResponse(
             status: status,

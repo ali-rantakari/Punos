@@ -9,9 +9,9 @@
 import XCTest
 
 
-func AssertDoesNotThrowError<T>(@autoclosure expression: () throws -> T, _ message: String = "", file: StaticString = #file, line: UInt = #line) {
+func AssertDoesNotThrowError<T>(_ expression: @autoclosure () throws -> T, _ message: String = "", file: StaticString = #file, line: UInt = #line) {
     do {
-        try expression()
+        _ = try expression()
     } catch {
         XCTFail("Expression threw error - \(message) - \(error)", file: file, line: line)
     }

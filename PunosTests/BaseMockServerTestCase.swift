@@ -9,8 +9,8 @@
 import XCTest
 import Punos
 
-extension NSHTTPURLResponse {
-    func headerWithName(name: String) -> String? {
+extension HTTPURLResponse {
+    func headerWithName(_ name: String) -> String? {
         return (allHeaderFields as? [String:String])?[name]
     }
     var allHeaderNames: Set<String> {
@@ -44,34 +44,34 @@ class MockServerTestCase: XCTestCase {
     }
     
     
-    func requestThatCanFail(method: String, _ path: String, host: String = "localhost", port: in_port_t? = nil, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData?, NSHTTPURLResponse?, NSError?) -> Void)? = nil) {
-        let expectation: XCTestExpectation = expectationWithDescription("Request \(method) \(path)")
+    func requestThatCanFail(_ method: String, _ path: String, host: String = "localhost", port: in_port_t? = nil, data: Data? = nil, headers: [String:String]? = nil, timeout: TimeInterval = 2, wait: Bool = true, completionHandler: ((Data?, HTTPURLResponse?, NSError?) -> Void)? = nil) {
+        let expectation: XCTestExpectation = self.expectation(withDescription: "Request \(method) \(path)")
         
         // Note: "localhost" will automatically map to either "127.0.0.1" (IPv4) or
         // "::1" (IPv6) even if only one of the two is available.
         //
-        let request = NSMutableURLRequest(URL: NSURL(string: "http://\(host):\(port ?? server.port)\(path)")!)
-        request.HTTPMethod = method
+        let request = NSMutableURLRequest(url: URL(string: "http://\(host):\(port ?? server.port)\(path)")!)
+        request.httpMethod = method
         if let headers = headers {
             headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
         }
         if let data = data {
-            request.HTTPBody = data
+            request.httpBody = data
         }
         
-        NSURLSession.sharedSession().dataTaskWithRequest(request) { data, maybeResponse, error in
-            completionHandler?(data, maybeResponse as? NSHTTPURLResponse, error)
+        URLSession.shared().dataTask(with: request as URLRequest) { data, maybeResponse, error in
+            completionHandler?(data, maybeResponse as? HTTPURLResponse, error)
             expectation.fulfill()
             }.resume()
         
         if wait {
-            waitForExpectationsWithTimeout(timeout) { error in
+            waitForExpectations(withTimeout: timeout) { error in
                 XCTAssertNil(error, "Request expectation timeout error: \(error)")
             }
         }
     }
     
-    func request(method: String, _ path: String, host: String = "localhost", port: in_port_t? = nil, data: NSData? = nil, headers: [String:String]? = nil, timeout: NSTimeInterval = 2, wait: Bool = true, completionHandler: ((NSData, NSHTTPURLResponse, NSError?) -> Void)? = nil) {
+    func request(_ method: String, _ path: String, host: String = "localhost", port: in_port_t? = nil, data: Data? = nil, headers: [String:String]? = nil, timeout: TimeInterval = 2, wait: Bool = true, completionHandler: ((Data, HTTPURLResponse, NSError?) -> Void)? = nil) {
         requestThatCanFail(method, path, host: host, port: port, data: data, headers: headers, timeout: timeout, wait: wait) { maybeData, maybeResponse, maybeError in
             guard let data = maybeData else {
                 XCTFail("Data is expected to be non-nil. Error: \(maybeError)")

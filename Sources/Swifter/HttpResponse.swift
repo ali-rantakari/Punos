@@ -10,10 +10,10 @@
 import Foundation
 
 internal protocol HttpResponseBodyWriter {
-    func write(data: [UInt8])
+    func write(_ data: [UInt8])
 }
 
-typealias HttpResponseContent = (length: Int, write: (HttpResponseBodyWriter throws -> Void)?)
+typealias HttpResponseContent = (length: Int, write: ((HttpResponseBodyWriter) throws -> Void)?)
 
 internal struct HttpResponse {
     
@@ -29,7 +29,7 @@ internal struct HttpResponse {
         self.content = content ?? (-1, nil)
     }
     
-    func containsHeader(headerName: String) -> Bool {
-        return headers.keys.map { $0.lowercaseString }.contains(headerName.lowercaseString)
+    func containsHeader(_ headerName: String) -> Bool {
+        return headers.keys.map { $0.lowercased() }.contains(headerName.lowercased())
     }
 }

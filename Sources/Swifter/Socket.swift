@@ -13,24 +13,24 @@
 
 /* Low level routines for POSIX sockets */
 
-internal enum SocketError: ErrorType {
-    case SocketCreationFailed(String)
-    case SocketSettingReUseAddrFailed(String)
-    case SocketSettingIPV6OnlyFailed(String)
-    case BindFailed(String)
-    case BindFailedAddressAlreadyInUse(String)
-    case ListenFailed(String)
-    case WriteFailed(String)
-    case GetPeerNameFailed(String)
-    case ConvertingPeerNameFailed
-    case GetNameInfoFailed(String)
-    case AcceptFailed(String)
-    case RecvFailed(String)
+internal enum SocketError: ErrorProtocol {
+    case socketCreationFailed(String)
+    case socketSettingReUseAddrFailed(String)
+    case socketSettingIPV6OnlyFailed(String)
+    case bindFailed(String)
+    case bindFailedAddressAlreadyInUse(String)
+    case listenFailed(String)
+    case writeFailed(String)
+    case getPeerNameFailed(String)
+    case convertingPeerNameFailed
+    case getNameInfoFailed(String)
+    case acceptFailed(String)
+    case recvFailed(String)
 }
 
 internal class Socket: Hashable, Equatable {
     
-    internal class func tcpSocketForListen(port: in_port_t, maxPendingConnection: Int32 = SOMAXCONN) throws -> Socket {
+    internal class func tcpSocketForListen(_ port: in_port_t, maxPendingConnection: Int32 = SOMAXCONN) throws -> Socket {
         
         #if os(Linux)
             let socketFileDescriptor = socket(AF_INET6, Int32(SOCK_STREAM.rawValue), 0)
@@ -39,7 +39,7 @@ internal class Socket: Hashable, Equatable {
         #endif
         
         if socketFileDescriptor == -1 {
-            throw SocketError.SocketCreationFailed(Socket.descriptionOfLastError())
+            throw SocketError.socketCreationFailed(Socket.descriptionOfLastError())
         }
         
         var sockoptValueYES: Int32 = 1
@@ -50,7 +50,7 @@ internal class Socket: Hashable, Equatable {
         if setsockopt(socketFileDescriptor, SOL_SOCKET, SO_REUSEADDR, &sockoptValueYES, socklen_t(sizeof(Int32))) == -1 {
             let details = Socket.descriptionOfLastError()
             Socket.release(socketFileDescriptor)
-            throw SocketError.SocketSettingReUseAddrFailed(details)
+            throw SocketError.socketSettingReUseAddrFailed(details)
         }
         
         // Accept also IPv4 connections (note that this means we must bind to
@@ -60,7 +60,7 @@ internal class Socket: Hashable, Equatable {
         if setsockopt(socketFileDescriptor, IPPROTO_IPV6, IPV6_V6ONLY, &sockoptValueNO, socklen_t(sizeof(Int32))) == -1 {
             let details = Socket.descriptionOfLastError()
             Socket.release(socketFileDescriptor)
-            throw SocketError.SocketSettingIPV6OnlyFailed(details)
+            throw SocketError.socketSettingIPV6OnlyFailed(details)
         }
         
         Socket.setNoSigPipe(socketFileDescriptor)
@@ -86,15 +86,15 @@ internal class Socket: Hashable, Equatable {
             let details = Socket.descriptionOfLastError()
             Socket.release(socketFileDescriptor)
             if myErrno == EADDRINUSE {
-                throw SocketError.BindFailedAddressAlreadyInUse(details)
+                throw SocketError.bindFailedAddressAlreadyInUse(details)
             }
-            throw SocketError.BindFailed(details)
+            throw SocketError.bindFailed(details)
         }
         
         if listen(socketFileDescriptor, maxPendingConnection) == -1 {
             let details = Socket.descriptionOfLastError()
             Socket.release(socketFileDescriptor)
-            throw SocketError.ListenFailed(details)
+            throw SocketError.listenFailed(details)
         }
         return Socket(socketFileDescriptor: socketFileDescriptor)
     }
@@ -120,31 +120,31 @@ internal class Socket: Hashable, Equatable {
         var len: socklen_t = 0
         let clientSocket = accept(self.socketFileDescriptor, &addr, &len)
         if clientSocket == -1 {
-            throw SocketError.AcceptFailed(Socket.descriptionOfLastError())
+            throw SocketError.acceptFailed(Socket.descriptionOfLastError())
         }
         Socket.setNoSigPipe(clientSocket)
         return Socket(socketFileDescriptor: clientSocket)
     }
     
-    internal func writeUTF8(string: String) throws {
+    internal func writeUTF8(_ string: String) throws {
         try writeUInt8([UInt8](string.utf8))
     }
     
-    internal func writeUTF8AndCRLF(string: String) throws {
+    internal func writeUTF8AndCRLF(_ string: String) throws {
         try writeUTF8(string + "\r\n")
     }
     
-    internal func writeUInt8(data: [UInt8]) throws {
+    internal func writeUInt8(_ data: [UInt8]) throws {
         try data.withUnsafeBufferPointer {
             var sent = 0
             while sent < data.count {
                 #if os(Linux)
                     let s = send(self.socketFileDescriptor, $0.baseAddress + sent, data.count - sent, Int32(MSG_NOSIGNAL))
                 #else
-                    let s = write(self.socketFileDescriptor, $0.baseAddress + sent, data.count - sent)
+                    let s = write(self.socketFileDescriptor, $0.baseAddress! + sent, data.count - sent)
                 #endif
                 if s <= 0 {
-                    throw SocketError.WriteFailed(Socket.descriptionOfLastError())
+                    throw SocketError.writeFailed(Socket.descriptionOfLastError())
                 }
                 sent += s
             }
@@ -152,26 +152,26 @@ internal class Socket: Hashable, Equatable {
     }
     
     internal func readOneByte() throws -> UInt8 {
-        var buffer = [UInt8](count: 1, repeatedValue: 0)
+        var buffer = [UInt8](repeating: 0, count: 1)
         let next = recv(self.socketFileDescriptor, &buffer, buffer.count, 0)
         if next <= 0 {
-            throw SocketError.RecvFailed(Socket.descriptionOfLastError())
+            throw SocketError.recvFailed(Socket.descriptionOfLastError())
         }
         return buffer[0]
     }
     
-    internal func readNumBytes(count: Int) throws -> [UInt8] {
+    internal func readNumBytes(_ count: Int) throws -> [UInt8] {
         var ret = [UInt8]()
         while ret.count < count {
             let maxBufferSize = 2048
             let remainingExpectedBytes = count - ret.count
             let bufferSize = min(remainingExpectedBytes, maxBufferSize)
-            var buffer = [UInt8](count: bufferSize, repeatedValue: 0)
+            var buffer = [UInt8](repeating: 0, count: bufferSize)
             let numBytesReceived = recv(self.socketFileDescriptor, &buffer, buffer.count, 0)
             if numBytesReceived <= 0 {
-                throw SocketError.RecvFailed(Socket.descriptionOfLastError())
+                throw SocketError.recvFailed(Socket.descriptionOfLastError())
             }
-            ret.appendContentsOf(buffer)
+            ret.append(contentsOf: buffer)
         }
         return ret
     }
@@ -192,23 +192,23 @@ internal class Socket: Hashable, Equatable {
     internal func peername() throws -> String {
         var addr = sockaddr(), len: socklen_t = socklen_t(sizeof(sockaddr))
         if getpeername(self.socketFileDescriptor, &addr, &len) != 0 {
-            throw SocketError.GetPeerNameFailed(Socket.descriptionOfLastError())
+            throw SocketError.getPeerNameFailed(Socket.descriptionOfLastError())
         }
-        var hostBuffer = [CChar](count: Int(NI_MAXHOST), repeatedValue: 0)
+        var hostBuffer = [CChar](repeating: 0, count: Int(NI_MAXHOST))
         if getnameinfo(&addr, len, &hostBuffer, socklen_t(hostBuffer.count), nil, 0, NI_NUMERICHOST) != 0 {
-            throw SocketError.GetNameInfoFailed(Socket.descriptionOfLastError())
+            throw SocketError.getNameInfoFailed(Socket.descriptionOfLastError())
         }
-        guard let name = String.fromCString(hostBuffer) else {
-            throw SocketError.ConvertingPeerNameFailed
+        guard let name = String(validatingUTF8: hostBuffer) else {
+            throw SocketError.convertingPeerNameFailed
         }
         return name
     }
     
     internal class func descriptionOfLastError() -> String {
-        return String.fromCString(UnsafePointer(strerror(errno))) ?? "Error: \(errno)"
+        return String(cString: UnsafePointer(strerror(errno))) ?? "Error: \(errno)"
     }
     
-    internal class func setNoSigPipe(socket: Int32) {
+    internal class func setNoSigPipe(_ socket: Int32) {
         #if os(Linux)
             // There is no SO_NOSIGPIPE in Linux (nor some other systems). You can instead use the MSG_NOSIGNAL flag when calling send(),
             // or use signal(SIGPIPE, SIG_IGN) to make your entire application ignore SIGPIPE.
@@ -219,7 +219,7 @@ internal class Socket: Hashable, Equatable {
         #endif
     }
     
-    private class func shutdwn(socket: Int32) {
+    private class func shutdwn(_ socket: Int32) {
         #if os(Linux)
             shutdown(socket, Int32(SHUT_RDWR))
         #else
@@ -227,7 +227,7 @@ internal class Socket: Hashable, Equatable {
         #endif
     }
     
-    internal class func release(socket: Int32) -> Int32 {
+    internal class func release(_ socket: Int32) -> Int32 {
         #if os(Linux)
             shutdown(socket, Int32(SHUT_RDWR))
         #else
@@ -236,7 +236,7 @@ internal class Socket: Hashable, Equatable {
         return close(socket)
     }
     
-    private class func htonsPort(port: in_port_t) -> in_port_t {
+    private class func htonsPort(_ port: in_port_t) -> in_port_t {
         #if os(Linux)
             return htons(port)
         #else

@@ -116,7 +116,7 @@ class MockServerTests: MockServerTestCase {
         // the server accepts the socket and starts the (delayed) response
         // processing:
         //
-        NSThread.sleepForTimeInterval(0.1)
+        Thread.sleep(forTimeInterval: 0.1)
         
         // Then stop the server while it's still processing the above
         // request. It should cancel the request processing and shut
@@ -124,7 +124,7 @@ class MockServerTests: MockServerTestCase {
         //
         s.stop()
         
-        waitForExpectationsWithTimeout(3) { error in
+        waitForExpectations(withTimeout: 3) { error in
             XCTAssertNil(error, "\(error)")
         }
     }
@@ -133,7 +133,7 @@ class MockServerTests: MockServerTestCase {
         request("GET", "/gettersson")
         request("HEAD", "/headster")
         
-        let requestData = "i used to be with it".dataUsingEncoding(NSUTF8StringEncoding)
+        let requestData = "i used to be with it".data(using: String.Encoding.utf8)
         request("POST", "/foo/bar?a=1&b=2&c=&d=%C3%A5", data: requestData, headers: ["X-Eka":"eka", "X-Toka":"toka"]) { data, response, error in
             XCTAssertEqual(self.server.latestRequests.count, 3)
             XCTAssertEqual(self.server.latestRequestEndpoints, [
@@ -150,7 +150,7 @@ class MockServerTests: MockServerTestCase {
                 XCTAssertEqual(self.server.lastRequest!.query, ["a":"1", "b":"2", "c":"", "d":"å"])
                 XCTAssertEqual(self.server.lastRequest!.headers["X-Eka"], "eka")
                 XCTAssertEqual(self.server.lastRequest!.headers["X-Toka"], "toka")
-                XCTAssertEqual(self.server.lastRequest?.data, "i used to be with it".dataUsingEncoding(NSUTF8StringEncoding))
+                XCTAssertEqual(self.server.lastRequest?.data, "i used to be with it".data(using: String.Encoding.utf8))
             }
             
             self.server.clearLatestRequests()
@@ -167,24 +167,24 @@ class MockServerTests: MockServerTestCase {
         server.mockResponse(status: 204, onlyOnce: true)
         server.mockResponse(status: 205, onlyOnce: true)
         
-        let waitBetweenRequestSends: NSTimeInterval = 0.01
+        let waitBetweenRequestSends: TimeInterval = 0.01
         
         request("GET", "/foo1", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 201)
         }
-        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        Thread.sleep(forTimeInterval: waitBetweenRequestSends)
         request("GET", "/foo2", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 202)
         }
-        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        Thread.sleep(forTimeInterval: waitBetweenRequestSends)
         request("GET", "/foo3", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 203)
         }
-        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        Thread.sleep(forTimeInterval: waitBetweenRequestSends)
         request("GET", "/foo4", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 204)
         }
-        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        Thread.sleep(forTimeInterval: waitBetweenRequestSends)
         request("GET", "/foo5") { data, response, error in
             XCTAssertEqual(response.statusCode, 205)
             XCTAssertEqual(self.server.latestRequestEndpoints, [
@@ -204,11 +204,11 @@ class MockServerTests: MockServerTestCase {
         server.mockResponse(status: 204, delay: 0.1, onlyOnce: true)
         server.mockResponse(status: 205, onlyOnce: true)
         
-        let waitBetweenRequestSends: NSTimeInterval = 0.05
+        let waitBetweenRequestSends: TimeInterval = 0.05
         
-        let finishedRequestStatusesLock = NSLock()
+        let finishedRequestStatusesLock = Lock()
         var finishedRequestStatuses = [Int]()
-        func statusFinished(status: Int) {
+        func statusFinished(_ status: Int) {
             finishedRequestStatusesLock.lock()
             finishedRequestStatuses.append(status)
             finishedRequestStatusesLock.unlock()
@@ -218,28 +218,28 @@ class MockServerTests: MockServerTestCase {
             XCTAssertEqual(response.statusCode, 201)
             statusFinished(response.statusCode)
         }
-        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        Thread.sleep(forTimeInterval: waitBetweenRequestSends)
         request("GET", "/foo2", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 202)
             statusFinished(response.statusCode)
         }
-        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        Thread.sleep(forTimeInterval: waitBetweenRequestSends)
         request("GET", "/foo3", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 203)
             statusFinished(response.statusCode)
         }
-        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        Thread.sleep(forTimeInterval: waitBetweenRequestSends)
         request("GET", "/foo4", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 204)
             statusFinished(response.statusCode)
         }
-        NSThread.sleepForTimeInterval(waitBetweenRequestSends)
+        Thread.sleep(forTimeInterval: waitBetweenRequestSends)
         request("GET", "/foo5", wait: false) { data, response, error in
             XCTAssertEqual(response.statusCode, 205)
             statusFinished(response.statusCode)
         }
         
-        waitForExpectationsWithTimeout(2) { error in
+        waitForExpectations(withTimeout: 2) { error in
             if error != nil {
                 XCTFail("Request error: \(error)")
                 return
@@ -261,7 +261,7 @@ class MockServerTests: MockServerTestCase {
     }
     
     func testCommonResponseModifier_noMockedResponsesConfigured() {
-        let commonData = "common override".dataUsingEncoding(NSUTF8StringEncoding)
+        let commonData = "common override".data(using: String.Encoding.utf8)
         server.commonResponseModifier = { response in
             return response.copyWithChanges(statusCode: 207, data: commonData, headers: ["Date": "today"])
         }
@@ -277,7 +277,7 @@ class MockServerTests: MockServerTestCase {
     func testCommonResponseModifier_baseMockedResponseConfigured() {
         server.mockResponse(status: 200)
         
-        let commonData = "common override".dataUsingEncoding(NSUTF8StringEncoding)
+        let commonData = "common override".data(using: String.Encoding.utf8)
         server.commonResponseModifier = { response in
             return response.copyWithChanges(statusCode: 207, data: commonData, headers: ["Date": "today"])
         }
@@ -311,18 +311,18 @@ class MockServerTests: MockServerTestCase {
     
     func testStreamedRequest_chunkedTransferEncoding() {
         let testDataFilePath = "/usr/share/dict/words"
-        let testData = NSData(contentsOfFile: testDataFilePath)
+        let testData = try? Data(contentsOf: URL(fileURLWithPath: testDataFilePath))
         
-        let expectation: XCTestExpectation = expectationWithDescription("Chunked request")
+        let expectation: XCTestExpectation = self.expectation(withDescription: "Chunked request")
         
-        let request = NSMutableURLRequest(URL: NSURL(string: "\(server.baseURLString ?? "")/stream")!)
-        request.HTTPMethod = "POST"
+        let request = NSMutableURLRequest(url: URL(string: "\(server.baseURLString ?? "")/stream")!)
+        request.httpMethod = "POST"
         request.addValue("Chunked", forHTTPHeaderField: "Transfer-Encoding")
         
         // Note: We do NOT set a value for the "Content-Length" header here.
         // This makes NSURLSession use "Transfer-Encoding: Chunked".
         
-        class DataProviderDelegate: NSObject, NSURLSessionTaskDelegate, NSURLSessionDataDelegate {
+        class DataProviderDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
             let expectation: XCTestExpectation?
             let testDataFilePath: String
             init(_ expectation: XCTestExpectation, _ testDataFilePath: String) {
@@ -330,25 +330,25 @@ class MockServerTests: MockServerTestCase {
                 self.testDataFilePath = testDataFilePath
             }
             
-            @objc func URLSession(session: NSURLSession, task: NSURLSessionTask, needNewBodyStream completionHandler: (NSInputStream?) -> Void) {
-                completionHandler(NSInputStream(fileAtPath: testDataFilePath))
+            @objc func urlSession(_ session: URLSession, task: URLSessionTask, needNewBodyStream completionHandler: (InputStream?) -> Void) {
+                completionHandler(InputStream(fileAtPath: testDataFilePath)!)
             }
-            @objc func URLSession(session: NSURLSession, task: NSURLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+            @objc func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
                 print("bytesSent:\(bytesSent), totalBytesSent:\(totalBytesSent), totalBytesExpectedToSend:\(totalBytesExpectedToSend)");
             }
-            @objc func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
+            @objc func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: (URLSession.ResponseDisposition) -> Void) {
                 expectation?.fulfill()
-                completionHandler(.Allow)
+                completionHandler(.allow)
             }
         }
         
-        let urlSession = NSURLSession(
-            configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
+        let urlSession = URLSession(
+            configuration: URLSessionConfiguration.default(),
             delegate: DataProviderDelegate(expectation, testDataFilePath),
             delegateQueue: nil)
-        urlSession.uploadTaskWithStreamedRequest(request).resume()
+        urlSession.uploadTask(withStreamedRequest: request as URLRequest).resume()
         
-        waitForExpectationsWithTimeout(10) { error in
+        waitForExpectations(withTimeout: 10) { error in
             XCTAssertNil(error, "Request expectation timeout error: \(error)")
             
             if error == nil {
@@ -359,8 +359,8 @@ class MockServerTests: MockServerTestCase {
                 // Avoid failing on the data equality assertion (the file is so large
                 // that the length of the error message in Xcode will bog down the whole editor.)
                 //
-                XCTAssertEqual(receivedData?.length, testData?.length)
-                if receivedData?.length == testData?.length {
+                XCTAssertEqual(receivedData?.count, testData?.count)
+                if receivedData?.count == testData?.count {
                     XCTAssertEqual(receivedData, testData)
                 }
             }

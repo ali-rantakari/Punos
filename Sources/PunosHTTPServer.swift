@@ -12,41 +12,41 @@
 
 import Foundation
 
-typealias Logger = String -> Void
+typealias Logger = (String) -> Void
 
 class PunosHTTPServer {
     
-    let queue: dispatch_queue_t
+    let queue: DispatchQueue
     private let log: Logger
     
-    init(queue: dispatch_queue_t, logger: Logger = { _ in }) {
+    init(queue: DispatchQueue, logger: Logger = { _ in }) {
         self.log = logger
         self.queue = queue
     }
     
-    private var sourceGroup: dispatch_group_t?
-    private var dispatchSource: dispatch_source_t?
+    private var sourceGroup: DispatchGroup?
+    private var dispatchSource: DispatchSourceType?
     
     private var clientSockets: Set<Socket> = []
-    private let clientSocketsLock = NSLock()
+    private let clientSocketsLock = Lock()
     
-    private func createDispatchSource(listeningSocket: Socket) -> dispatch_source_t? {
+    private func createDispatchSource(_ listeningSocket: Socket) -> DispatchSourceType? {
         guard let sourceGroup = sourceGroup else { return nil }
         
         let listeningSocketFD = listeningSocket.socketFileDescriptor
-        dispatch_group_enter(sourceGroup)
-        let source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, UInt(listeningSocketFD), 0, queue)
+        sourceGroup.enter()
+        let source = DispatchSource.read(fileDescriptor: listeningSocketFD, queue: queue)
         
-        dispatch_source_set_cancel_handler(source) { _ in
+        source.setCancelHandler { _ in
             if Socket.release(listeningSocketFD) != 0 {
                 self.log("Failed to close listening socket \(listeningSocketFD): \(Socket.descriptionOfLastError())")
             } else {
                 self.log("Closed listening socket \(listeningSocketFD)")
             }
-            dispatch_group_leave(sourceGroup)
+            sourceGroup.leave()
         }
         
-        dispatch_source_set_event_handler(source) { _ in
+        source.setEventHandler { _ in
             autoreleasepool {
                 do {
                     let clientSocket = try listeningSocket.acceptClientSocket()
@@ -55,7 +55,7 @@ class PunosHTTPServer {
                         self.clientSockets.insert(clientSocket)
                     }
                     
-                    dispatch_async(self.queue) {
+                    self.queue.async {
                         self.handleConnection(clientSocket) {
                             lock(self.clientSocketsLock) {
                                 self.clientSockets.remove(clientSocket)
@@ -74,7 +74,7 @@ class PunosHTTPServer {
     
     private(set) var port: in_port_t?
     
-    func start(portsToTry portsToTry: [in_port_t]) throws {
+    func start(portsToTry: [in_port_t]) throws {
         if dispatchSource != nil {
             throw punosError(0, "Already running")
         }
@@ -85,7 +85,7 @@ class PunosHTTPServer {
             do {
                 maybeSocket = try Socket.tcpSocketForListen(port)
             } catch let error {
-                if case SocketError.BindFailedAddressAlreadyInUse(_) = error {
+                if case SocketError.bindFailedAddressAlreadyInUse(_) = error {
                     continue
                 }
                 throw error
@@ -98,13 +98,13 @@ class PunosHTTPServer {
             throw punosError(0, "Could not bind to any given port")
         }
         
-        sourceGroup = dispatch_group_create()
+        sourceGroup = DispatchGroup()
         dispatchSource = createDispatchSource(socket)
         
         guard let source = dispatchSource else {
             throw punosError(0, "Could not create dispatch source")
         }
-        dispatch_resume(source)
+        source.resume()
     }
     
     func stop() {
@@ -123,18 +123,18 @@ class PunosHTTPServer {
         for socket in self.clientSockets {
             socket.shutdwn()
         }
-        self.clientSockets.removeAll(keepCapacity: true)
+        self.clientSockets.removeAll(keepingCapacity: true)
         
         // Cancel the main listening socket dispatch source (the
         // cancellation handler is responsible for closing the
         // socket):
         //
-        dispatch_source_cancel(source)
+        source.cancel()
         
         // Wait until the cancellation handler has been called, which
         // guarantees that the listening socket is closed:
         //
-        dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
+        _ = group.wait(timeout: DispatchTime.distantFuture)
         
         port = nil
     }
@@ -142,7 +142,7 @@ class PunosHTTPServer {
     var responder: ((HttpRequest, (HttpResponse) -> Void) -> Void)?
     var defaultResponse = HttpResponse(200, nil, nil)
     
-    private func respondToRequestAsync(request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
+    private func respondToRequestAsync(_ request: HttpRequest, responseCallback: (HttpResponse) -> Void) {
         if let responder = responder {
             responder(request, responseCallback)
         } else {
@@ -150,7 +150,7 @@ class PunosHTTPServer {
         }
     }
     
-    private func handleConnection(socket: Socket, doneCallback: () -> Void) {
+    private func handleConnection(_ socket: Socket, doneCallback: () -> Void) {
         let parser = HttpParser()
         
         guard let request = try? parser.readHttpRequest(socket) else {
@@ -163,7 +163,7 @@ class PunosHTTPServer {
         
         self.respondToRequestAsync(request) { response in
             do {
-                try self.respond(socket, response: response, keepAlive: false)
+                _ = try self.respond(socket, response: response, keepAlive: false)
             } catch {
                 self.log("Failed to send response: \(error)")
             }
@@ -174,7 +174,7 @@ class PunosHTTPServer {
     
     private struct InnerWriteContext: HttpResponseBodyWriter {
         let socket: Socket
-        func write(data: [UInt8]) {
+        func write(_ data: [UInt8]) {
             do {
                 try socket.writeUInt8(data)
             } catch {
@@ -183,7 +183,7 @@ class PunosHTTPServer {
         }
     }
     
-    private func respond(socket: Socket, response: HttpResponse, keepAlive: Bool) throws -> Bool {
+    private func respond(_ socket: Socket, response: HttpResponse, keepAlive: Bool) throws -> Bool {
         try socket.writeUTF8AndCRLF("HTTP/1.1 \(response.statusCode) \(response.reasonPhrase)")
         
         let content = response.content

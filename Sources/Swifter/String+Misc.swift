@@ -13,15 +13,15 @@
 
 extension String {
 
-    internal func split(separator: Character) -> [String] {
+    internal func split(_ separator: Character) -> [String] {
         return self.characters.split { $0 == separator }.map(String.init)
     }
     
-    internal func split(maxSplit: Int = Int.max, separator: Character) -> [String] {
-        return self.characters.split(maxSplit) { $0 == separator }.map(String.init)
+    internal func split(_ maxSplit: Int = Int.max, separator: Character) -> [String] {
+        return self.characters.split(maxSplits: maxSplit) { $0 == separator }.map(String.init)
     }
     
-    internal func replace(old: Character, _ new: Character) -> String {
+    internal func replace(_ old: Character, _ new: Character) -> String {
         var buffer = [Character]()
         self.characters.forEach { buffer.append($0 == old ? new : $0) }
         return String(buffer)
@@ -44,8 +44,8 @@ extension String {
         return String(scalars)
     }
     
-    internal static func fromUInt8(array: [UInt8]) -> String {
-        return String(data: NSData(bytes: array, length: array.count), encoding: NSUTF8StringEncoding) ?? ""
+    internal static func fromUInt8(_ array: [UInt8]) -> String {
+        return String(data: Data(bytes: UnsafePointer<UInt8>(array), count: array.count), encoding: String.Encoding.utf8) ?? ""
     }
     
     internal func removePercentEncoding() -> String {
@@ -60,7 +60,7 @@ extension String {
                     bytesBuffer.append(first*16+secon)
                 } else {
                     if !bytesBuffer.isEmpty {
-                        output.appendContentsOf(String.fromUInt8(bytesBuffer))
+                        output.append(String.fromUInt8(bytesBuffer))
                         bytesBuffer.removeAll()
                     }
                     if let first = first { output.append(Character(first)) }
@@ -68,14 +68,14 @@ extension String {
                 }
             } else {
                 if !bytesBuffer.isEmpty {
-                    output.appendContentsOf(String.fromUInt8(bytesBuffer))
+                    output.append(String.fromUInt8(bytesBuffer))
                     bytesBuffer.removeAll()
                 }
                 output.append(Character(scalar))
             }
         }
         if !bytesBuffer.isEmpty {
-            output.appendContentsOf(String.fromUInt8(bytesBuffer))
+            output.append(String.fromUInt8(bytesBuffer))
             bytesBuffer.removeAll()
         }
         return output
