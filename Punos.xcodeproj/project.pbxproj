@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A455ABE81D1C728300CF6E52 /* HTTPHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = A455ABE71D1C728300CF6E52 /* HTTPHeaders.swift */; };
+		A455ABE81D1C728300CF6E52 /* KeyValueLists.swift in Sources */ = {isa = PBXBuildFile; fileRef = A455ABE71D1C728300CF6E52 /* KeyValueLists.swift */; };
 		A4AA82EE1D12855600245CB5 /* UtilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4AA82ED1D12855600245CB5 /* UtilityTests.swift */; };
 		A4AA82F01D129A6300245CB5 /* Assertions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4AA82EF1D129A6300245CB5 /* Assertions.swift */; };
 		A4DE4FAE1C6B1BCA00005441 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4DE4FAD1C6B1BCA00005441 /* Utils.swift */; };
@@ -50,7 +50,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A455ABE71D1C728300CF6E52 /* HTTPHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPHeaders.swift; sourceTree = "<group>"; };
+		A455ABE71D1C728300CF6E52 /* KeyValueLists.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyValueLists.swift; sourceTree = "<group>"; };
 		A4AA82ED1D12855600245CB5 /* UtilityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UtilityTests.swift; sourceTree = "<group>"; };
 		A4AA82EF1D129A6300245CB5 /* Assertions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assertions.swift; sourceTree = "<group>"; };
 		A4DE4FAD1C6B1BCA00005441 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -127,7 +127,7 @@
 				C979168B1C6A7BD700E5B379 /* Info.plist */,
 				A4DE4FD41C6E151500005441 /* Swifter */,
 				A4DE4FAD1C6B1BCA00005441 /* Utils.swift */,
-				A455ABE71D1C728300CF6E52 /* HTTPHeaders.swift */,
+				A455ABE71D1C728300CF6E52 /* KeyValueLists.swift */,
 				C97917301C6F5D4600E5B379 /* PunosHTTPServer.swift */,
 				C979172A1C6E6E4300E5B379 /* RFC2616.swift */,
 				C97916A01C6A7C0700E5B379 /* MockHTTPServer.swift */,
@@ -261,7 +261,7 @@
 			files = (
 				A4DE4FFF1C6E1D0D00005441 /* Socket.swift in Sources */,
 				A4DE4FFD1C6E1D0D00005441 /* HttpResponse.swift in Sources */,
-				A455ABE81D1C728300CF6E52 /* HTTPHeaders.swift in Sources */,
+				A455ABE81D1C728300CF6E52 /* KeyValueLists.swift in Sources */,
 				A4DE4FFB1C6E1D0D00005441 /* HttpParser.swift in Sources */,
 				C97916A11C6A7C0700E5B379 /* MockHTTPServer.swift in Sources */,
 				C979172B1C6E6E4300E5B379 /* RFC2616.swift in Sources */,
