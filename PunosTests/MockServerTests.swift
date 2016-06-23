@@ -263,7 +263,7 @@ class MockServerTests: MockServerTestCase {
     func testCommonResponseModifier_noMockedResponsesConfigured() {
         let commonData = "common override".data(using: String.Encoding.utf8)
         server.commonResponseModifier = { response in
-            return response.copyWithChanges(statusCode: 207, data: commonData, headers: [("Date", "today")])
+            return response.copyWithChanges(statusCode: 207, data: commonData, headers: ["Date": "today"])
         }
         
         request("GET", "/foo1") { data, response, error in
@@ -279,7 +279,7 @@ class MockServerTests: MockServerTestCase {
         
         let commonData = "common override".data(using: String.Encoding.utf8)
         server.commonResponseModifier = { response in
-            return response.copyWithChanges(statusCode: 207, data: commonData, headers: [("Date", "today")])
+            return response.copyWithChanges(statusCode: 207, data: commonData, headers: ["Date": "today"])
         }
         
         request("GET", "/foo1") { data, response, error in

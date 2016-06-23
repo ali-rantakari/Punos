@@ -291,7 +291,7 @@ class ResponseMockingTests: MockServerTestCase {
             "Last-Modified": "-lm",
             "Transfer-Encoding": "-te",
         ]
-        server.mockResponse(headers: fakeHeaders)
+        server.mockResponse(headers: HTTPHeaders(fakeHeaders))
         
         request("GET", "/foo") { data, response, error in
             XCTAssertEqual(response.allHeaderFields as! [String:String], fakeHeaders)

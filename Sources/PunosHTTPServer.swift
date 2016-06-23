@@ -199,7 +199,7 @@ class PunosHTTPServer {
             }
         }
         
-        for (name, value) in response.headers {
+        for (name, value) in response.headers.pairs {
             try socket.writeUTF8AndCRLF("\(name): \(value)")
         }
         

@@ -22,10 +22,10 @@ public struct MockResponse {
     /// The body data
     public let data: Data?
     
-    /// The HTTP header (name,value) pairs
-    public let headers: [(String,String)]?
+    /// The HTTP headers
+    public let headers: HTTPHeaders?
     
-    public init(statusCode: Int, data: Data?, headers: [(String,String)]?) {
+    public init(statusCode: Int, data: Data?, headers: HTTPHeaders?) {
         self.statusCode = statusCode
         self.data = data
         self.headers = headers
@@ -34,7 +34,7 @@ public struct MockResponse {
     /// Returns a copy of self by replacing members with the supplied
     /// values.
     ///
-    public func copyWithChanges(statusCode: Int? = nil, data: Data? = nil, headers: [(String,String)]? = nil) -> MockResponse {
+    public func copyWithChanges(statusCode: Int? = nil, data: Data? = nil, headers: HTTPHeaders? = nil) -> MockResponse {
         return MockResponse(
             statusCode: statusCode ?? self.statusCode,
             data: data ?? self.data,
@@ -306,11 +306,11 @@ public class MockHTTPServer {
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockResponse(endpoint: String? = nil, status: Int? = nil, data: Data? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockResponse(endpoint: String? = nil, status: Int? = nil, data: Data? = nil, headers: HTTPHeaders? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let response = MockResponse(
             statusCode: status ?? 200,
             data: data,
-            headers: headers?.asTupleList())
+            headers: headers)
         mockResponse(endpoint: endpoint, response: response, onlyOnce: onlyOnce, delay: delay, matcher: matcher)
     }
     
@@ -339,11 +339,11 @@ public class MockHTTPServer {
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockJSONResponse(endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockJSONResponse(endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: HTTPHeaders? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         mockResponse(
             status: status,
             data: json?.data(using: String.Encoding.utf8),
-            headers: ["Content-Type": "application/json"].merged(headers),
+            headers: HTTPHeaders("Content-Type", "application/json").merged(headers),
             onlyOnce: onlyOnce,
             delay: delay,
             endpoint: endpoint,
@@ -376,7 +376,7 @@ public class MockHTTPServer {
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockJSONResponse(endpoint: String? = nil, object: AnyObject? = nil, status: Int? = nil, headers: [String:String]? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockJSONResponse(endpoint: String? = nil, object: AnyObject? = nil, status: Int? = nil, headers: HTTPHeaders? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         let jsonData: Data? = {
             guard let o = object else { return nil }
             return try? JSONSerialization.data(withJSONObject: o, options: JSONSerialization.WritingOptions())
@@ -384,7 +384,7 @@ public class MockHTTPServer {
         mockResponse(
             status: status,
             data: jsonData,
-            headers: ["Content-Type": "application/json"].merged(headers),
+            headers: HTTPHeaders("Content-Type", "application/json").merged(headers),
             onlyOnce: onlyOnce,
             delay: delay,
             endpoint: endpoint,
