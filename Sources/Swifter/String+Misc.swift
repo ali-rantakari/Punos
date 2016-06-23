@@ -45,29 +45,3 @@ extension String {
         return String(data: Data(bytes: UnsafePointer<UInt8>(array), count: array.count), encoding: String.Encoding.utf8) ?? ""
     }
 }
-
-extension UnicodeScalar {
-    
-    internal func asWhitespace() -> UInt8? {
-        if self.value >= 9 && self.value <= 13 {
-            return UInt8(self.value)
-        }
-        if self.value == 32 {
-            return UInt8(self.value)
-        }
-        return nil
-    }
-    
-    internal func asAlpha() -> UInt8? {
-        if self.value >= 48 && self.value <= 57 {
-            return UInt8(self.value) - 48
-        }
-        if self.value >= 97 && self.value <= 102 {
-            return UInt8(self.value) - 87
-        }
-        if self.value >= 65 && self.value <= 70 {
-            return UInt8(self.value) - 55
-        }
-        return nil
-    }
-}
