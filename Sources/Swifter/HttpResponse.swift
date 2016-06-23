@@ -28,9 +28,4 @@ internal struct HttpResponse {
         self.headers = headers ?? []
         self.content = content ?? (-1, nil)
     }
-    
-    // TODO: Move to HTTPHeaders
-    func containsHeader(_ headerName: String) -> Bool {
-        return headers.pairs.map { $0.0.lowercased() }.contains(headerName.lowercased())
-    }
 }

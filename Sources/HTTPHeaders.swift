@@ -44,6 +44,10 @@ public struct HTTPHeaders: DictionaryLiteralConvertible, ArrayLiteralConvertible
     // ------------------------------
     // MARK: Utilities
     
+    func contains(name: String) -> Bool {
+        return pairs.map { $0.0.lowercased() }.contains(name.lowercased())
+    }
+    
     func merged(_ other: HTTPHeaders?) -> HTTPHeaders {
         var p = pairs
         if let o = other {

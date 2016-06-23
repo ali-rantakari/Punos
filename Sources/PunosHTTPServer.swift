@@ -191,7 +191,7 @@ class PunosHTTPServer {
         }
         
         let respondKeepAlive = keepAlive && content.length != -1
-        if !response.containsHeader("Connection") { // Allow the response to override this
+        if !response.headers.contains(name: "Connection") { // Allow the response to override this
             if respondKeepAlive {
                 try socket.writeUTF8AndCRLF("Connection: keep-alive")
             } else {
