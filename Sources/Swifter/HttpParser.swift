@@ -47,7 +47,7 @@ private func extractQueryParams(_ url: String) -> [(String, String)] {
         guard 0 < tokens.count else { return c }
         let name = tokens[0]
         let value = 1 < tokens.count ? tokens[1] : ""
-        return c + [(name.removePercentEncoding(), value.removePercentEncoding())]
+        return c + [(name.removingPercentEncoding ?? "", value.removingPercentEncoding ?? "")]
     }
 }
 

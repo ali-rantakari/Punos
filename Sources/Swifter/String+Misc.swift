@@ -47,39 +47,6 @@ extension String {
     internal static func fromUInt8(_ array: [UInt8]) -> String {
         return String(data: Data(bytes: UnsafePointer<UInt8>(array), count: array.count), encoding: String.Encoding.utf8) ?? ""
     }
-    
-    internal func removePercentEncoding() -> String {
-        var scalars = self.unicodeScalars
-        var output = ""
-        var bytesBuffer = [UInt8]()
-        while let scalar = scalars.popFirst() {
-            if scalar == "%" {
-                let first = scalars.popFirst()
-                let secon = scalars.popFirst()
-                if let first = first?.asAlpha(), secon = secon?.asAlpha() {
-                    bytesBuffer.append(first*16+secon)
-                } else {
-                    if !bytesBuffer.isEmpty {
-                        output.append(String.fromUInt8(bytesBuffer))
-                        bytesBuffer.removeAll()
-                    }
-                    if let first = first { output.append(Character(first)) }
-                    if let secon = secon { output.append(Character(secon)) }
-                }
-            } else {
-                if !bytesBuffer.isEmpty {
-                    output.append(String.fromUInt8(bytesBuffer))
-                    bytesBuffer.removeAll()
-                }
-                output.append(Character(scalar))
-            }
-        }
-        if !bytesBuffer.isEmpty {
-            output.append(String.fromUInt8(bytesBuffer))
-            bytesBuffer.removeAll()
-        }
-        return output
-    }
 }
 
 extension UnicodeScalar {
