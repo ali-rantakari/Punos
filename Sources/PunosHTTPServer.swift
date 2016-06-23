@@ -52,13 +52,13 @@ class PunosHTTPServer {
                 do {
                     let clientSocket = try listeningSocket.acceptClientSocket()
                     
-                    lock(self.clientSocketsLock) {
+                    self.clientSocketsLock.with {
                         self.clientSockets.insert(clientSocket)
                     }
                     
                     self.queue.async {
                         self.handleConnection(clientSocket) {
-                            lock(self.clientSocketsLock) {
+                            self.clientSocketsLock.with {
                                 self.clientSockets.remove(clientSocket)
                             }
                         }

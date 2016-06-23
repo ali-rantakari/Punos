@@ -24,13 +24,16 @@ extension DispatchQueue {
     }
 }
 
-@discardableResult
-func lock<T>(_ lockObject: Lock, fn: @noescape () -> T) -> T {
-    lockObject.lock()
-    let ret = fn()
-    lockObject.unlock()
-    return ret
+extension Lock {
+    @discardableResult
+    func with<T>(_ fn: @noescape () -> T) -> T {
+        lock()
+        let ret = fn()
+        unlock()
+        return ret
+    }
 }
+
 
 extension Dictionary {
     

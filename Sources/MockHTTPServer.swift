@@ -165,7 +165,7 @@ public class MockHTTPServer {
     private let responseLock = Lock()
     
     private func respondToRequest(_ request: HttpRequest, _ callback: (HttpResponse) -> Void) {
-        let mockConfig: MockResponseConfiguration = lock(responseLock) {
+        let mockConfig: MockResponseConfiguration = responseLock.with {
             let publicRequest = HTTPRequest(request)
             latestRequests.append(publicRequest)
             
