@@ -48,4 +48,12 @@ extension Dictionary {
         }
         return copy
     }
+    
+    func asTupleList() -> [(Key,Value)] {
+        var list = [(Key,Value)]()
+        for (key, value) in self {
+            list.append((key, value))
+        }
+        return list
+    }
 }

@@ -19,17 +19,17 @@ internal struct HttpResponse {
     
     let statusCode: Int
     let reasonPhrase: String
-    let headers: [String:String]
+    let headers: [(String,String)]
     let content: HttpResponseContent
     
-    init(_ statusCode: Int, _ headers: [String:String]?, _ content: HttpResponseContent?) {
+    init(_ statusCode: Int, _ headers: [(String,String)]?, _ content: HttpResponseContent?) {
         self.statusCode = statusCode
         self.reasonPhrase = RFC2616.reasonsForStatusCodes[statusCode] ?? ""
-        self.headers = headers ?? [:]
+        self.headers = headers ?? []
         self.content = content ?? (-1, nil)
     }
     
     func containsHeader(_ headerName: String) -> Bool {
-        return headers.keys.map { $0.lowercased() }.contains(headerName.lowercased())
+        return headers.map { $0.0.lowercased() }.contains(headerName.lowercased())
     }
 }

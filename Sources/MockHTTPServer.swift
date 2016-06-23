@@ -22,10 +22,10 @@ public struct MockResponse {
     /// The body data
     public let data: Data?
     
-    /// The HTTP headers
-    public let headers: [String:String]?
+    /// The HTTP header (name,value) pairs
+    public let headers: [(String,String)]?
     
-    public init(statusCode: Int, data: Data?, headers: [String:String]?) {
+    public init(statusCode: Int, data: Data?, headers: [(String,String)]?) {
         self.statusCode = statusCode
         self.data = data
         self.headers = headers
@@ -34,7 +34,7 @@ public struct MockResponse {
     /// Returns a copy of self by replacing members with the supplied
     /// values.
     ///
-    public func copyWithChanges(statusCode: Int? = nil, data: Data? = nil, headers: [String:String]? = nil) -> MockResponse {
+    public func copyWithChanges(statusCode: Int? = nil, data: Data? = nil, headers: [(String,String)]? = nil) -> MockResponse {
         return MockResponse(
             statusCode: statusCode ?? self.statusCode,
             data: data ?? self.data,
@@ -310,7 +310,7 @@ public class MockHTTPServer {
         let response = MockResponse(
             statusCode: status ?? 200,
             data: data,
-            headers: headers)
+            headers: headers?.asTupleList())
         mockResponse(endpoint: endpoint, response: response, onlyOnce: onlyOnce, delay: delay, matcher: matcher)
     }
     
