@@ -190,7 +190,7 @@ public class MockHTTPServer {
             content)
         
         if 0 < mockConfig.delay {
-            dispatchAfterInterval(mockConfig.delay, queue: server.queue) {
+            server.queue.after(interval: mockConfig.delay) {
                 callback(response)
             }
         } else {

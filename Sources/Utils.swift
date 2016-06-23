@@ -12,8 +12,16 @@ func punosError(_ code: Int, _ description: String) -> NSError {
     return NSError(domain: "org.hasseg.Punos", code: code, userInfo: [NSLocalizedDescriptionKey: description])
 }
 
-func dispatchAfterInterval(_ interval: TimeInterval, queue: DispatchQueue, block: () -> Void) {
-    queue.after(when: DispatchTime.now() + Double(Int64(interval * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: block);
+extension TimeInterval {
+    var asDispatchTimeInterval: DispatchTimeInterval {
+        return DispatchTimeInterval.milliseconds(Int(self * 1000))
+    }
+}
+
+extension DispatchQueue {
+    func after(interval: TimeInterval, execute work: @convention(block) () -> Swift.Void) {
+        after(walltime: DispatchWallTime.now() + interval.asDispatchTimeInterval, execute: work)
+    }
 }
 
 @discardableResult
