@@ -129,7 +129,7 @@ private func readHeaders(_ socket: Socket) throws -> [String: String] {
             return headers
         }
         let headerTokens = headerLine.split(1, separator: ":")
-        if let name = headerTokens.first, value = headerTokens.last {
+        if let name = headerTokens.first, let value = headerTokens.last {
             headers[name.lowercased()] = value.trimmed
         }
     } while true
