@@ -48,7 +48,7 @@ internal class Socket: Hashable, Equatable {
         
         // Allow reuse of local addresses:
         //
-        if setsockopt(socketFileDescriptor, SOL_SOCKET, SO_REUSEADDR, &sockoptValueYES, socklen_t(sizeof(Int32))) == -1 {
+        if setsockopt(socketFileDescriptor, SOL_SOCKET, SO_REUSEADDR, &sockoptValueYES, socklen_t(sizeof(Int32.self))) == -1 {
             let details = Socket.descriptionOfLastError()
             Socket.releaseIgnoringErrors(socketFileDescriptor)
             throw SocketError.socketSettingReUseAddrFailed(details)
@@ -58,7 +58,7 @@ internal class Socket: Hashable, Equatable {
         // in6addr_any — binding to in6addr_loopback will effectively rule out
         // IPv4 addresses):
         //
-        if setsockopt(socketFileDescriptor, IPPROTO_IPV6, IPV6_V6ONLY, &sockoptValueNO, socklen_t(sizeof(Int32))) == -1 {
+        if setsockopt(socketFileDescriptor, IPPROTO_IPV6, IPV6_V6ONLY, &sockoptValueNO, socklen_t(sizeof(Int32.self))) == -1 {
             let details = Socket.descriptionOfLastError()
             Socket.releaseIgnoringErrors(socketFileDescriptor)
             throw SocketError.socketSettingIPV6OnlyFailed(details)
@@ -73,16 +73,16 @@ internal class Socket: Hashable, Equatable {
             addr.sin6_addr = in6addr_any
         #else
             var addr = sockaddr_in6()
-            addr.sin6_len = __uint8_t(sizeof(sockaddr_in6))
+            addr.sin6_len = __uint8_t(sizeof(sockaddr_in6.self))
             addr.sin6_family = sa_family_t(AF_INET6)
             addr.sin6_port = Socket.htonsPort(port)
             addr.sin6_addr = in6addr_any
         #endif
         
         var bind_addr = sockaddr()
-        memcpy(&bind_addr, &addr, Int(sizeof(sockaddr_in6)))
+        memcpy(&bind_addr, &addr, Int(sizeof(sockaddr_in6.self)))
         
-        if bind(socketFileDescriptor, &bind_addr, socklen_t(sizeof(sockaddr_in6))) == -1 {
+        if bind(socketFileDescriptor, &bind_addr, socklen_t(sizeof(sockaddr_in6.self))) == -1 {
             let myErrno = errno
             let details = Socket.descriptionOfLastError()
             Socket.releaseIgnoringErrors(socketFileDescriptor)
@@ -195,7 +195,7 @@ internal class Socket: Hashable, Equatable {
     }
     
     internal func peername() throws -> String {
-        var addr = sockaddr(), len: socklen_t = socklen_t(sizeof(sockaddr))
+        var addr = sockaddr(), len: socklen_t = socklen_t(sizeof(sockaddr.self))
         if getpeername(socketFileDescriptor, &addr, &len) != 0 {
             throw SocketError.getPeerNameFailed(Socket.descriptionOfLastError())
         }
@@ -220,7 +220,7 @@ internal class Socket: Hashable, Equatable {
         #else
             // Prevents crashes when blocking calls are pending and the app is paused ( via Home button ).
             var no_sig_pipe: Int32 = 1
-            setsockopt(socketFileDescriptor, SOL_SOCKET, SO_NOSIGPIPE, &no_sig_pipe, socklen_t(sizeof(Int32)))
+            setsockopt(socketFileDescriptor, SOL_SOCKET, SO_NOSIGPIPE, &no_sig_pipe, socklen_t(sizeof(Int32.self)))
         #endif
     }
     
