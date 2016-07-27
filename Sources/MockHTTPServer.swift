@@ -297,16 +297,16 @@ public class MockHTTPServer {
     ///     - data: The response body data. If non-nil, the `"Content-Length"` header will
     ///       be given an appropriate value.
     ///     - headers: The response headers
+    ///     - delay: How long to wait (after processing the incoming request) before sending
+    ///       the response
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
     ///       thereafter
-    ///     - delay: How long to wait (after processing the incoming request) before sending
-    ///       the response
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockResponse(endpoint: String? = nil, status: Int? = nil, data: Data? = nil, headers: HTTPHeaders? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockResponse(endpoint: String? = nil, status: Int? = nil, data: Data? = nil, headers: HTTPHeaders? = nil, delay: TimeInterval = 0, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
         let response = MockResponse(
             statusCode: status ?? 200,
             data: data,
@@ -327,26 +327,26 @@ public class MockHTTPServer {
     ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
     ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. The HTTP verb is required
     ///       but the path is optional. If set, this will supersede `matcher`.
-    ///     - json: The UTF-8 encoded JSON to be sent in the response body
     ///     - status: The response HTTP status code. Default: 200
+    ///     - json: The UTF-8 encoded JSON to be sent in the response body
     ///     - headers: The response headers
+    ///     - delay: How long to wait (after processing the incoming request) before sending
+    ///       the response
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
     ///       thereafter
-    ///     - delay: How long to wait (after processing the incoming request) before sending
-    ///       the response
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockJSONResponse(endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: HTTPHeaders? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockJSONResponse(endpoint: String? = nil, status: Int? = nil, json: String? = nil, headers: HTTPHeaders? = nil, delay: TimeInterval = 0, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
         mockResponse(
             endpoint: endpoint,
             status: status,
             data: json?.data(using: String.Encoding.utf8),
             headers: HTTPHeaders("Content-Type", "application/json").merged(headers),
-            onlyOnce: onlyOnce,
             delay: delay,
+            onlyOnce: onlyOnce,
             matcher: matcher)
     }
     
@@ -363,20 +363,20 @@ public class MockHTTPServer {
     ///     - endpoint: The “endpoint,” requests to which this response should be sent for,
     ///       in the format `"HTTPVERB path"`, e.g. `"POST /foo/bar"`. The HTTP verb is required
     ///       but the path is optional. If set, this will supersede `matcher`.
+    ///     - status: The response HTTP status code. Default: 200
     ///     - object: The object to be sent in the response body, serialized as JSON. Serialization
     ///       failures will be silent and yield an empty response body.
-    ///     - status: The response HTTP status code. Default: 200
     ///     - headers: The response headers
+    ///     - delay: How long to wait (after processing the incoming request) before sending
+    ///       the response
     ///     - onlyOnce: Whether to only mock this response once — if `true`, this
     ///       mock response will only be sent for the first matching request and not
     ///       thereafter
-    ///     - delay: How long to wait (after processing the incoming request) before sending
-    ///       the response
     ///     - matcher: An “evaluator” function that determines what requests this response
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockJSONResponse(endpoint: String? = nil, object: AnyObject? = nil, status: Int? = nil, headers: HTTPHeaders? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
+    public func mockJSONResponse(endpoint: String? = nil, status: Int? = nil, object: AnyObject? = nil, headers: HTTPHeaders? = nil, delay: TimeInterval = 0, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
         let jsonData: Data? = {
             guard let o = object else { return nil }
             return try? JSONSerialization.data(withJSONObject: o, options: JSONSerialization.WritingOptions())
@@ -386,8 +386,8 @@ public class MockHTTPServer {
             status: status,
             data: jsonData,
             headers: HTTPHeaders("Content-Type", "application/json").merged(headers),
-            onlyOnce: onlyOnce,
             delay: delay,
+            onlyOnce: onlyOnce,
             matcher: matcher)
     }
     
