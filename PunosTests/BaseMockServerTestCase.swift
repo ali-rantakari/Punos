@@ -45,7 +45,7 @@ class MockServerTestCase: XCTestCase {
     
     
     func requestThatCanFail(_ method: String, _ path: String, host: String = "localhost", port: in_port_t? = nil, data: Data? = nil, headers: [String:String]? = nil, timeout: TimeInterval = 2, wait: Bool = true, completionHandler: ((Data?, HTTPURLResponse?, NSError?) -> Void)? = nil) {
-        let expectation: XCTestExpectation = self.expectation(withDescription: "Request \(method) \(path)")
+        let expectation: XCTestExpectation = self.expectation(description: "Request \(method) \(path)")
         
         // Note: "localhost" will automatically map to either "127.0.0.1" (IPv4) or
         // "::1" (IPv6) even if only one of the two is available.
@@ -59,13 +59,13 @@ class MockServerTestCase: XCTestCase {
             request.httpBody = data
         }
         
-        URLSession.shared().dataTask(with: request as URLRequest) { data, maybeResponse, error in
+        URLSession.shared.dataTask(with: request as URLRequest) { data, maybeResponse, error in
             completionHandler?(data, maybeResponse as? HTTPURLResponse, error)
             expectation.fulfill()
             }.resume()
         
         if wait {
-            waitForExpectations(withTimeout: timeout) { error in
+            waitForExpectations(timeout: timeout) { error in
                 XCTAssertNil(error, "Request expectation timeout error: \(error)")
             }
         }

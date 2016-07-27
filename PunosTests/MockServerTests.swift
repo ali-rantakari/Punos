@@ -124,7 +124,7 @@ class MockServerTests: MockServerTestCase {
         //
         s.stop()
         
-        waitForExpectations(withTimeout: 3) { error in
+        waitForExpectations(timeout: 3) { error in
             XCTAssertNil(error, "\(error)")
         }
     }
@@ -245,7 +245,7 @@ class MockServerTests: MockServerTestCase {
             statusFinished(response.statusCode)
         }
         
-        waitForExpectations(withTimeout: 2) { error in
+        waitForExpectations(timeout: 2) { error in
             if error != nil {
                 XCTFail("Request error: \(error)")
                 return
@@ -319,7 +319,7 @@ class MockServerTests: MockServerTestCase {
         let testDataFilePath = "/usr/share/dict/words"
         let testData = try? Data(contentsOf: URL(fileURLWithPath: testDataFilePath))
         
-        let expectation: XCTestExpectation = self.expectation(withDescription: "Chunked request")
+        let expectation: XCTestExpectation = self.expectation(description: "Chunked request")
         
         let request = NSMutableURLRequest(url: URL(string: "\(server.baseURLString ?? "")/stream")!)
         request.httpMethod = "POST"
@@ -349,12 +349,12 @@ class MockServerTests: MockServerTestCase {
         }
         
         let urlSession = URLSession(
-            configuration: URLSessionConfiguration.default(),
+            configuration: URLSessionConfiguration.default,
             delegate: DataProviderDelegate(expectation, testDataFilePath),
             delegateQueue: nil)
         urlSession.uploadTask(withStreamedRequest: request as URLRequest).resume()
         
-        waitForExpectations(withTimeout: 10) { error in
+        waitForExpectations(timeout: 10) { error in
             XCTAssertNil(error, "Request expectation timeout error: \(error)")
             
             if error == nil {
