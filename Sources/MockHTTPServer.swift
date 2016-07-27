@@ -341,12 +341,12 @@ public class MockHTTPServer {
     ///
     public func mockJSONResponse(endpoint: String? = nil, json: String? = nil, status: Int? = nil, headers: HTTPHeaders? = nil, onlyOnce: Bool = false, delay: TimeInterval = 0, matcher: MockResponseMatcher? = nil) {
         mockResponse(
+            endpoint: endpoint,
             status: status,
             data: json?.data(using: String.Encoding.utf8),
             headers: HTTPHeaders("Content-Type", "application/json").merged(headers),
             onlyOnce: onlyOnce,
             delay: delay,
-            endpoint: endpoint,
             matcher: matcher)
     }
     
@@ -382,12 +382,12 @@ public class MockHTTPServer {
             return try? JSONSerialization.data(withJSONObject: o, options: JSONSerialization.WritingOptions())
         }()
         mockResponse(
+            endpoint: endpoint,
             status: status,
             data: jsonData,
             headers: HTTPHeaders("Content-Type", "application/json").merged(headers),
             onlyOnce: onlyOnce,
             delay: delay,
-            endpoint: endpoint,
             matcher: matcher)
     }
     
