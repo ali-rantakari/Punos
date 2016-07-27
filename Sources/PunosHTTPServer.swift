@@ -109,7 +109,7 @@ class PunosHTTPServer {
     }
     
     func stop() {
-        guard let source = dispatchSource, group = sourceGroup else {
+        guard let source = dispatchSource, let group = sourceGroup else {
             return
         }
         
