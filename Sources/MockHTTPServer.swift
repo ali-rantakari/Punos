@@ -377,7 +377,7 @@ public class MockHTTPServer {
     ///       should be sent for. If omitted or `nil`, this response will match _all_
     ///       incoming requests.
     ///
-    public func mockJSONResponse(endpoint: String? = nil, status: Int? = nil, object: AnyObject? = nil, headers: HTTPHeaders? = nil, delay: TimeInterval = 0, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
+    public func mockJSONResponse(endpoint: String? = nil, status: Int? = nil, object: Any? = nil, headers: HTTPHeaders? = nil, delay: TimeInterval = 0, onlyOnce: Bool = false, matcher: MockResponseMatcher? = nil) {
         let jsonData: Data? = {
             guard let o = object else { return nil }
             return try? JSONSerialization.data(withJSONObject: o, options: JSONSerialization.WritingOptions())
