@@ -212,7 +212,7 @@ class MockServerTests: MockServerTestCase {
         
         let waitBetweenRequestSends: TimeInterval = 0.05
         
-        let finishedRequestStatusesLock = Lock()
+        let finishedRequestStatusesLock = NSLock()
         var finishedRequestStatuses = [Int]()
         func statusFinished(_ status: Int) {
             finishedRequestStatusesLock.lock()
@@ -336,13 +336,13 @@ class MockServerTests: MockServerTestCase {
                 self.testDataFilePath = testDataFilePath
             }
             
-            @objc func urlSession(_ session: URLSession, task: URLSessionTask, needNewBodyStream completionHandler: (InputStream?) -> Void) {
+            @objc func urlSession(_ session: URLSession, task: URLSessionTask, needNewBodyStream completionHandler: @escaping (InputStream?) -> Void) {
                 completionHandler(InputStream(fileAtPath: testDataFilePath)!)
             }
             @objc func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
                 print("bytesSent:\(bytesSent), totalBytesSent:\(totalBytesSent), totalBytesExpectedToSend:\(totalBytesExpectedToSend)")
             }
-            @objc func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: (URLSession.ResponseDisposition) -> Void) {
+            @objc func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
                 expectation?.fulfill()
                 completionHandler(.allow)
             }

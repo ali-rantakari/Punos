@@ -19,14 +19,14 @@ extension TimeInterval {
 }
 
 extension DispatchQueue {
-    func after(interval: TimeInterval, execute work: @convention(block) () -> Swift.Void) {
-        after(walltime: DispatchWallTime.now() + interval.asDispatchTimeInterval, execute: work)
+    func after(interval: TimeInterval, execute work: @escaping @convention(block) () -> Swift.Void) {
+        asyncAfter(wallDeadline: DispatchWallTime.now() + interval.asDispatchTimeInterval, execute: work)
     }
 }
 
-extension Lock {
+extension NSLock {
     @discardableResult
-    func with<T>(_ fn: @noescape () -> T) -> T {
+    func with<T>(_ fn: () -> T) -> T {
         lock()
         let ret = fn()
         unlock()

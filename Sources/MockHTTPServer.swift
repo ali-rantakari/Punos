@@ -9,7 +9,7 @@
 import Foundation
 
 
-public typealias MockResponseMatcher = (request: HTTPRequest) -> Bool
+public typealias MockResponseMatcher = (HTTPRequest) -> Bool
 
 
 /// Data for a mocked HTTP server response.
@@ -72,7 +72,7 @@ public class MockHTTPServer {
     public init(loggingEnabled: Bool = false) {
         log = loggingEnabled ? printMessageToLog : { _ in }
         server = PunosHTTPServer(
-            queue: DispatchQueue(label: "org.hasseg.Punos.server", attributes: DispatchQueueAttributes.concurrent),
+            queue: DispatchQueue(label: "org.hasseg.Punos.server", attributes: .concurrent),
             logger: log
         )
         server.responder = respondToRequest
@@ -92,7 +92,7 @@ public class MockHTTPServer {
         do {
             try server.start(portsToTry: ports)
             isRunning = true
-            log("\(self.dynamicType) started at port \(port)")
+            log("\(type(of: self)) started at port \(port)")
         } catch let error {
             throw punosError(Int(port), "The mock server failed to start with preferred ports \(ports). Error: \(error)")
         }
@@ -103,7 +103,7 @@ public class MockHTTPServer {
     public func stop() {
         server.stop()
         isRunning = false
-        log("\(self.dynamicType) stopped.")
+        log("\(type(of: self)) stopped.")
     }
     
     /// Whether the server is currently running.
@@ -137,7 +137,7 @@ public class MockHTTPServer {
             let responseConfig = mockResponsesWithMatchers[i]
             guard let matcher = responseConfig.matcher else { continue }
             
-            if matcher(request: request) {
+            if matcher(request) {
                 if responseConfig.onlyOnce {
                     mockResponsesWithMatchers.remove(at: i)
                 }
@@ -162,9 +162,9 @@ public class MockHTTPServer {
         onlyOnce: false,
         delay: 0)
     
-    private let responseLock = Lock()
+    private let responseLock = NSLock()
     
-    private func respondToRequest(_ request: HTTPRequest, _ callback: (HttpResponse) -> Void) {
+    private func respondToRequest(_ request: HTTPRequest, _ callback: @escaping (HttpResponse) -> Void) {
         let mockConfig: MockResponseConfiguration = responseLock.with {
             latestRequests.append(request)
             return mockResponseConfigForRequest(request) ?? defaultMockResponseConfiguration
@@ -175,7 +175,8 @@ public class MockHTTPServer {
         let content: HttpResponseContent? = {
             if let bodyData = mockData.data {
                 return (length: bodyData.count, write: { responseBodyWriter in
-                    let bytes = Array(UnsafeBufferPointer(start: UnsafePointer<UInt8>((bodyData as NSData).bytes), count: bodyData.count))
+                    var bytes = [UInt8](repeating: 0, count: bodyData.count)
+                    (bodyData as NSData).getBytes(&bytes, length: bodyData.count * MemoryLayout<UInt8>.size)
                     responseBodyWriter.write(bytes)
                 })
             }

@@ -25,17 +25,17 @@ class PunosHTTPServer {
     }
     
     private var sourceGroup: DispatchGroup?
-    private var dispatchSource: DispatchSourceType?
+    private var dispatchSource: DispatchSourceProtocol?
     
     private var clientSockets: Set<Socket> = []
-    private let clientSocketsLock = Lock()
+    private let clientSocketsLock = NSLock()
     
-    private func createDispatchSource(_ listeningSocket: Socket) -> DispatchSourceType? {
+    private func createDispatchSource(_ listeningSocket: Socket) -> DispatchSourceProtocol? {
         guard let sourceGroup = sourceGroup else { return nil }
         
         let listeningSocketFD = listeningSocket.socketFileDescriptor
         sourceGroup.enter()
-        let source = DispatchSource.read(fileDescriptor: listeningSocketFD, queue: queue)
+        let source = DispatchSource.makeReadSource(fileDescriptor: listeningSocketFD, queue: queue)
         
         source.setCancelHandler { _ in
             do {
@@ -140,10 +140,10 @@ class PunosHTTPServer {
         port = nil
     }
     
-    var responder: ((HTTPRequest, (HttpResponse) -> Void) -> Void)?
+    var responder: ((HTTPRequest, @escaping (HttpResponse) -> Void) -> Void)?
     var defaultResponse = HttpResponse(200, nil, nil)
     
-    private func respondToRequestAsync(_ request: HTTPRequest, responseCallback: (HttpResponse) -> Void) {
+    private func respondToRequestAsync(_ request: HTTPRequest, responseCallback: @escaping (HttpResponse) -> Void) {
         if let responder = responder {
             responder(request, responseCallback)
         } else {
@@ -151,7 +151,7 @@ class PunosHTTPServer {
         }
     }
     
-    private func handleConnection(_ socket: Socket, doneCallback: () -> Void) {
+    private func handleConnection(_ socket: Socket, doneCallback: @escaping () -> Void) {
         guard let request = try? readHttpRequest(socket) else {
             socket.releaseIgnoringErrors()
             doneCallback()

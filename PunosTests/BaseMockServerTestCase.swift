@@ -11,11 +11,10 @@ import Punos
 
 extension HTTPURLResponse {
     func headerWithName(_ name: String) -> String? {
-        return (allHeaderFields as? [String:String])?[name]
+        return allHeaderFields[name] as? String
     }
     var allHeaderNames: Set<String> {
-        guard let headers = allHeaderFields as? [String:String] else { return [] }
-        return Set(headers.keys) ?? []
+        return Set(allHeaderFields.keys.flatMap { $0 as? String })
     }
 }
 
@@ -60,7 +59,7 @@ class MockServerTestCase: XCTestCase {
         }
         
         URLSession.shared.dataTask(with: request as URLRequest) { data, maybeResponse, error in
-            completionHandler?(data, maybeResponse as? HTTPURLResponse, error)
+            completionHandler?(data, maybeResponse as? HTTPURLResponse, error as NSError?)
             expectation.fulfill()
             }.resume()
         

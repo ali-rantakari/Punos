@@ -80,7 +80,7 @@ public extension KeyValueList {
 
 /// A list of HTTP headers
 ///
-public struct HTTPHeaders: KeyValueList, DictionaryLiteralConvertible, ArrayLiteralConvertible {
+public struct HTTPHeaders: KeyValueList, ExpressibleByDictionaryLiteral, ExpressibleByArrayLiteral {
     public let pairs: [(String,String)]
     public init(pairs: [(String,String)]) {
         self.pairs = pairs
@@ -90,7 +90,7 @@ public struct HTTPHeaders: KeyValueList, DictionaryLiteralConvertible, ArrayLite
 
 /// A list of URL query parameters
 ///
-public struct URLQueryParameters: KeyValueList, DictionaryLiteralConvertible, ArrayLiteralConvertible {
+public struct URLQueryParameters: KeyValueList, ExpressibleByDictionaryLiteral, ExpressibleByArrayLiteral {
     public let pairs: [(String,String)]
     public init(pairs: [(String,String)]) {
         self.pairs = pairs
