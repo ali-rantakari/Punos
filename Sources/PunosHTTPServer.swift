@@ -19,7 +19,7 @@ class PunosHTTPServer {
     let queue: DispatchQueue
     private let log: Logger
     
-    init(queue: DispatchQueue, logger: Logger = { _ in }) {
+    init(queue: DispatchQueue, logger: @escaping Logger = { _ in }) {
         self.log = logger
         self.queue = queue
     }
