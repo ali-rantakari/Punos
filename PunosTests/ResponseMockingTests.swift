@@ -293,4 +293,82 @@ class ResponseMockingTests: MockServerTestCase {
         }
     }
     
+    func testResponseMocking_AdHoc() {
+        var requestReceivedByHandler: HTTPRequest?
+        server.mockAdHocResponse { request in
+            requestReceivedByHandler = request
+            return MockResponse(
+                statusCode: 507,
+                data: "adhoc".data(using: .utf8),
+                headers: [
+                    "X-Adhoc": "adhoc!"
+                ])
+        }
+        
+        request("GET", "/foo/bar%20baz?a=b") { data, response, error in
+            XCTAssertNotNil(requestReceivedByHandler)
+            XCTAssertEqual(requestReceivedByHandler!.method, "GET")
+            XCTAssertEqual(requestReceivedByHandler!.path, "/foo/bar%20baz")
+            XCTAssertEqual(requestReceivedByHandler!.queryParameters["a"], "b")
+            
+            XCTAssertEqual(response.statusCode, 507)
+            XCTAssertEqual(String(data: data, encoding: .utf8), "adhoc")
+            XCTAssertEqual(response.headerWithName("X-Adhoc"), "adhoc!")
+        }
+        
+        server.clearAllMockingState()
+        
+        request("GET", "/foo/bar%20baz?a=b") { data, response, error in
+            XCTAssertEqual(response.statusCode, 200)
+        }
+    }
+    
+    func testResponseMocking_AdHoc_TakesPrecedenceOverStaticMockResponses() {
+        server.mockResponse(endpoint: nil, status: 300)
+        
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 300)
+        }
+        
+        server.mockAdHocResponse { request in
+            return MockResponse(
+                statusCode: 507,
+                data: nil,
+                headers: nil)
+        }
+        
+        request("GET", "/foo") { data, response, error in
+            XCTAssertEqual(response.statusCode, 507)
+        }
+    }
+    
+    func testResponseMocking_AdHoc_InvokedInOrder_SomeReturnNil() {
+        server.mockResponse(endpoint: nil, status: 300)
+        
+        server.mockAdHocResponse { request in
+            guard request.path.contains("first") else { return nil }
+            return MockResponse(statusCode: 501, data: nil, headers: nil)
+        }
+        server.mockAdHocResponse { request in
+            guard request.path.contains("second") else { return nil }
+            return MockResponse(statusCode: 502, data: nil, headers: nil)
+        }
+        server.mockAdHocResponse { request in
+            guard request.path.contains("third") else { return nil }
+            return MockResponse(statusCode: 503, data: nil, headers: nil)
+        }
+        
+        request("GET", "/first") { data, response, error in
+            XCTAssertEqual(response.statusCode, 501, "Matches 1st ad-hoc handler")
+        }
+        request("GET", "/second") { data, response, error in
+            XCTAssertEqual(response.statusCode, 502, "Matches 2nd ad-hoc handler")
+        }
+        request("GET", "/third") { data, response, error in
+            XCTAssertEqual(response.statusCode, 503, "Matches 3rd ad-hoc handler")
+        }
+        request("GET", "/fourth") { data, response, error in
+            XCTAssertEqual(response.statusCode, 300, "Matches none of the ad-hoc handlers")
+        }
+    }
 }

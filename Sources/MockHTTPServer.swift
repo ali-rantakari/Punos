@@ -133,6 +133,16 @@ public class MockHTTPServer {
     
     private func mockResponseConfigForRequest(_ request: HTTPRequest) -> MockResponseConfiguration? {
         
+        for handler in mockAdHocResponseHandlers {
+            if let response = handler(request) {
+                return MockResponseConfiguration(
+                    response: response,
+                    matcher: nil,
+                    onlyOnce: false,
+                    delay: 0)
+            }
+        }
+        
         for i in mockResponsesWithMatchers.indices {
             let responseConfig = mockResponsesWithMatchers[i]
             guard let matcher = responseConfig.matcher else { continue }
@@ -223,6 +233,7 @@ public class MockHTTPServer {
     // ------------------------------------
     // MARK: Response mocking
     
+    private var mockAdHocResponseHandlers: [(HTTPRequest) -> MockResponse?] = []
     private var defaultMockResponses: [MockResponseConfiguration] = []
     private var mockResponsesWithMatchers: [MockResponseConfiguration] = []
     
@@ -241,6 +252,21 @@ public class MockHTTPServer {
     /// By default, the “identity” function (`{ $0 }`).
     ///
     public var commonResponseModifier: ((MockResponse) -> MockResponse) = { $0 }
+    
+    /// Tell the server to handle incoming requests with the given handler function.
+    ///
+    /// - Several ad-hoc request handlers can be configured with this function.
+    /// - Ad-hoc request handlers are invoked in the order in which they were added.
+    /// - Ad-hoc request handlers take precedence over other (static) mock responses.
+    ///
+    /// - parameters:
+    ///     - handler: A handler function that takes the incoming HTTP request as an
+    ///       argument and returns the mock response that the server should respond to
+    ///       the request with, or `nil` to specify no response.
+    ///
+    public func mockAdHocResponse(handler: @escaping (HTTPRequest) -> MockResponse?) {
+        mockAdHocResponseHandlers.append(handler)
+    }
     
     /// Tell the server to send this response to incoming requests.
     ///
@@ -397,6 +423,7 @@ public class MockHTTPServer {
     public func clearMockResponses() {
         defaultMockResponses.removeAll()
         mockResponsesWithMatchers.removeAll()
+        mockAdHocResponseHandlers.removeAll()
     }
     
     /// Removes all “mocking” state: the mock responses, the
