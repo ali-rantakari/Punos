@@ -309,7 +309,7 @@ class ResponseMockingTests: MockServerTestCase {
             XCTAssertNotNil(requestReceivedByHandler)
             XCTAssertEqual(requestReceivedByHandler!.method, "GET")
             XCTAssertEqual(requestReceivedByHandler!.path, "/foo/bar%20baz")
-            XCTAssertEqual(requestReceivedByHandler!.queryParameters["a"], "b")
+            XCTAssertEqual(requestReceivedByHandler!.query["a"], "b")
             
             XCTAssertEqual(response.statusCode, 507)
             XCTAssertEqual(String(data: data, encoding: .utf8), "adhoc")

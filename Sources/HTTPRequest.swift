@@ -20,7 +20,7 @@ public struct HTTPRequest {
     public let method: String
     
     /// The query parameters
-    public let queryParameters: URLQueryParameters
+    public let query: URLQueryParameters
     
     /// The HTTP headers
     public let headers: HTTPHeaders

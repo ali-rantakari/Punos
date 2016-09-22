@@ -66,7 +66,7 @@ internal func readHttpRequest(_ socket: Socket) throws -> HTTPRequest {
     return HTTPRequest(
         path: path,
         method: method,
-        queryParameters: URLQueryParameters(pairs: queryPairs),
+        query: URLQueryParameters(pairs: queryPairs),
         headers: HTTPHeaders(headersWithCapitalizedNames(headers)),
         data: data)
 }
