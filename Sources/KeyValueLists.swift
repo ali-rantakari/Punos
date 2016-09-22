@@ -75,6 +75,10 @@ public extension KeyValueList {
         }
         return Self(pairs: p)
     }
+    
+    var keys: [String] {
+        return pairs.map { $0.0 }
+    }
 }
 
 
