@@ -125,7 +125,7 @@ class MockServerTests: MockServerTestCase {
         s.stop()
         
         waitForExpectations(timeout: 3) { error in
-            XCTAssertNil(error, "\(error)")
+            XCTAssertNil(error, "\(String(describing: error))")
         }
     }
     
@@ -247,7 +247,7 @@ class MockServerTests: MockServerTestCase {
         
         waitForExpectations(timeout: 2) { error in
             if error != nil {
-                XCTFail("Request error: \(error)")
+                XCTFail("Request error: \(String(describing: error))")
                 return
             }
             
@@ -355,7 +355,7 @@ class MockServerTests: MockServerTestCase {
         urlSession.uploadTask(withStreamedRequest: request as URLRequest).resume()
         
         waitForExpectations(timeout: 10) { error in
-            XCTAssertNil(error, "Request expectation timeout error: \(error)")
+            XCTAssertNil(error, "Request expectation timeout error: \(String(describing: error))")
             
             if error == nil {
                 let receivedData = self.server.lastRequest?.data

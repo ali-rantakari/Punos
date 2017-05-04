@@ -65,7 +65,7 @@ class MockServerTestCase: XCTestCase {
         
         if wait {
             waitForExpectations(timeout: timeout) { error in
-                XCTAssertNil(error, "Request expectation timeout error: \(error)")
+                XCTAssertNil(error, "Request expectation timeout error: \(String(describing: error))")
             }
         }
     }
@@ -73,11 +73,11 @@ class MockServerTestCase: XCTestCase {
     func request(_ method: String, _ path: String, host: String = "localhost", port: in_port_t? = nil, data: Data? = nil, headers: [String:String]? = nil, timeout: TimeInterval = 2, wait: Bool = true, completionHandler: ((Data, HTTPURLResponse, NSError?) -> Void)? = nil) {
         requestThatCanFail(method, path, host: host, port: port, data: data, headers: headers, timeout: timeout, wait: wait) { maybeData, maybeResponse, maybeError in
             guard let data = maybeData else {
-                XCTFail("Data is expected to be non-nil. Error: \(maybeError)")
+                XCTFail("Data is expected to be non-nil. Error: \(String(describing: maybeError))")
                 return
             }
             guard let response = maybeResponse else {
-                XCTFail("Response is expected to be non-nil. Error: \(maybeError)")
+                XCTFail("Response is expected to be non-nil. Error: \(String(describing: maybeError))")
                 return
             }
             completionHandler?(data, response, maybeError)
