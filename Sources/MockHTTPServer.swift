@@ -209,7 +209,7 @@ public class MockHTTPServer {
     
     /// The latest HTTP requests this server has received, in order of receipt.
     ///
-    public var latestRequests = [HTTPRequest]()
+    private(set) public var latestRequests = [HTTPRequest]()
     
     /// The `.endpoint` values for `latestRequests`.
     ///
