@@ -25,10 +25,28 @@ public struct MockResponse {
     /// The HTTP headers
     public let headers: HTTPHeaders?
     
+    /// The body data, deserialized into a JSON object, or `nil` if
+    /// it could not be deserialized
+    public var jsonData: Any? {
+        guard let data = data else { return nil }
+        return try? JSONSerialization.jsonObject(
+            with: data,
+            options: [])
+    }
+    
     public init(statusCode: Int, data: Data?, headers: HTTPHeaders?) {
         self.statusCode = statusCode
         self.data = data
         self.headers = headers
+    }
+    
+    public init(statusCode: Int, jsonObject: Any, headers: HTTPHeaders? = nil) throws {
+        self.init(
+            statusCode: statusCode,
+            data: try JSONSerialization.data(
+                withJSONObject: jsonObject,
+                options: []),
+            headers: HTTPHeaders("Content-Type", "application/json").merged(headers))
     }
     
     /// Returns a copy of self by replacing members with the supplied

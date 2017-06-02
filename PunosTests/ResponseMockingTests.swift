@@ -293,6 +293,19 @@ class ResponseMockingTests: MockServerTestCase {
         }
     }
     
+    func testMockResponseJSONSupport() throws {
+        XCTAssertEqual(try MockResponse(statusCode: 507, jsonObject: [3]).statusCode, 507)
+        
+        // Handling of headers
+        XCTAssertEqual(try MockResponse(statusCode: 507, jsonObject: [3]).headers?["Content-Type"], "application/json")
+        XCTAssertEqual(try MockResponse(statusCode: 507, jsonObject: [3], headers: ["Foo": "Bar"]).headers?["Content-Type"], "application/json")
+        XCTAssertEqual(try MockResponse(statusCode: 507, jsonObject: [3], headers: ["Foo": "Bar"]).headers?["Foo"], "Bar")
+        
+        // Serialization and deserialization
+        XCTAssertEqual((try JSONSerialization.jsonObject(with: try MockResponse(statusCode: 507, jsonObject: ["baz": 7]).data ?? Data(), options: []) as? [String:Int])?["baz"], 7)
+        XCTAssertEqual((try MockResponse(statusCode: 507, jsonObject: ["baz": 7]).jsonData as? [String:Int])?["baz"], 7)
+    }
+    
     func testResponseMocking_AdHoc() {
         var requestReceivedByHandler: HTTPRequest?
         server.mockAdHocResponse { request in
