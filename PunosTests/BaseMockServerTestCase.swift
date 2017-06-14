@@ -52,7 +52,11 @@ class MockServerTestCase: XCTestCase {
         let request = NSMutableURLRequest(url: URL(string: "http://\(host):\(port ?? server.port)\(path)")!)
         request.httpMethod = method
         if let headers = headers {
-            headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
+            #if swift(>=4)
+                headers.forEach { request.addValue($0.value, forHTTPHeaderField: $0.key) }
+            #else
+                headers.forEach { request.addValue($1, forHTTPHeaderField: $0) }
+            #endif
         }
         if let data = data {
             request.httpBody = data
