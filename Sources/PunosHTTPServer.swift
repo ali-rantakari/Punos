@@ -37,7 +37,7 @@ class PunosHTTPServer {
         sourceGroup.enter()
         let source = DispatchSource.makeReadSource(fileDescriptor: listeningSocketFD, queue: queue)
         
-        source.setCancelHandler { _ in
+        source.setCancelHandler {
             do {
                 try Socket.release(listeningSocketFD)
                 self.log("Closed listening socket \(listeningSocketFD)")
@@ -47,7 +47,7 @@ class PunosHTTPServer {
             sourceGroup.leave()
         }
         
-        source.setEventHandler { _ in
+        source.setEventHandler {
             autoreleasepool {
                 do {
                     let clientSocket = try listeningSocket.acceptClientSocket()
