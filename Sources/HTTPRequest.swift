@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// An HTTP request sent to the `MockServer`.
+/// An HTTP request sent to a `MockHTTPServer`.
 ///
 public struct HTTPRequest {
     
