@@ -193,6 +193,10 @@ public class MockHTTPServer {
     private let responseLock = NSLock()
     
     private func respondToRequest(_ request: HTTPRequest, _ callback: @escaping (HttpResponse) -> Void) {
+        for observer in requestObservers {
+            observer(request)
+        }
+        
         let mockConfig: MockResponseConfiguration = responseLock.with {
             latestRequests.append(request)
             return mockResponseConfigForRequest(request) ?? defaultMockResponseConfiguration
@@ -251,6 +255,7 @@ public class MockHTTPServer {
     // ------------------------------------
     // MARK: Response mocking
     
+    private var requestObservers: [(HTTPRequest) -> Void] = []
     private var mockAdHocResponseHandlers: [(HTTPRequest) -> MockResponse?] = []
     private var defaultMockResponses: [MockResponseConfiguration] = []
     private var mockResponsesWithMatchers: [MockResponseConfiguration] = []
@@ -265,6 +270,12 @@ public class MockHTTPServer {
         }
     }
     
+    /// Tell the server to invoke `observer` after receiving each incoming HTTP request.
+    ///
+    public func addRequestObserver(_ observer: @escaping (HTTPRequest) -> Void) {
+        requestObservers.append(observer)
+    }
+
     /// A function that modifies each response before it is sent.
     /// Useful for e.g. setting common headers like `"Server"`.
     /// By default, the “identity” function (`{ $0 }`).
@@ -444,12 +455,20 @@ public class MockHTTPServer {
         mockAdHocResponseHandlers.removeAll()
     }
     
+    /// Remove all request observers.
+    ///
+    public func clearRequestObservers() {
+        requestObservers.removeAll()
+    }
+
     /// Removes all “mocking” state: the mock responses, the
-    /// common response modifier, and the latest request list.
+    /// common response modifier, the latest request list, and
+    /// all request observers.
     ///
     public func clearAllMockingState() {
         clearLatestRequests()
         clearMockResponses()
+        clearRequestObservers()
         commonResponseModifier = { $0 }
     }
 }

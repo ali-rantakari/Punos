@@ -373,6 +373,45 @@ class MockServerTests: MockServerTestCase {
         }
     }
     
+    func testRequestObserver() {
+        var observedRequests1: [HTTPRequest] = []
+        var observedRequests2: [HTTPRequest] = []
+        
+        server.addRequestObserver { request in
+            observedRequests1.append(request)
+        }
+        server.addRequestObserver { request in
+            observedRequests2.append(request)
+        }
+
+        XCTAssertEqual(observedRequests1.count, 0)
+        XCTAssertEqual(observedRequests2.count, 0)
+        
+        request("GET", "/foo1") { data, response, error in
+            XCTAssertEqual(observedRequests1.count, 1)
+            XCTAssertEqual(observedRequests2.count, 1)
+        }
+        
+        request("GET", "/foo2") { data, response, error in
+            XCTAssertEqual(observedRequests1.count, 2)
+            XCTAssertEqual(observedRequests2.count, 2)
+        }
+        
+        XCTAssertEqual(observedRequests1[0].endpoint, "GET /foo1")
+        XCTAssertEqual(observedRequests1[1].endpoint, "GET /foo2")
+        XCTAssertEqual(observedRequests2[0].endpoint, "GET /foo1")
+        XCTAssertEqual(observedRequests2[1].endpoint, "GET /foo2")
+
+        server.clearRequestObservers()
+        observedRequests1.removeAll()
+        observedRequests2.removeAll()
+
+        request("GET", "/foo3") { data, response, error in
+            XCTAssertEqual(observedRequests1.count, 0)
+            XCTAssertEqual(observedRequests2.count, 0)
+        }
+    }
+    
     func testIPv4Support() {
         server.mockResponse(status: 201)
         
