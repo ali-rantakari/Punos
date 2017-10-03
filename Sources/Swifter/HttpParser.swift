@@ -100,7 +100,11 @@ private func readChunkedBody(_ socket: Socket) throws -> [UInt8] {
         }
         let chunkSizeHexString: String = {
             if chunkHeaderLine.contains(";") {
-                return chunkHeaderLine.substring(to: chunkHeaderLine.range(of: ";")!.lowerBound)
+                #if swift(>=4)
+                    return String(chunkHeaderLine[..<chunkHeaderLine.range(of: ";")!.lowerBound])
+                #else
+                    return chunkHeaderLine.substring(to: chunkHeaderLine.range(of: ";")!.lowerBound)
+                #endif
             }
             return chunkHeaderLine
         }()
