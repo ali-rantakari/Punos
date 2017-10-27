@@ -4,6 +4,17 @@ Punos
 
 A Swift localhost mock HTTP server for writing automated tests against.
 
+
+Swift Compatibility
+-------------------
+
+- For __Swift 4+__, use the latest version.
+- For Swift <= 3.1, use version 0.3.3.
+
+
+Overview
+--------
+
 This is what it might look like to __use in a test case:__
 
 ```swift
