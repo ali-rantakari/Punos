@@ -87,10 +87,12 @@ class PunosHTTPServer {
                 maybeSocket = try Socket.tcpSocketForListen(port)
             } catch let error {
                 if case SocketError.bindFailedAddressAlreadyInUse(_) = error {
+                    log("Could not bind to port \(port)")
                     continue
                 }
                 throw error
             }
+            log("Assigning port \(port)")
             self.port = port
             break
         }
@@ -112,6 +114,8 @@ class PunosHTTPServer {
         guard let source = dispatchSource, let group = sourceGroup else {
             return
         }
+        
+        log("Stopping server at port \(port ?? 0)")
         
         // These properties are our implicit "are we running" state:
         //
