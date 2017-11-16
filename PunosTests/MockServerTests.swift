@@ -167,6 +167,13 @@ class MockServerTests: MockServerTestCase {
             XCTAssertEqual(self.server.latestRequests.count, 0)
             XCTAssertNil(self.server.lastRequest)
         }
+        
+        for path in ["/", "/foo", "/foo/bar", "/foo/bar?"] {
+            request("POST", path) { _, _, _ in
+                XCTAssertEqual(self.server.lastRequest?.query.count, 0,
+                               "Expected empty query for URL path '\(path)'")
+            }
+        }
     }
     
     func testManyRequestsInQuickSuccession() {

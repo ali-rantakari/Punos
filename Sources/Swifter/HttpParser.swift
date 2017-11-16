@@ -72,8 +72,11 @@ internal func readHttpRequest(_ socket: Socket) throws -> HTTPRequest {
 }
 
 private func extractQueryParams(_ url: String) -> [(String, String)] {
-    guard let query = url.split("?").last else {
-        return []
+    guard
+        let parts = Optional(url.split("?")),
+        1 < parts.count,
+        let query = parts.last else {
+            return []
     }
     return query.split("&").reduce([(String, String)]()) { (c, s) -> [(String, String)] in
         let tokens = s.split(1, separator: "=")
