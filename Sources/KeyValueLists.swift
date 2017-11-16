@@ -79,6 +79,10 @@ public extension KeyValueList {
     var keys: [String] {
         return pairs.map { $0.0 }
     }
+    
+    var count: Int {
+        return pairs.count
+    }
 }
 
 
