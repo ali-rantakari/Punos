@@ -14,21 +14,21 @@
 extension String {
 
     internal func split(_ separator: Character) -> [String] {
-        return self.characters.split { $0 == separator }.map(String.init)
+        return self.split { $0 == separator }.map(String.init)
     }
     
     internal func split(_ maxSplit: Int = Int.max, separator: Character) -> [String] {
-        return self.characters.split(maxSplits: maxSplit) { $0 == separator }.map(String.init)
+        return self.split(maxSplits: maxSplit) { $0 == separator }.map(String.init)
     }
     
     internal func replace(_ old: Character, _ new: Character) -> String {
         var buffer = [Character]()
-        self.characters.forEach { buffer.append($0 == old ? new : $0) }
+        forEach { buffer.append($0 == old ? new : $0) }
         return String(buffer)
     }
     
     internal func unquote() -> String {
-        var scalars = self.unicodeScalars
+        var scalars = unicodeScalars
         if scalars.first == "\"" && scalars.last == "\"" && scalars.count >= 2 {
             scalars.removeFirst()
             scalars.removeLast()
