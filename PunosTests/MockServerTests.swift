@@ -143,20 +143,23 @@ class MockServerTests: MockServerTestCase {
                 ])
             
             XCTAssertNotNil(self.server.lastRequest)
-            if self.server.lastRequest != nil {
-                XCTAssertEqual(self.server.lastRequest?.endpoint, "POST /foo/bar")
-                XCTAssertEqual(self.server.lastRequest?.method, "POST")
-                XCTAssertEqual(self.server.lastRequest?.path, "/foo/bar")
-                XCTAssertEqual(self.server.lastRequest!.query.pairs[0].0, "a")
-                XCTAssertEqual(self.server.lastRequest!.query.pairs[0].1, "0")
-                XCTAssertEqual(self.server.lastRequest!.query.pairs[1].0, "b")
-                XCTAssertEqual(self.server.lastRequest!.query.pairs[1].1, "2")
-                XCTAssertEqual(self.server.lastRequest!.query.pairs[2].0, "a")
-                XCTAssertEqual(self.server.lastRequest!.query.pairs[2].1, "1")
-                XCTAssertEqual(self.server.lastRequest!.query.dictionary, ["a":"1", "b":"2", "c":"", "d":"å"])
-                XCTAssertEqual(self.server.lastRequest!.headers["X-Eka"], "eka")
-                XCTAssertEqual(self.server.lastRequest!.headers["X-Toka"], "toka")
-                XCTAssertEqual(self.server.lastRequest?.data, "i used to be with it".data(using: String.Encoding.utf8))
+            
+            if let lastRequest = self.server.lastRequest {
+                XCTAssertEqual(lastRequest.endpoint, "POST /foo/bar")
+                XCTAssertEqual(lastRequest.method, "POST")
+                XCTAssertEqual(lastRequest.path, "/foo/bar")
+                XCTAssertEqual(lastRequest.query.pairs[0].0, "a")
+                XCTAssertEqual(lastRequest.query.pairs[0].1, "0")
+                XCTAssertEqual(lastRequest.query.pairs[1].0, "b")
+                XCTAssertEqual(lastRequest.query.pairs[1].1, "2")
+                XCTAssertEqual(lastRequest.query.pairs[2].0, "a")
+                XCTAssertEqual(lastRequest.query.pairs[2].1, "1")
+                XCTAssertEqual(lastRequest.query.dictionary, ["a":"1", "b":"2", "c":"", "d":"å"])
+                XCTAssertEqual(lastRequest.headers["X-Eka"], "eka")
+                XCTAssertEqual(lastRequest.headers["X-Toka"], "toka")
+                XCTAssertEqual(lastRequest.data, "i used to be with it".data(using: String.Encoding.utf8))
+            } else {
+                XCTFail("lastRequest can’t be nil")
             }
             
             self.server.clearLatestRequests()
