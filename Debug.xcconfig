@@ -1,0 +1,13 @@
+//
+//  Debug.xcconfig
+//  Punos
+//
+//  Created by Ali Rantakari on 25/04/2018.
+//  Copyright © 2018 Ali Rantakari. All rights reserved.
+//
+
+// The Swift 4.1 compiler crashes for this project unless we
+// enable “optimize for speed” :-(
+//
+SWIFT_OPTIMIZATION_LEVEL = -O
+
