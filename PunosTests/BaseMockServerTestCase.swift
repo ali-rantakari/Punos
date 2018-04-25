@@ -14,7 +14,7 @@ extension HTTPURLResponse {
         return allHeaderFields[name] as? String
     }
     var allHeaderNames: Set<String> {
-        return Set(allHeaderFields.keys.flatMap { $0 as? String })
+        return Set(allHeaderFields.keys.compactMap { $0 as? String })
     }
 }
 
