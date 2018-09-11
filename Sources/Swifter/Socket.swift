@@ -79,17 +79,18 @@ internal class Socket: Hashable, Equatable {
             addr.sin6_addr = in6addr_any
         #endif
         
-        var bind_addr = sockaddr()
-        memcpy(&bind_addr, &addr, Int(MemoryLayout<sockaddr_in6>.size))
-        
-        if bind(socketFileDescriptor, &bind_addr, socklen_t(MemoryLayout<sockaddr_in6>.size)) == -1 {
-            let myErrno = errno
-            let details = Socket.descriptionOfLastError()
-            Socket.releaseIgnoringErrors(socketFileDescriptor)
-            if myErrno == EADDRINUSE {
-                throw SocketError.bindFailedAddressAlreadyInUse(details)
+        try withUnsafePointer(to: &addr) { addrPointer in
+            let bind_addr = UnsafeRawPointer(addrPointer).assumingMemoryBound(to: sockaddr.self)
+            
+            if bind(socketFileDescriptor, bind_addr, socklen_t(MemoryLayout<sockaddr_in6>.size)) == -1 {
+                let myErrno = errno
+                let details = Socket.descriptionOfLastError()
+                Socket.releaseIgnoringErrors(socketFileDescriptor)
+                if myErrno == EADDRINUSE {
+                    throw SocketError.bindFailedAddressAlreadyInUse(details)
+                }
+                throw SocketError.bindFailed(details)
             }
-            throw SocketError.bindFailed(details)
         }
         
         if listen(socketFileDescriptor, maxPendingConnection) == -1 {
