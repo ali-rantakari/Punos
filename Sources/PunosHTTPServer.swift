@@ -58,7 +58,7 @@ class PunosHTTPServer {
                     
                     self.queue.async {
                         self.handleConnection(clientSocket) {
-                            self.clientSocketsLock.with {
+                            _ = self.clientSocketsLock.with {
                                 self.clientSockets.remove(clientSocket)
                             }
                         }
